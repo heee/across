@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#faf8f4">
+<title>Across</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Across">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <!-- Name entry / profile picker (first run, or when returning on a shared device) -->
+  <div id="screen-name-entry" class="screen">
+    <div class="name-entry">
+      <div class="app-mark">
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+      </div>
+      <div class="name-entry-title">Who's solving today?</div>
+      <p class="name-entry-subtitle">Pick your name, or add someone new</p>
+
+      <div class="profile-picker-grid" id="profile-picker-grid"></div>
+
+      <div id="new-player-form" style="display:none;flex-direction:column;align-items:center;gap:16px;margin-top:8px;width:100%">
+        <input id="name-entry-input" type="text" maxlength="40" placeholder="Your name" autocomplete="off">
+        <button id="name-entry-submit" class="cta-primary" style="max-width:280px">Start solving</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home -->
+  <div id="screen-home" class="screen">
+    <div class="screen-header"><div class="screen-title">Across</div></div>
+    <div class="scroll-area no-scrollbar" id="home-scroll"></div>
+    <nav class="bottom-nav" data-nav></nav>
+  </div>
+
+  <!-- Search -->
+  <div id="screen-search" class="screen">
+    <div class="screen-header">
+      <div class="screen-title">Search</div>
+      <div class="search-bar">
+        <span class="search-icon"></span>
+        <input id="search-input" type="text" placeholder="Search crosswords or topics">
+      </div>
+    </div>
+    <div class="chip-row no-scrollbar" id="search-chips" style="padding-top:0"></div>
+    <div class="scroll-area no-scrollbar" style="padding-top:4px">
+      <div class="list-label">Newest first</div>
+      <div class="puzzle-list" id="search-results"></div>
+    </div>
+    <nav class="bottom-nav" data-nav></nav>
+  </div>
+
+  <!-- Create -->
+  <div id="screen-create" class="screen">
+    <div class="create-header">
+      <button class="back-btn" data-action="go-home">‹</button>
+      <div class="screen-title">New crossword</div>
+    </div>
+    <div class="scroll-area no-scrollbar" style="padding-top:8px">
+      <div class="field-label">Title</div>
+      <input id="create-title" class="text-field" type="text" placeholder="e.g. European Capitals" maxlength="60">
+
+      <div class="field-label">Short description <span class="optional">(optional)</span></div>
+      <input id="create-description" class="text-field description" type="text" placeholder="A one-line hint at the theme" maxlength="140">
+
+      <div class="field-label">Keywords</div>
+      <div class="chip-field" id="create-keywords"></div>
+
+      <div class="field-label">Puzzle size</div>
+      <div class="segmented" id="create-size">
+        <button class="segmented-option" data-value="mini">Mini</button>
+        <button class="segmented-option selected" data-value="standard">Standard</button>
+        <button class="segmented-option" data-value="large">Large</button>
+      </div>
+
+      <div class="field-label">Difficulty</div>
+      <div class="segmented" id="create-difficulty">
+        <button class="segmented-option" data-value="easy">Easy</button>
+        <button class="segmented-option selected" data-value="medium">Medium</button>
+        <button class="segmented-option" data-value="hard">Hard</button>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-row-label">Advanced controls</div>
+        <button class="toggle" id="create-advanced-toggle" disabled title="Coming in a later update"></button>
+      </div>
+
+      <div class="field-label" style="color:var(--muted-45)">Preview</div>
+      <div class="preview-card">
+        <div class="preview-grid" id="create-preview-grid"></div>
+        <div class="preview-caption" id="create-preview-caption">Standard · Medium · Up to 8 players</div>
+      </div>
+
+      <div class="field-label">Visibility</div>
+      <button class="text-field" id="create-visibility" style="text-align:left;cursor:pointer;font:600 13px Sora">Open · anyone with the link can join</button>
+    </div>
+    <div class="cta-row">
+      <button class="cta-primary" id="create-submit">Generate &amp; publish</button>
+    </div>
+  </div>
+
+  <!-- Crossword solve -->
+  <div id="screen-puzzle" class="screen">
+    <div class="puzzle-header">
+      <div>
+        <div class="puzzle-header-title" id="puzzle-title"></div>
+        <div class="puzzle-header-sub">
+          <span id="puzzle-playing-count"></span> playing · <span id="puzzle-my-time">0:00</span> mins
+          <span class="total-time">(<span id="puzzle-total-time">0:00</span> total)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn-pair">
+          <button class="icon-btn" data-action="go-home" title="Home">⌂</button>
+          <button class="icon-btn assist" id="puzzle-assist-btn" title="Assist">✦</button>
+        </div>
+        <div class="player-avatars" id="puzzle-avatars"></div>
+      </div>
+    </div>
+    <div class="grid-wrap">
+      <div class="crossword-grid" id="puzzle-grid"></div>
+    </div>
+    <div class="clue-bar">
+      <button class="clue-step" id="clue-prev">‹</button>
+      <span class="clue-text" id="clue-text"></span>
+      <button class="clue-step" id="clue-next">›</button>
+    </div>
+    <div class="keyboard" id="puzzle-keyboard"></div>
+  </div>
+
+  <!-- Assist menu (simple overlay, reused across states) -->
+  <div id="assist-menu" class="screen" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.35);align-items:flex-end;justify-content:center;">
+    <div style="background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:8px 18px calc(24px + env(safe-area-inset-bottom,0px))">
+      <div style="width:36px;height:4px;background:rgba(0,0,0,.15);border-radius:2px;margin:8px auto 16px"></div>
+      <button class="settings-row" style="width:100%;background:none;border:none;text-align:left;cursor:pointer" data-assist="reveal-cell">Reveal cell</button>
+      <button class="settings-row" style="width:100%;background:none;border:none;text-align:left;cursor:pointer" data-assist="reveal-word">Reveal word</button>
+      <button class="settings-row" style="width:100%;background:none;border:none;text-align:left;cursor:pointer" data-assist="reveal-puzzle">Reveal puzzle</button>
+      <div class="settings-row" style="justify-content:space-between">
+        <div>Auto Check <span style="color:var(--muted-4);font-weight:400">(half credit while on)</span></div>
+        <button class="toggle" id="autocheck-toggle"></button>
+      </div>
+      <button class="action-text" style="width:100%;margin-top:8px" data-assist="close">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Completion -->
+  <div id="screen-completion" class="screen">
+    <div class="scroll-area no-scrollbar completion-scroll" style="align-items:center;display:flex;flex-direction:column">
+      <div class="completion-badge"><div class="completion-badge-grid" id="completion-badge-grid"></div></div>
+      <div class="completion-title" id="completion-title"></div>
+      <div class="completion-sub">Completed together</div>
+      <div class="stat-columns">
+        <div class="stat-col"><div class="stat-value" id="completion-time">0:00</div><div class="stat-label">Time</div></div>
+        <div class="stat-col"><div class="stat-value" id="completion-players">0</div><div class="stat-label">Players</div></div>
+        <div class="stat-col"><div class="stat-value" id="completion-letters">0</div><div class="stat-label">Letters</div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Contribution</div>
+        <div id="completion-contribution"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Highlights</div>
+        <div id="completion-highlights"></div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="action-primary" id="completion-share">Share</button>
+      <button class="action-secondary" id="completion-create-similar">Create similar</button>
+      <button class="action-text" id="completion-done">Done</button>
+    </div>
+  </div>
+
+  <!-- Rankings -->
+  <div id="screen-rankings" class="screen">
+    <div class="screen-header">
+      <div class="screen-title">Rankings</div>
+      <div class="chip-row no-scrollbar" id="rankings-window-chips" style="padding:12px 0 0"></div>
+    </div>
+    <div class="metric-row" style="padding-left:18px;padding-right:18px">
+      <div class="metric-label" id="rankings-metric-label">Contribution score</div>
+      <button class="metric-change" id="rankings-metric-change">Change ▾</button>
+    </div>
+    <div class="scroll-area no-scrollbar" id="rankings-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <nav class="bottom-nav" data-nav></nav>
+  </div>
+
+  <!-- Rankings metric picker overlay -->
+  <div id="metric-menu" class="screen" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.35);align-items:flex-end;justify-content:center;">
+    <div style="background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:70vh;overflow-y:auto;padding:8px 18px calc(24px + env(safe-area-inset-bottom,0px))">
+      <div style="width:36px;height:4px;background:rgba(0,0,0,.15);border-radius:2px;margin:8px auto 16px"></div>
+      <div id="metric-menu-list"></div>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div id="screen-profile" class="screen">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-name-row">
+        <div class="profile-name" id="profile-name"></div>
+      </div>
+    </div>
+    <div class="scroll-area no-scrollbar">
+      <div class="stat-grid" id="profile-stats"></div>
+      <div class="field-label" style="color:var(--muted-45)">Settings</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div>Push notifications</div>
+          <button class="toggle" data-setting="push"></button>
+        </div>
+        <div class="settings-row">
+          <div>Sound effects</div>
+          <button class="toggle" data-setting="sound"></button>
+        </div>
+        <div class="settings-row">
+          <div>Haptic feedback</div>
+          <button class="toggle" data-setting="haptic"></button>
+        </div>
+      </div>
+    </div>
+    <nav class="bottom-nav" data-nav></nav>
+  </div>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
