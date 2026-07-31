@@ -9136,6 +9136,347 @@
       "completedAt": null,
       "totalTimeMs": 0,
       "highlights": []
+    },
+    "off-the-map-ms8uen4y": {
+      "id": "off-the-map-ms8uen4y",
+      "title": "Off the map",
+      "description": "",
+      "keywords": [
+        "geography"
+      ],
+      "size": "mini",
+      "difficulty": "medium",
+      "visibility": "open",
+      "createdBy": "Henning",
+      "createdAt": "2026-07-31T11:11:56.578Z",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "P",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "C",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "R",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "K",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "PARIS",
+            "clue": "City of Light",
+            "row": 0,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ANDES",
+            "clue": "Longest mountain range in the world",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "CREEK",
+            "clue": "A small stream",
+            "row": 0,
+            "col": 4,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "RIDGE",
+            "clue": "A long, narrow elevated landform",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "cells": {},
+      "players": [
+        "Henning"
+      ],
+      "sessions": {
+        "Henning": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "timeSpentMs": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T11:11:56.578Z"
+        }
+      },
+      "state": "open",
+      "completedAt": null,
+      "totalTimeMs": 0,
+      "highlights": []
     }
   }
 }
