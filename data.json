@@ -12146,14 +12146,25 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "8-2": {
+          "letter": "N",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "8-3": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        }
+      },
       "players": [
         "Henning"
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 2,
+          "correctLetters": 2,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
