@@ -10464,14 +10464,30 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "0-0": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-1": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-2": {
+          "letter": "C",
+          "owner": "Henning",
+          "revealed": false
+        }
+      },
       "players": [
         "Henning"
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 3,
+          "correctLetters": 3,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
