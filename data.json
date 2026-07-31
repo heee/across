@@ -9508,12 +9508,12 @@
           "revealed": false
         },
         "2-0": {
-          "letter": "T",
+          "letter": "R",
           "owner": "Henning",
           "revealed": false
         },
         "2-1": {
-          "letter": "E",
+          "letter": "I",
           "owner": "Henning",
           "revealed": false
         },
@@ -9548,13 +9548,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 20,
-          "correctLetters": 6,
+          "lettersEntered": 22,
+          "correctLetters": 8,
           "incorrectLetters": 14,
-          "correctionsMade": 0,
+          "correctionsMade": 2,
           "revealsUsed": 5,
           "wordsCompleted": 1,
-          "timeSpentMs": 74660,
+          "timeSpentMs": 89661,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T11:11:56.578Z"
         }
