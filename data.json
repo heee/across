@@ -12307,6 +12307,26 @@
           "letter": "E",
           "owner": "Henning",
           "revealed": false
+        },
+        "4-1": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-2": {
+          "letter": "G",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-3": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-4": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -12314,21 +12334,23 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 20,
-          "correctLetters": 16,
+          "lettersEntered": 24,
+          "correctLetters": 20,
           "incorrectLetters": 4,
           "correctionsMade": 4,
           "revealsUsed": 0,
-          "wordsCompleted": 3,
+          "wordsCompleted": 4,
           "timeSpentMs": 29651,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T11:18:06.035Z"
         }
       },
-      "state": "open",
-      "completedAt": null,
+      "state": "completed",
+      "completedAt": "2026-07-31T11:18:48.216Z",
       "totalTimeMs": 0,
-      "highlights": []
+      "highlights": [
+        "Henning typed the most letters — 24 of 24"
+      ]
     }
   }
 }
