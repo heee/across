@@ -8,6 +8,15 @@
         "sound": true,
         "haptic": true
       }
+    },
+    "Christie": {
+      "hue": 30,
+      "createdAt": "2026-07-31T11:21:26.747Z",
+      "settings": {
+        "push": true,
+        "sound": true,
+        "haptic": true
+      }
     }
   },
   "puzzles": {
