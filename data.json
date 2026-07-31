@@ -351,15 +351,21 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "0-0": {
+          "letter": "Q",
+          "owner": "Alex",
+          "revealed": false
+        }
+      },
       "players": [
         "Alex"
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 0,
+          "lettersEntered": 1,
           "correctLetters": 0,
-          "incorrectLetters": 0,
+          "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 0,
