@@ -408,32 +408,37 @@
           "revealed": false
         },
         "4-4": {
-          "letter": "E",
+          "letter": "",
           "owner": "Alex",
           "revealed": false
         },
         "4-0": {
-          "letter": "V",
+          "letter": "",
           "owner": "Alex",
           "revealed": false
         },
         "4-1": {
-          "letter": "O",
+          "letter": "",
           "owner": "Alex",
           "revealed": false
         },
         "4-2": {
-          "letter": "L",
+          "letter": "",
           "owner": "Alex",
           "revealed": false
         },
         "4-3": {
-          "letter": "L",
+          "letter": "",
           "owner": "Alex",
           "revealed": false
         },
         "1-1": {
           "letter": "R",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "3-1": {
+          "letter": "S",
           "owner": "Alex",
           "revealed": false
         }
@@ -443,8 +448,8 @@
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 19,
-          "correctLetters": 14,
+          "lettersEntered": 20,
+          "correctLetters": 15,
           "incorrectLetters": 5,
           "correctionsMade": 0,
           "revealsUsed": 0,
