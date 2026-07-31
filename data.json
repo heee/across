@@ -7671,37 +7671,37 @@
           "revealed": false
         },
         "0-0": {
-          "letter": "E",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "1-0": {
-          "letter": "Q",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "2-0": {
-          "letter": "U",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "3-0": {
-          "letter": "A",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "4-0": {
-          "letter": "T",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "5-0": {
-          "letter": "O",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "6-0": {
-          "letter": "R",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
@@ -7744,6 +7744,21 @@
           "letter": "A",
           "owner": "Henning",
           "revealed": false
+        },
+        "10-5": {
+          "letter": "M",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "10-6": {
+          "letter": "A",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "7-0": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -7751,13 +7766,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 23,
-          "correctLetters": 16,
-          "incorrectLetters": 7,
+          "lettersEntered": 30,
+          "correctLetters": 18,
+          "incorrectLetters": 12,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 3,
-          "timeSpentMs": 59271,
+          "wordsCompleted": 4,
+          "timeSpentMs": 89272,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:35:34.495Z"
         }
