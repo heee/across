@@ -87,10 +87,26 @@ async function main() {
     headers: { Authorization: `Bearer ${apiToken}` },
     body: form,
   });
-  const json = await res.json();
+
+  // Cloudflare's API normally returns JSON even for errors, but a wrong
+  // account ID, bad token, or hitting the wrong URL entirely can return an
+  // HTML error page instead — parsing that as JSON crashes with an unhelpful
+  // "Unexpected token '<'" error. Read as text first so a bad response is
+  // diagnosable instead of opaque.
+  const bodyText = await res.text();
+  let json;
+  try {
+    json = JSON.parse(bodyText);
+  } catch (e) {
+    console.error(`Deploy failed: HTTP ${res.status} ${res.statusText}, and the response wasn't JSON.`);
+    console.error(`URL requested: ${url}`);
+    console.error(`Response body (first 500 chars):\n${bodyText.slice(0, 500)}`);
+    console.error("\nThis usually means CF_ACCOUNT_ID is wrong/malformed, or CF_API_TOKEN is invalid/expired. Double-check both against the Cloudflare dashboard.");
+    process.exit(1);
+  }
 
   if (!res.ok || !json.success) {
-    console.error("Deploy failed:", JSON.stringify(json.errors || json, null, 2));
+    console.error(`Deploy failed (HTTP ${res.status}):`, JSON.stringify(json.errors || json, null, 2));
     process.exit(1);
   }
 
