@@ -2516,7 +2516,7 @@
           "correctionsMade": 1,
           "revealsUsed": 0,
           "wordsCompleted": 2,
-          "autoCheckUsed": false,
+          "autoCheckUsed": true,
           "joinedAt": "2026-07-31T01:46:17.345Z",
           "timeSpentMs": 642900
         }
