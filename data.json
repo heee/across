@@ -7612,14 +7612,20 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "0-3": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
+        }
+      },
       "players": [
         "Henning"
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 1,
+          "correctLetters": 1,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
