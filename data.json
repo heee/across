@@ -8,6 +8,15 @@
         "sound": true,
         "haptic": true
       }
+    },
+    "Henning": {
+      "hue": 30,
+      "createdAt": "2026-07-31T01:45:17.797Z",
+      "settings": {
+        "push": true,
+        "sound": true,
+        "haptic": true
+      }
     }
   },
   "puzzles": {
