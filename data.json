@@ -695,14 +695,20 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "2-0": {
+          "letter": "C",
+          "owner": "Alex",
+          "revealed": false
+        }
+      },
       "players": [
         "Alex"
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 1,
+          "correctLetters": 1,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
