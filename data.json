@@ -10054,19 +10054,40 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "0-7": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-7": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-7": {
+          "letter": "B",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-9": {
+          "letter": "G",
+          "owner": "Henning",
+          "revealed": false
+        }
+      },
       "players": [
         "Henning"
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 4,
+          "correctLetters": 4,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 0,
-          "timeSpentMs": 29589,
+          "wordsCompleted": 1,
+          "timeSpentMs": 44589,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:17:20.578Z"
         }
