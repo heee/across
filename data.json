@@ -3245,12 +3245,12 @@
           "revealed": false
         },
         "8-4": {
-          "letter": "U",
+          "letter": "B",
           "owner": "Christie",
           "revealed": false
         },
         "9-4": {
-          "letter": "N",
+          "letter": "U",
           "owner": "Christie",
           "revealed": false
         },
@@ -3282,8 +3282,8 @@
           "joinedAt": "2026-07-31T02:26:07.414Z"
         },
         "Christie": {
-          "lettersEntered": 13,
-          "correctLetters": 9,
+          "lettersEntered": 16,
+          "correctLetters": 12,
           "incorrectLetters": 4,
           "correctionsMade": 1,
           "revealsUsed": 0,
