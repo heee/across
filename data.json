@@ -10159,6 +10159,11 @@
           "letter": "L",
           "owner": "Henning",
           "revealed": false
+        },
+        "1-11": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -10166,13 +10171,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 13,
-          "correctLetters": 13,
+          "lettersEntered": 14,
+          "correctLetters": 14,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 3,
-          "timeSpentMs": 133603,
+          "timeSpentMs": 148604,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:17:20.578Z"
         }
