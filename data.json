@@ -353,7 +353,22 @@
       },
       "cells": {
         "0-0": {
-          "letter": "",
+          "letter": "H",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "0-1": {
+          "letter": "E",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "0-2": {
+          "letter": "N",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "2-0": {
+          "letter": "J",
           "owner": "Alex",
           "revealed": false
         }
@@ -363,12 +378,12 @@
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 1,
-          "correctLetters": 0,
+          "lettersEntered": 5,
+          "correctLetters": 4,
           "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 0,
+          "wordsCompleted": 1,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T00:09:33.631Z"
         }
