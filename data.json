@@ -10214,6 +10214,51 @@
           "letter": "M",
           "owner": "Henning",
           "revealed": false
+        },
+        "1-4": {
+          "letter": "F",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-5": {
+          "letter": "A",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-6": {
+          "letter": "M",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-8": {
+          "letter": "N",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-2": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-2": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-2": {
+          "letter": "M",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-2": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-2": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -10221,13 +10266,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 25,
-          "correctLetters": 25,
-          "incorrectLetters": 0,
+          "lettersEntered": 36,
+          "correctLetters": 35,
+          "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 6,
-          "timeSpentMs": 178608,
+          "wordsCompleted": 7,
+          "timeSpentMs": 193612,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:17:20.578Z"
         }
