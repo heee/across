@@ -10121,6 +10121,370 @@
       "completedAt": null,
       "totalTimeMs": 0,
       "highlights": []
+    },
+    "superhero-showdown-ms8dppik": {
+      "id": "superhero-showdown-ms8dppik",
+      "title": "Superhero showdown",
+      "description": "",
+      "keywords": [
+        "movies"
+      ],
+      "size": "mini",
+      "difficulty": "medium",
+      "visibility": "open",
+      "createdBy": "Henning",
+      "createdAt": "2026-07-31T03:24:39.404Z",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "D",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "M",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "OSCAR",
+            "clue": "Golden statuette award",
+            "row": 0,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "CAMEO",
+            "clue": "Brief celebrity appearance in a film",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "RIO",
+            "clue": "Animated film about a rare blue macaw",
+            "row": 0,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "DUMBO",
+            "clue": "Disney film about a flying elephant",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "SCORE",
+            "clue": "The orchestral music behind a film",
+            "row": 4,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "cells": {},
+      "players": [
+        "Henning"
+      ],
+      "sessions": {
+        "Henning": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "timeSpentMs": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T03:24:39.404Z"
+        }
+      },
+      "state": "open",
+      "completedAt": null,
+      "totalTimeMs": 0,
+      "highlights": []
     }
   }
 }
