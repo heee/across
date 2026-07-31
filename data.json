@@ -458,10 +458,12 @@
           "joinedAt": "2026-07-31T00:09:33.631Z"
         }
       },
-      "state": "open",
-      "completedAt": null,
+      "state": "completed",
+      "completedAt": "2026-07-31T01:09:55.408Z",
       "totalTimeMs": 0,
-      "highlights": []
+      "highlights": [
+        "Alex typed the most letters — 22 of 22"
+      ]
     },
     "european-capitals-ms88iuv3": {
       "id": "european-capitals-ms88iuv3",
