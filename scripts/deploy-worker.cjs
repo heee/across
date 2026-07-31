@@ -66,13 +66,16 @@ async function main() {
       { type: "secret_text", name: "APP_KEY", text: appKey },
       { type: "durable_object_namespace", name: "PUZZLE_ROOM", class_name: "PuzzleRoom" },
     ],
-    migrations: {
-      // Re-deploys with this same tag are a no-op on Cloudflare's end — safe
-      // to leave this in place on every future deploy, not just the first.
-      tag: "v1",
-      new_sqlite_classes: ["PuzzleRoom"],
-    },
   };
+
+  // The migration that creates the PuzzleRoom class only needs to run once —
+  // Cloudflare rejects re-declaring new_sqlite_classes for a class that
+  // already exists (contrary to what an earlier version of this script's
+  // comment assumed). Only set CF_APPLY_MIGRATION=1 for the very first
+  // deploy against a fresh Worker; omit it on every deploy after that.
+  if (process.env.CF_APPLY_MIGRATION === "1") {
+    metadata.migrations = { tag: "v1", new_sqlite_classes: ["PuzzleRoom"] };
+  }
 
   const form = new FormData();
   form.set("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
