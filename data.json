@@ -10349,6 +10349,56 @@
           "letter": "W",
           "owner": null,
           "revealed": true
+        },
+        "14-4": {
+          "letter": "S",
+          "owner": null,
+          "revealed": true
+        },
+        "14-5": {
+          "letter": "H",
+          "owner": null,
+          "revealed": true
+        },
+        "14-6": {
+          "letter": "O",
+          "owner": null,
+          "revealed": true
+        },
+        "14-7": {
+          "letter": "R",
+          "owner": null,
+          "revealed": true
+        },
+        "14-8": {
+          "letter": "T",
+          "owner": null,
+          "revealed": true
+        },
+        "14-9": {
+          "letter": "B",
+          "owner": null,
+          "revealed": true
+        },
+        "14-10": {
+          "letter": "R",
+          "owner": null,
+          "revealed": true
+        },
+        "14-11": {
+          "letter": "E",
+          "owner": null,
+          "revealed": true
+        },
+        "14-12": {
+          "letter": "A",
+          "owner": null,
+          "revealed": true
+        },
+        "14-13": {
+          "letter": "D",
+          "owner": null,
+          "revealed": true
         }
       },
       "players": [
@@ -10360,9 +10410,9 @@
           "correctLetters": 38,
           "incorrectLetters": 1,
           "correctionsMade": 0,
-          "revealsUsed": 17,
+          "revealsUsed": 27,
           "wordsCompleted": 8,
-          "timeSpentMs": 238624,
+          "timeSpentMs": 268632,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:17:20.578Z"
         }
