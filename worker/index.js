@@ -448,7 +448,7 @@ function validateCreateRequest(body) {
 }
 
 function buildPuzzle(req, wordBank) {
-  const grid = generatePuzzle({ keywords: req.keywords, size: req.size, difficulty: req.difficulty, wordBank });
+  const grid = generatePuzzle({ keywords: req.keywords, title: req.title, size: req.size, difficulty: req.difficulty, wordBank });
   const slug = slugify(req.title) || "puzzle";
   const id = `${slug}-${Date.now().toString(36)}`;
   return {

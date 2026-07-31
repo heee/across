@@ -107,7 +107,7 @@ const LocalBackend = {
     new BroadcastChannel(`across-room-${puzzleId}`).postMessage({ type: "puzzle-deleted" });
   },
   async createPuzzle(req) {
-    const grid = generatePuzzle({ keywords: req.keywords, size: req.size, difficulty: req.difficulty, wordBank: WORD_BANK });
+    const grid = generatePuzzle({ keywords: req.keywords, title: req.title, size: req.size, difficulty: req.difficulty, wordBank: WORD_BANK });
     const id = `${slugify(req.title) || "puzzle"}-${Date.now().toString(36)}`;
     const puzzle = {
       id,
@@ -363,15 +363,65 @@ const RANKING_METRICS = [
 const SEARCH_CATEGORIES = ["Geography", "Movies", "History", "Sports", "Science", "Food", "Kids"];
 
 // Sentence case throughout (only the first letter capitalized) — no
-// title-case styling.
+// title-case styling. Deliberately long lists: with only a handful per
+// category the shuffle button repeated itself within a few taps.
 const TITLE_IDEAS = {
-  geography: ["European capitals", "Rivers of the world", "Mountain peaks", "Island nations", "Deserts & dunes", "World landmarks", "Around the globe"],
-  movies: ["Movie night", "Animated classics", "Superhero showdown", "Sci-fi favorites", "Classic comedies", "Blockbuster hits", "Behind the scenes"],
-  history: ["Ancient civilizations", "Kings & queens", "Empires & explorers", "Renaissance rewind", "Legends of the past", "Turning points"],
-  sports: ["Game day", "Olympic spirit", "Team sports", "Track & field", "Sporting legends", "Play ball", "Home field advantage"],
-  science: ["Space explorers", "Under the microscope", "Elements & energy", "Wonders of science", "Planet earth", "Lab notes"],
-  food: ["Foodie favorites", "World cuisine", "Sweet treats", "Kitchen classics", "Taste of the world", "Dinner party"],
-  kids: ["Storybook adventures", "Fairy tale fun", "Playground games", "Once upon a time", "Kids' corner", "Make-believe"],
+  geography: [
+    "Passport required", "Where in the world", "Off the map", "Continental drift",
+    "The grand tour", "Border patrol", "Peak conditions", "Capital gains",
+    "River deep, mountain high", "Latitude adjustment", "Terra incognita", "The scenic route",
+    "Wish you were here", "Compass points", "Global positioning", "Map quest",
+    "Sea level", "Wanderlust", "Postcards home", "Elevation anxiety",
+    "European capitals", "Island nations", "Deserts & dunes", "Around the globe",
+  ],
+  movies: [
+    "Now showing", "Roll credits", "Popcorn required", "Silver screen",
+    "Based on a true story", "Coming soon", "Director's cut", "Opening weekend",
+    "The sequel nobody asked for", "Two thumbs up", "Spoiler alert", "Final cut",
+    "Blockbuster season", "Straight to streaming", "Award season", "Method acting",
+    "The plot thickens", "Cut and print", "Screen time", "Box office gold",
+    "Fade to black", "Animated classics", "Superhero showdown", "Behind the scenes",
+  ],
+  history: [
+    "Ancient history", "Once upon a timeline", "Old news", "Before your time",
+    "The past is prologue", "Rise and fall", "History repeats", "Written in stone",
+    "Dusty archives", "Empire building", "Turning points", "Back in the day",
+    "Age of discovery", "Living memory", "The long view", "Yesterday's headlines",
+    "Founding moments", "Time capsule", "Relics and ruins", "Revolution required",
+    "History's greatest hits", "Kings & queens", "Empires & explorers", "Ancient civilizations",
+  ],
+  sports: [
+    "Game on", "Extra innings", "Overtime", "Home field advantage",
+    "Sudden death", "The final whistle", "Benchwarmers", "Photo finish",
+    "Personal best", "Championship season", "Full contact", "Play by play",
+    "Sweat equity", "Down to the wire", "Team spirit", "Off the bench",
+    "Second half", "Victory lap", "Training day", "The comeback",
+    "Season openers", "Halftime", "No pain, no gain", "Olympic spirit",
+  ],
+  science: [
+    "Lab results", "Hypothesis confirmed", "Elementary", "Under the microscope",
+    "Peer reviewed", "Chain reaction", "Critical mass", "The scientific method",
+    "Room temperature", "Cosmic questions", "Small wonders", "Natural selection",
+    "Test conditions", "Eureka moments", "Periodic tendencies", "Deep space",
+    "Life sciences", "Reaction time", "Field notes", "Observable universe",
+    "Bright ideas", "Matter of fact", "Space explorers", "Elements & energy",
+  ],
+  food: [
+    "Second helpings", "Chef's kiss", "Table for two", "Comfort food",
+    "Guilty pleasures", "Farm to table", "Just desserts", "Midnight snack",
+    "Family recipe", "Taste test", "Seasoned to taste", "Menu options",
+    "Food for thought", "Leftovers", "Slow cooked", "Bite sized",
+    "Pantry raid", "Daily special", "Home cooking", "Sugar rush",
+    "Well done", "The main course", "Sweet treats", "World cuisine",
+  ],
+  kids: [
+    "Bedtime stories", "Recess", "Show and tell", "Once upon a time",
+    "Playground rules", "Snack time", "Are we there yet", "Imaginary friends",
+    "Blanket fort", "Saturday morning", "Kid tested", "Nap time",
+    "Crayon colors", "Backyard adventures", "Story hour", "Make believe",
+    "Rainy day fun", "First day jitters", "Sticker rewards", "Puddle jumping",
+    "Cartoon logic", "Growing pains", "Fairy tale fun", "Storybook adventures",
+  ],
 };
 
 // ===========================================================================
@@ -726,6 +776,7 @@ function openCreate() {
   createSize = "standard";
   createDifficulty = "medium";
   createVisibility = "open";
+  offeredTitles = new Set();
   $("#create-title").value = "";
   $("#create-description").value = "";
   renderCreateCategoryList();
@@ -758,11 +809,24 @@ function updateGenerateTitleButton() {
   $("#create-generate-title").disabled = !createCategory;
 }
 
+// Tracks titles already offered this visit so repeated taps cycle through
+// the whole pool before any repeats, rather than sampling independently
+// (which produces obvious dupes within a few taps even from a big list).
+let offeredTitles = new Set();
+
 $("#create-generate-title").addEventListener("click", () => {
   if (!createCategory) return;
   const ideas = TITLE_IDEAS[createCategory.toLowerCase()] || [];
   if (ideas.length === 0) return;
-  $("#create-title").value = ideas[Math.floor(Math.random() * ideas.length)];
+  const current = $("#create-title").value.trim();
+  let pool = ideas.filter((t) => !offeredTitles.has(t) && t !== current);
+  if (pool.length === 0) {
+    offeredTitles = new Set(); // exhausted the pool — start a fresh cycle
+    pool = ideas.filter((t) => t !== current);
+  }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  offeredTitles.add(pick);
+  $("#create-title").value = pick;
 });
 
 function renderSegmented(sel, value, onChange) {
