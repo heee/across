@@ -2361,6 +2361,21 @@
           "letter": "D",
           "owner": "Alex",
           "revealed": false
+        },
+        "6-9": {
+          "letter": "R",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "6-10": {
+          "letter": "Y",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "0-0": {
+          "letter": "B",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -2369,24 +2384,24 @@
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 15,
-          "correctLetters": 15,
+          "lettersEntered": 17,
+          "correctLetters": 17,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 2,
+          "wordsCompleted": 3,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 1,
+          "correctLetters": 1,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 0,
           "autoCheckUsed": false,
-          "joinedAt": "2026-07-31T01:46:04.364Z"
+          "joinedAt": "2026-07-31T01:46:17.345Z"
         }
       },
       "state": "open",
