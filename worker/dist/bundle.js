@@ -1674,76 +1674,1776 @@ const WORD_BANK = [
   { w: "HOSPITAL", c: "A building where the sick are treated", cat: "general", diff: 1 },
   { w: "PHARMACY", c: "A shop that dispenses medicine", cat: "general", diff: 1 },
   { w: "BAKERY", c: "A shop that sells baked goods", cat: "general", diff: 1 },
+
+  // ---- general (short fill, added for grid density) ----
+  { w: "ADD", c: "To combine numbers into a sum", cat: "general", diff: 1 },
+  { w: "AID", c: "Help or assistance", cat: "general", diff: 1 },
+  { w: "AIM", c: "To point something at a target", cat: "general", diff: 1 },
+  { w: "ALE", c: "A hoppy malt beverage", cat: "general", diff: 1 },
+  { w: "ANY", c: "Some, no matter which one", cat: "general", diff: 1 },
+  { w: "APE", c: "A tailless primate like a gorilla", cat: "general", diff: 1 },
+  { w: "ARC", c: "A curved line or part of a circle", cat: "general", diff: 1 },
+  { w: "ARM", c: "The limb between shoulder and hand", cat: "general", diff: 1 },
+  { w: "ART", c: "Creative work meant to be admired", cat: "general", diff: 1 },
+  { w: "ASH", c: "What remains after a fire", cat: "general", diff: 1 },
+  { w: "ASK", c: "To pose a question", cat: "general", diff: 1 },
+  { w: "ATE", c: "Past tense of eat", cat: "general", diff: 1 },
+  { w: "AWE", c: "A feeling of wonder", cat: "general", diff: 1 },
+  { w: "BAG", c: "A container you carry things in", cat: "general", diff: 1 },
+  { w: "BAN", c: "An official prohibition", cat: "general", diff: 1 },
+  { w: "BAR", c: "A counter where drinks are served", cat: "general", diff: 1 },
+  { w: "BED", c: "Where you sleep", cat: "general", diff: 1 },
+  { w: "BET", c: "A wager on an outcome", cat: "general", diff: 1 },
+  { w: "BID", c: "An offer of a price", cat: "general", diff: 1 },
+  { w: "BIN", c: "A container for trash or storage", cat: "general", diff: 1 },
+  { w: "BIT", c: "A small piece of something", cat: "general", diff: 1 },
+  { w: "BOG", c: "A wet, spongy area of ground", cat: "general", diff: 1 },
+  { w: "BOW", c: "To bend forward in respect, or a knot with loops", cat: "general", diff: 1 },
+  { w: "BOY", c: "A young male", cat: "general", diff: 1 },
+  { w: "BUD", c: "A small growth on a plant before it flowers", cat: "general", diff: 1 },
+  { w: "BUG", c: "A small insect, or a software glitch", cat: "general", diff: 1 },
+  { w: "BUN", c: "A small round bread roll", cat: "general", diff: 1 },
+  { w: "BUS", c: "A large vehicle that carries many passengers", cat: "general", diff: 1 },
+  { w: "BUY", c: "To purchase", cat: "general", diff: 1 },
+  { w: "CAB", c: "A taxi", cat: "general", diff: 1 },
+  { w: "CAP", c: "A soft hat, or a bottle's lid", cat: "general", diff: 1 },
+  { w: "CAR", c: "A motor vehicle with four wheels", cat: "general", diff: 1 },
+  { w: "CAT", c: "A common household pet that meows", cat: "general", diff: 1 },
+  { w: "COB", c: "The core of an ear of corn", cat: "general", diff: 1 },
+  { w: "COD", c: "A cold-water fish often fried", cat: "general", diff: 1 },
+  { w: "COG", c: "A tooth on a gear wheel", cat: "general", diff: 1 },
+  { w: "COT", c: "A small, portable bed", cat: "general", diff: 1 },
+  { w: "COY", c: "Shy or evasively modest", cat: "general", diff: 1 },
+  { w: "CRY", c: "To shed tears", cat: "general", diff: 1 },
+  { w: "CUB", c: "A young bear, lion, or wolf", cat: "general", diff: 1 },
+  { w: "CUE", c: "A signal to begin, or a pool stick", cat: "general", diff: 1 },
+  { w: "CUT", c: "To slice with a sharp tool", cat: "general", diff: 1 },
+  { w: "DAB", c: "A small quantity applied with light pats", cat: "general", diff: 1 },
+  { w: "DAD", c: "Your father", cat: "general", diff: 1 },
+  { w: "DAM", c: "A barrier built across a river", cat: "general", diff: 1 },
+  { w: "DEN", c: "A small, cozy room, or an animal's lair", cat: "general", diff: 1 },
+  { w: "DEW", c: "Moisture that forms on grass overnight", cat: "general", diff: 1 },
+  { w: "DIE", c: "One of a pair of dice", cat: "general", diff: 1 },
+  { w: "DIG", c: "To excavate the ground", cat: "general", diff: 1 },
+  { w: "DIM", c: "Not brightly lit", cat: "general", diff: 1 },
+  { w: "DIP", c: "A creamy sauce for chips or vegetables", cat: "general", diff: 1 },
+  { w: "DOE", c: "A female deer", cat: "general", diff: 1 },
+  { w: "DOT", c: "A small round mark", cat: "general", diff: 1 },
+  { w: "DUE", c: "Expected or owed", cat: "general", diff: 1 },
+  { w: "DUG", c: "Past tense of dig", cat: "general", diff: 1 },
+  { w: "DYE", c: "A substance used to change color", cat: "general", diff: 1 },
+  { w: "EAR", c: "The organ used for hearing", cat: "general", diff: 1 },
+  { w: "EAT", c: "To consume food", cat: "general", diff: 1 },
+  { w: "ELM", c: "A tall shade tree", cat: "general", diff: 1 },
+  { w: "EWE", c: "A female sheep", cat: "general", diff: 1 },
+  { w: "EYE", c: "The organ used for sight", cat: "general", diff: 1 },
+  { w: "FAR", c: "A great distance away", cat: "general", diff: 1 },
+  { w: "FAT", c: "Containing a lot of body tissue, or rich in oil", cat: "general", diff: 1 },
+  { w: "FEW", c: "Not many", cat: "general", diff: 1 },
+  { w: "FIB", c: "A small, harmless lie", cat: "general", diff: 1 },
+  { w: "FIG", c: "A sweet fruit often dried", cat: "general", diff: 1 },
+  { w: "FIN", c: "A fish's steering appendage", cat: "general", diff: 1 },
+  { w: "FIT", c: "In good physical shape, or the right size", cat: "general", diff: 1 },
+  { w: "FIX", c: "To repair", cat: "general", diff: 1 },
+  { w: "FLY", c: "To move through the air", cat: "general", diff: 1 },
+  { w: "FOE", c: "An enemy", cat: "general", diff: 1 },
+  { w: "FOG", c: "A thick mist that reduces visibility", cat: "general", diff: 1 },
+  { w: "FRY", c: "To cook in hot oil", cat: "general", diff: 1 },
+  { w: "FUN", c: "Enjoyable activity", cat: "general", diff: 1 },
+  { w: "FUR", c: "An animal's soft coat of hair", cat: "general", diff: 1 },
+  { w: "GAP", c: "A break or space between two things", cat: "general", diff: 1 },
+  { w: "GEL", c: "A thick, jellylike substance", cat: "general", diff: 1 },
+  { w: "GUM", c: "Chewy candy, or the tissue around your teeth", cat: "general", diff: 1 },
+  { w: "GUN", c: "A firearm", cat: "general", diff: 1 },
+  { w: "GUT", c: "The stomach or intestines", cat: "general", diff: 1 },
+  { w: "GUY", c: "An informal word for a man", cat: "general", diff: 1 },
+  { w: "HAY", c: "Dried grass used as animal feed", cat: "general", diff: 1 },
+  { w: "HID", c: "Past tense of hide", cat: "general", diff: 1 },
+  { w: "HIP", c: "The joint connecting leg to torso", cat: "general", diff: 1 },
+  { w: "HOG", c: "A domestic pig", cat: "general", diff: 1 },
+  { w: "HOT", c: "Very warm in temperature", cat: "general", diff: 1 },
+  { w: "HUB", c: "A center of activity, or the middle of a wheel", cat: "general", diff: 1 },
+  { w: "HUG", c: "To embrace warmly", cat: "general", diff: 1 },
+  { w: "HUT", c: "A small, simple shelter", cat: "general", diff: 1 },
+  { w: "ILL", c: "Sick or unwell", cat: "general", diff: 1 },
+  { w: "INK", c: "The colored liquid used for writing or printing", cat: "general", diff: 1 },
+  { w: "IVY", c: "A climbing evergreen vine", cat: "general", diff: 1 },
+  { w: "JAW", c: "The bone that forms the mouth's frame", cat: "general", diff: 1 },
+  { w: "JOB", c: "Paid work", cat: "general", diff: 1 },
+  { w: "JOT", c: "To write something down quickly", cat: "general", diff: 1 },
+  { w: "JUG", c: "A large container for liquids with a handle", cat: "general", diff: 1 },
+  { w: "KEG", c: "A small barrel, often for beer", cat: "general", diff: 1 },
+  { w: "KID", c: "A child, or a young goat", cat: "general", diff: 1 },
+  { w: "KIN", c: "Family members", cat: "general", diff: 1 },
+  { w: "LAD", c: "A boy or young man", cat: "general", diff: 1 },
+  { w: "LAG", c: "To fall behind", cat: "general", diff: 1 },
+  { w: "LAY", c: "To put something down", cat: "general", diff: 1 },
+  { w: "LEG", c: "One of the limbs used for walking", cat: "general", diff: 1 },
+  { w: "LIP", c: "The edge of the mouth", cat: "general", diff: 1 },
+  { w: "LIT", c: "Past tense of light, or brightly illuminated", cat: "general", diff: 1 },
+  { w: "LOG", c: "A cut section of a tree trunk", cat: "general", diff: 1 },
+  { w: "LOT", c: "A large quantity, or a plot of land", cat: "general", diff: 1 },
+  { w: "LOW", c: "Not high", cat: "general", diff: 1 },
+  { w: "MAT", c: "A flat piece of material placed on a floor", cat: "general", diff: 1 },
+  { w: "MIX", c: "To combine ingredients together", cat: "general", diff: 1 },
+  { w: "MOB", c: "A large, disorderly crowd", cat: "general", diff: 1 },
+  { w: "MOM", c: "Your mother", cat: "general", diff: 1 },
+  { w: "MOP", c: "A tool for cleaning floors", cat: "general", diff: 1 },
+  { w: "MUD", c: "Wet, soft earth", cat: "general", diff: 1 },
+  { w: "MUG", c: "A cup with a handle", cat: "general", diff: 1 },
+  { w: "NUT", c: "A hard-shelled seed, or a threaded fastener", cat: "general", diff: 1 },
+  { w: "OAK", c: "A sturdy hardwood tree", cat: "general", diff: 1 },
+  { w: "OAR", c: "A pole used to row a boat", cat: "general", diff: 1 },
+  { w: "OAT", c: "A cereal grain used in porridge", cat: "general", diff: 1 },
+  { w: "OIL", c: "A slippery liquid used for cooking or fuel", cat: "general", diff: 1 },
+  { w: "ORB", c: "A spherical object", cat: "general", diff: 1 },
+  { w: "OWN", c: "To possess", cat: "general", diff: 1 },
+  { w: "PAD", c: "A cushioned surface, or a stack of paper", cat: "general", diff: 1 },
+  { w: "PAL", c: "A close friend", cat: "general", diff: 1 },
+  { w: "PAN", c: "A shallow cooking vessel", cat: "general", diff: 1 },
+  { w: "PAT", c: "To tap gently", cat: "general", diff: 1 },
+  { w: "PAW", c: "An animal's foot", cat: "general", diff: 1 },
+  { w: "PEA", c: "A small round green vegetable", cat: "general", diff: 1 },
+  { w: "PEG", c: "A wooden or metal pin", cat: "general", diff: 1 },
+  { w: "PET", c: "A domesticated companion animal", cat: "general", diff: 1 },
+  { w: "PIN", c: "A thin, pointed piece of metal", cat: "general", diff: 1 },
+  { w: "PIT", c: "A hole in the ground", cat: "general", diff: 1 },
+  { w: "POD", c: "A seed case, or a small group", cat: "general", diff: 1 },
+  { w: "POT", c: "A round container used for cooking", cat: "general", diff: 1 },
+  { w: "PUB", c: "A place to drink and socialize", cat: "general", diff: 1 },
+  { w: "PUP", c: "A young dog", cat: "general", diff: 1 },
+  { w: "RAG", c: "A worn scrap of cloth", cat: "general", diff: 1 },
+  { w: "RAM", c: "A male sheep, or to strike forcefully", cat: "general", diff: 1 },
+  { w: "RAT", c: "A long-tailed rodent", cat: "general", diff: 1 },
+  { w: "RAW", c: "Uncooked", cat: "general", diff: 1 },
+  { w: "RAY", c: "A beam of light", cat: "general", diff: 1 },
+  { w: "RID", c: "To free from something unwanted", cat: "general", diff: 1 },
+  { w: "RIG", c: "A truck, or drilling equipment", cat: "general", diff: 1 },
+  { w: "RIM", c: "The outer edge of something round", cat: "general", diff: 1 },
+  { w: "RIP", c: "To tear apart", cat: "general", diff: 1 },
+  { w: "ROB", c: "To steal from", cat: "general", diff: 1 },
+  { w: "ROD", c: "A thin, straight bar", cat: "general", diff: 1 },
+  { w: "ROT", c: "Decay", cat: "general", diff: 1 },
+  { w: "ROW", c: "A straight line of things, or to paddle a boat", cat: "general", diff: 1 },
+  { w: "RUB", c: "To move something back and forth against a surface", cat: "general", diff: 1 },
+  { w: "ACRE", c: "A unit of land area", cat: "general", diff: 2 },
+  { w: "ALSO", c: "In addition", cat: "general", diff: 2 },
+  { w: "ALTO", c: "A low singing voice for a woman", cat: "general", diff: 2 },
+  { w: "ARID", c: "Extremely dry", cat: "general", diff: 2 },
+  { w: "AXIS", c: "An imaginary line something rotates around", cat: "general", diff: 2 },
+  { w: "BAKE", c: "To cook in an oven", cat: "general", diff: 2 },
+  { w: "BALD", c: "Lacking hair on the head", cat: "general", diff: 2 },
+  { w: "BARE", c: "Uncovered or empty", cat: "general", diff: 2 },
+  { w: "BARN", c: "A farm building for storing crops or housing animals", cat: "general", diff: 2 },
+  { w: "BASK", c: "To lie in warm sunlight", cat: "general", diff: 2 },
+  { w: "BEEF", c: "Meat from cattle", cat: "general", diff: 2 },
+  { w: "BEEP", c: "A short electronic sound", cat: "general", diff: 2 },
+  { w: "BELT", c: "A strap worn around the waist", cat: "general", diff: 2 },
+  { w: "BEND", c: "To curve something", cat: "general", diff: 2 },
+  { w: "BLOB", c: "A soft, shapeless mass", cat: "general", diff: 2 },
+  { w: "BLUR", c: "An indistinct, hazy shape", cat: "general", diff: 2 },
+  { w: "BOIL", c: "To heat a liquid until it bubbles", cat: "general", diff: 2 },
+  { w: "BOLT", c: "A metal fastener, or to run suddenly", cat: "general", diff: 2 },
+  { w: "BOND", c: "A connection, or a financial security", cat: "general", diff: 2 },
+  { w: "BONE", c: "A hard structure that forms the skeleton", cat: "general", diff: 2 },
+  { w: "BOOM", c: "A loud, deep sound", cat: "general", diff: 2 },
+  { w: "BOOT", c: "Footwear that covers the ankle", cat: "general", diff: 2 },
+  { w: "BORE", c: "To drill a hole, or to make someone lose interest", cat: "general", diff: 2 },
+  { w: "BOSS", c: "A person in charge at work", cat: "general", diff: 2 },
+  { w: "BOWL", c: "A round, open dish", cat: "general", diff: 2 },
+  { w: "BRAG", c: "To boast", cat: "general", diff: 2 },
+  { w: "BRIM", c: "The edge of a hat or cup", cat: "general", diff: 2 },
+  { w: "BUCK", c: "A male deer, or an informal word for a dollar", cat: "general", diff: 2 },
+  { w: "BULB", c: "A rounded plant root, or a light fixture", cat: "general", diff: 2 },
+  { w: "BULK", c: "Large in size or quantity", cat: "general", diff: 2 },
+  { w: "BULL", c: "A male cattle animal", cat: "general", diff: 2 },
+  { w: "BUMP", c: "A small collision, or a raised area", cat: "general", diff: 2 },
+  { w: "BUNK", c: "A narrow built-in bed", cat: "general", diff: 2 },
+  { w: "BURN", c: "To be consumed by fire", cat: "general", diff: 2 },
+  { w: "BUSY", c: "Occupied with activity", cat: "general", diff: 2 },
+  { w: "CAGE", c: "An enclosure with bars", cat: "general", diff: 2 },
+  { w: "CAMP", c: "A temporary outdoor shelter site", cat: "general", diff: 2 },
+  { w: "CANE", c: "A walking stick", cat: "general", diff: 2 },
+  { w: "CARD", c: "A small piece of stiff paper, often used in games", cat: "general", diff: 2 },
+  { w: "CARE", c: "Attention or concern for someone", cat: "general", diff: 2 },
+  { w: "CASH", c: "Physical money", cat: "general", diff: 2 },
+  { w: "CAST", c: "The actors in a show, or a plaster covering for a broken bone", cat: "general", diff: 2 },
+  { w: "CHAT", c: "A casual conversation", cat: "general", diff: 2 },
+  { w: "CHEF", c: "A professional cook", cat: "general", diff: 2 },
+  { w: "CHIN", c: "The lower part of the face", cat: "general", diff: 2 },
+  { w: "CHIP", c: "A small fragment, or a fried potato slice", cat: "general", diff: 2 },
+  { w: "CHOP", c: "To cut with quick, sharp strokes", cat: "general", diff: 2 },
+  { w: "CLAM", c: "A bivalve shellfish", cat: "general", diff: 2 },
+  { w: "CLAP", c: "To strike your hands together", cat: "general", diff: 2 },
+  { w: "CLAY", c: "A fine, moldable earth material", cat: "general", diff: 2 },
+  { w: "CLIP", c: "A fastener, or a short video segment", cat: "general", diff: 2 },
+  { w: "CLUB", c: "A group with shared interests, or a heavy stick", cat: "general", diff: 2 },
+  { w: "COAL", c: "A black rock burned as fuel", cat: "general", diff: 2 },
+  { w: "COAT", c: "An outer garment worn for warmth", cat: "general", diff: 2 },
+  { w: "COIL", c: "To wind into loops", cat: "general", diff: 2 },
+  { w: "COLD", c: "Low in temperature", cat: "general", diff: 2 },
+  { w: "COMB", c: "A tool used to untangle hair", cat: "general", diff: 2 },
+  { w: "CORD", c: "A thin length of twisted strands", cat: "general", diff: 2 },
+  { w: "CORK", c: "A stopper for a wine bottle", cat: "general", diff: 2 },
+  { w: "CRAB", c: "A sideways-walking shelled sea creature", cat: "general", diff: 2 },
+  { w: "CROP", c: "A cultivated plant grown for harvest", cat: "general", diff: 2 },
+  { w: "CURB", c: "The edge of a sidewalk, or to restrain", cat: "general", diff: 2 },
+  { w: "CURL", c: "A spiral shape, especially of hair", cat: "general", diff: 2 },
+  { w: "DARE", c: "To challenge someone", cat: "general", diff: 2 },
+  { w: "DASH", c: "A quick sprint, or a small amount", cat: "general", diff: 2 },
+  { w: "DEAF", c: "Unable to hear", cat: "general", diff: 2 },
+  { w: "DEAL", c: "An agreement, or to distribute cards", cat: "general", diff: 2 },
+  { w: "DECK", c: "The floor of a ship, or a set of playing cards", cat: "general", diff: 2 },
+  { w: "DEED", c: "An action, or a legal property document", cat: "general", diff: 2 },
+  { w: "DENT", c: "A small dip caused by an impact", cat: "general", diff: 2 },
+  { w: "DESK", c: "A table used for writing or work", cat: "general", diff: 2 },
+  { w: "DIAL", c: "A rotating control, or to place a phone call", cat: "general", diff: 2 },
+  { w: "DICE", c: "Small cubes used in games of chance", cat: "general", diff: 2 },
+  { w: "DISC", c: "A flat, round object", cat: "general", diff: 2 },
+  { w: "DOCK", c: "A platform where boats load and unload", cat: "general", diff: 2 },
+  { w: "DOSE", c: "A measured amount of medicine", cat: "general", diff: 2 },
+  { w: "DOZE", c: "To sleep lightly", cat: "general", diff: 2 },
+  { w: "DRIP", c: "A slow fall of liquid, drop by drop", cat: "general", diff: 2 },
+  { w: "DRUM", c: "A percussion instrument played by striking", cat: "general", diff: 2 },
+  { w: "DUCK", c: "A water bird, or to quickly lower your head", cat: "general", diff: 2 },
+  { w: "DUEL", c: "A formal fight between two people", cat: "general", diff: 2 },
+  { w: "DUMP", c: "To discard carelessly", cat: "general", diff: 2 },
+  { w: "DUST", c: "Fine, dry particles of matter", cat: "general", diff: 2 },
+  { w: "EASE", c: "Freedom from difficulty", cat: "general", diff: 2 },
+  { w: "EAST", c: "The direction the sun rises from", cat: "general", diff: 2 },
+  { w: "EDGE", c: "The outer boundary of something", cat: "general", diff: 2 },
+  { w: "EPIC", c: "A grand, heroic story", cat: "general", diff: 2 },
+  { w: "EXIT", c: "A way out", cat: "general", diff: 2 },
+  { w: "FACT", c: "A statement known to be true", cat: "general", diff: 2 },
+  { w: "FADE", c: "To gradually disappear", cat: "general", diff: 2 },
+  { w: "FAME", c: "Widespread public recognition", cat: "general", diff: 2 },
+  { w: "FANG", c: "A long, pointed animal tooth", cat: "general", diff: 2 },
+  { w: "FARM", c: "Land used to grow crops or raise animals", cat: "general", diff: 2 },
+  { w: "FEAT", c: "An impressive achievement", cat: "general", diff: 2 },
+  { w: "FEED", c: "To give food to", cat: "general", diff: 2 },
+  { w: "FERN", c: "A leafy plant that reproduces by spores", cat: "general", diff: 2 },
+  { w: "FIST", c: "A tightly closed hand", cat: "general", diff: 2 },
+  { w: "FLAP", c: "To move up and down, like a bird's wing", cat: "general", diff: 2 },
+  { w: "FLAT", c: "Level and even, or an apartment", cat: "general", diff: 2 },
+  { w: "FLEE", c: "To run away from danger", cat: "general", diff: 2 },
+  { w: "FLIP", c: "To turn over quickly", cat: "general", diff: 2 },
+  { w: "FLOW", c: "To move steadily, like water", cat: "general", diff: 2 },
+  { w: "FOAM", c: "A mass of small bubbles", cat: "general", diff: 2 },
+  { w: "FOLD", c: "To bend something over on itself", cat: "general", diff: 2 },
+  { w: "FONT", c: "A style of typeface", cat: "general", diff: 2 },
+  { w: "FORK", c: "A utensil with prongs used for eating", cat: "general", diff: 2 },
+  { w: "FRAY", c: "To become worn or unraveled", cat: "general", diff: 2 },
+  { w: "FUEL", c: "A substance burned to produce energy", cat: "general", diff: 2 },
+  { w: "FUME", c: "To be very angry, or a strong-smelling gas", cat: "general", diff: 2 },
+  { w: "FUND", c: "A pool of money set aside for a purpose", cat: "general", diff: 2 },
+  { w: "GAIN", c: "To acquire more of something", cat: "general", diff: 2 },
+  { w: "GALE", c: "A very strong wind", cat: "general", diff: 2 },
+  { w: "GASP", c: "A sharp intake of breath", cat: "general", diff: 2 },
+  { w: "GAZE", c: "A steady, prolonged look", cat: "general", diff: 2 },
+  { w: "GEAR", c: "Equipment needed for an activity", cat: "general", diff: 2 },
+  { w: "GLUE", c: "A sticky substance used to bond things", cat: "general", diff: 2 },
+  { w: "GOAT", c: "A horned farm animal known for climbing", cat: "general", diff: 2 },
+  { w: "GONG", c: "A metal disc struck to make a resonant sound", cat: "general", diff: 2 },
+  { w: "GOWN", c: "A long, formal dress", cat: "general", diff: 2 },
+  { w: "GRIN", c: "A broad smile", cat: "general", diff: 2 },
+  { w: "GRIP", c: "A firm hold", cat: "general", diff: 2 },
+  { w: "GULF", c: "A large area of sea partly enclosed by land", cat: "general", diff: 2 },
+  { w: "GUSH", c: "To flow out forcefully", cat: "general", diff: 2 },
+  { w: "HAIL", c: "Frozen rain, or to greet enthusiastically", cat: "general", diff: 2 },
+  { w: "HALL", c: "A long passage inside a building", cat: "general", diff: 2 },
+  { w: "HALO", c: "A ring of light around a saint's head", cat: "general", diff: 2 },
+  { w: "HALT", c: "To stop suddenly", cat: "general", diff: 2 },
+  { w: "HARM", c: "Damage or injury", cat: "general", diff: 2 },
+  { w: "HAZE", c: "A light mist that obscures visibility", cat: "general", diff: 2 },
+  { w: "HEAP", c: "A messy pile", cat: "general", diff: 2 },
+  { w: "HEEL", c: "The back part of the foot", cat: "general", diff: 2 },
+  { w: "HERB", c: "A plant used for flavoring or medicine", cat: "general", diff: 2 },
+  { w: "HERD", c: "A large group of grazing animals", cat: "general", diff: 2 },
+  { w: "HIDE", c: "To conceal from view", cat: "general", diff: 2 },
+  { w: "HINT", c: "A slight indication or clue", cat: "general", diff: 2 },
+  { w: "HISS", c: "A sharp sibilant sound, like a snake makes", cat: "general", diff: 2 },
+  { w: "HIVE", c: "A structure where bees live", cat: "general", diff: 2 },
+  { w: "HOAX", c: "A deliberate deception", cat: "general", diff: 2 },
+  { w: "HOLD", c: "To grasp or keep something", cat: "general", diff: 2 },
+  { w: "HOLE", c: "An opening or gap", cat: "general", diff: 2 },
+  { w: "HONK", c: "The sound a car horn makes", cat: "general", diff: 2 },
+  { w: "HOOD", c: "A covering for the head, or a car's front panel", cat: "general", diff: 2 },
+  { w: "HOOF", c: "The hard covering on a horse's foot", cat: "general", diff: 2 },
+  { w: "HOOK", c: "A curved device used for catching or hanging", cat: "general", diff: 2 },
+  { w: "HOOT", c: "The call an owl makes", cat: "general", diff: 2 },
+  { w: "HOSE", c: "A flexible tube for carrying liquid", cat: "general", diff: 2 },
+  { w: "HUSH", c: "To make quiet", cat: "general", diff: 2 },
+  { w: "HUSK", c: "The dry outer covering of a seed", cat: "general", diff: 2 },
+  { w: "HYMN", c: "A religious song of praise", cat: "general", diff: 2 },
+  { w: "ICON", c: "A small picture representing a program, or a revered figure", cat: "general", diff: 2 },
+  { w: "TOOTH", c: "One of the hard structures used for chewing", cat: "general", diff: 2 },
+  { w: "TWIST", c: "To turn something into a spiral shape", cat: "general", diff: 2 },
+  { w: "ABIDE", c: "To accept or tolerate something", cat: "general", diff: 2 },
+  { w: "ABOVE", c: "In a higher position than", cat: "general", diff: 2 },
+  { w: "ADAPT", c: "To adjust to new conditions", cat: "general", diff: 2 },
+  { w: "AGENT", c: "A person who acts on behalf of another", cat: "general", diff: 2 },
+  { w: "ALARM", c: "A warning sound or device", cat: "general", diff: 2 },
+  { w: "ALIKE", c: "Similar to one another", cat: "general", diff: 2 },
+  { w: "ALIVE", c: "Living, not dead", cat: "general", diff: 2 },
+  { w: "ALLOW", c: "To permit", cat: "general", diff: 2 },
+  { w: "ALONE", c: "Without other people", cat: "general", diff: 2 },
+  { w: "ALTER", c: "To change something", cat: "general", diff: 2 },
+  { w: "AMONG", c: "In the middle of a group", cat: "general", diff: 2 },
+  { w: "ANGLE", c: "The space between two intersecting lines", cat: "general", diff: 2 },
+  { w: "ANKLE", c: "The joint connecting foot and leg", cat: "general", diff: 2 },
+  { w: "APPLY", c: "To make a formal request, or to put something on", cat: "general", diff: 2 },
+  { w: "ARGUE", c: "To disagree verbally", cat: "general", diff: 2 },
+  { w: "ARISE", c: "To come into being", cat: "general", diff: 2 },
+  { w: "AROMA", c: "A pleasant, distinctive smell", cat: "general", diff: 2 },
+  { w: "ASIDE", c: "To one side, or a remark not part of the main dialogue", cat: "general", diff: 2 },
+  { w: "ASSET", c: "Something valuable that is owned", cat: "general", diff: 2 },
+  { w: "AVOID", c: "To keep away from", cat: "general", diff: 2 },
+  { w: "AWAKE", c: "Not asleep", cat: "general", diff: 2 },
+  { w: "BADGE", c: "A small emblem worn to show identity", cat: "general", diff: 2 },
+  { w: "BASIC", c: "Forming an essential foundation", cat: "general", diff: 2 },
+  { w: "BEACH", c: "A sandy shore beside water", cat: "general", diff: 2 },
+  { w: "BEGIN", c: "To start", cat: "general", diff: 2 },
+  { w: "BENCH", c: "A long seat for several people", cat: "general", diff: 2 },
+  { w: "BERRY", c: "A small, juicy fruit", cat: "general", diff: 2 },
+  { w: "BIRTH", c: "The beginning of life", cat: "general", diff: 2 },
+  { w: "BLADE", c: "The flat cutting edge of a knife", cat: "general", diff: 2 },
+  { w: "BLAME", c: "To hold someone responsible for a fault", cat: "general", diff: 2 },
+  { w: "BLANK", c: "Empty, without content", cat: "general", diff: 2 },
+  { w: "BLAST", c: "A sudden, forceful explosion of air or sound", cat: "general", diff: 2 },
+  { w: "BLEND", c: "To mix together smoothly", cat: "general", diff: 2 },
+  { w: "BLESS", c: "To ask for divine favor upon", cat: "general", diff: 2 },
+  { w: "BLIND", c: "Unable to see", cat: "general", diff: 2 },
+  { w: "BLOCK", c: "A solid piece, or to obstruct", cat: "general", diff: 2 },
+  { w: "BLOOD", c: "The red liquid that circulates in the body", cat: "general", diff: 2 },
+  { w: "BLOOM", c: "To produce flowers", cat: "general", diff: 2 },
+  { w: "BOARD", c: "A flat piece of wood, or a group that governs", cat: "general", diff: 2 },
+  { w: "BOAST", c: "To speak with excessive pride", cat: "general", diff: 2 },
+  { w: "BOOST", c: "To increase or improve", cat: "general", diff: 2 },
+  { w: "BOOTH", c: "A small enclosed stall", cat: "general", diff: 2 },
+  { w: "BOUND", c: "Certain to happen, or to leap", cat: "general", diff: 2 },
+  { w: "BRAIN", c: "The organ used for thinking", cat: "general", diff: 2 },
+  { w: "BRAND", c: "A name or trademark identifying a product", cat: "general", diff: 2 },
+  { w: "BREAD", c: "A baked food made from flour and water", cat: "general", diff: 2 },
+  { w: "BREAK", c: "To separate into pieces, or a pause", cat: "general", diff: 2 },
+  { w: "BREED", c: "A specific type within a species", cat: "general", diff: 2 },
+  { w: "BRICK", c: "A rectangular block used for building", cat: "general", diff: 2 },
+  { w: "BRIDE", c: "A woman on her wedding day", cat: "general", diff: 2 },
+  { w: "BRIEF", c: "Short in duration", cat: "general", diff: 2 },
+  { w: "BRING", c: "To carry something along", cat: "general", diff: 2 },
+  { w: "BROAD", c: "Wide in extent", cat: "general", diff: 2 },
+  { w: "BROOM", c: "A tool used for sweeping", cat: "general", diff: 2 },
+  { w: "BROTH", c: "A thin, flavorful soup", cat: "general", diff: 2 },
+  { w: "BROWN", c: "A dark, earthy color", cat: "general", diff: 2 },
+  { w: "BRUSH", c: "A tool with bristles used for cleaning or painting", cat: "general", diff: 2 },
+  { w: "BUILD", c: "To construct something", cat: "general", diff: 2 },
+  { w: "BUNCH", c: "A group of things gathered together", cat: "general", diff: 2 },
+  { w: "BURST", c: "To break open suddenly", cat: "general", diff: 2 },
+  { w: "CABIN", c: "A small wooden house, or a room on a ship", cat: "general", diff: 2 },
+  { w: "CANOE", c: "A narrow boat propelled by paddling", cat: "general", diff: 2 },
+  { w: "CARGO", c: "Goods transported by a vehicle", cat: "general", diff: 2 },
+  { w: "CARVE", c: "To cut into a shape", cat: "general", diff: 2 },
+  { w: "CATCH", c: "To capture something moving", cat: "general", diff: 2 },
+  { w: "CAUSE", c: "The reason something happens", cat: "general", diff: 2 },
+  { w: "CHAIN", c: "A series of connected metal links", cat: "general", diff: 2 },
+  { w: "CHALK", c: "A soft white material used for writing on boards", cat: "general", diff: 2 },
+  { w: "CHARM", c: "A quality that attracts, or a small trinket", cat: "general", diff: 2 },
+  { w: "CHASE", c: "To pursue quickly", cat: "general", diff: 2 },
+  { w: "CHEAP", c: "Low in price", cat: "general", diff: 2 },
+  { w: "CHECK", c: "To verify, or a restaurant bill", cat: "general", diff: 2 },
+  { w: "CHEEK", c: "The side of the face below the eye", cat: "general", diff: 2 },
+  { w: "CHESS", c: "A strategy board game played with pieces like kings and knights", cat: "general", diff: 2 },
+  { w: "CHEST", c: "The upper front of the body, or a storage box", cat: "general", diff: 2 },
+  { w: "CHILD", c: "A young human", cat: "general", diff: 2 },
+  { w: "CHILL", c: "A cold sensation, or to relax", cat: "general", diff: 2 },
+  { w: "CHORD", c: "A group of musical notes played together", cat: "general", diff: 2 },
+  { w: "CIVIL", c: "Relating to citizens, or polite", cat: "general", diff: 2 },
+  { w: "CLAIM", c: "To assert something is true", cat: "general", diff: 2 },
+  { w: "CLASH", c: "A conflict, or a loud discordant sound", cat: "general", diff: 2 },
+  { w: "CLASS", c: "A group of students, or a category", cat: "general", diff: 2 },
+  { w: "CLICK", c: "A short, sharp sound", cat: "general", diff: 2 },
+  { w: "CLING", c: "To hold on tightly", cat: "general", diff: 2 },
+  { w: "CLOTH", c: "Woven fabric", cat: "general", diff: 2 },
+  { w: "COVER", c: "To place something over another", cat: "general", diff: 2 },
+  { w: "CRACK", c: "A narrow break, or a sharp sound", cat: "general", diff: 2 },
+  { w: "CRAFT", c: "A skilled activity, or a small boat", cat: "general", diff: 2 },
+
+  // ---- general (more short fill, round 2) ----
+  { w: "RUG", c: "A small carpet", cat: "general", diff: 1 },
+  { w: "RUM", c: "A spirit distilled from sugarcane", cat: "general", diff: 1 },
+  { w: "RYE", c: "A grain used to make bread and whiskey", cat: "general", diff: 1 },
+  { w: "SAD", c: "Feeling unhappy", cat: "general", diff: 1 },
+  { w: "SAP", c: "The fluid inside a plant's stem", cat: "general", diff: 1 },
+  { w: "SET", c: "A matched group of things", cat: "general", diff: 1 },
+  { w: "SEW", c: "To join fabric with a needle and thread", cat: "general", diff: 1 },
+  { w: "SIN", c: "A moral wrongdoing", cat: "general", diff: 1 },
+  { w: "SIP", c: "A small drink", cat: "general", diff: 1 },
+  { w: "SKI", c: "To glide over snow on long boards", cat: "general", diff: 1 },
+  { w: "SLY", c: "Cunning and secretive", cat: "general", diff: 1 },
+  { w: "SOB", c: "To cry with heaving breaths", cat: "general", diff: 1 },
+  { w: "SOD", c: "A layer of grass and soil", cat: "general", diff: 1 },
+  { w: "SON", c: "A male child", cat: "general", diff: 1 },
+  { w: "SOW", c: "To plant seeds", cat: "general", diff: 1 },
+  { w: "SOY", c: "A bean used to make tofu and sauce", cat: "general", diff: 1 },
+  { w: "SPA", c: "A place for relaxing treatments", cat: "general", diff: 1 },
+  { w: "SPY", c: "Someone who secretly gathers information", cat: "general", diff: 1 },
+  { w: "SUM", c: "The result of addition", cat: "general", diff: 1 },
+  { w: "TAB", c: "A small flap, or a running bill", cat: "general", diff: 1 },
+  { w: "TAN", c: "A light brown color from sun exposure", cat: "general", diff: 1 },
+  { w: "TAP", c: "To strike lightly, or a faucet", cat: "general", diff: 1 },
+  { w: "TAR", c: "A thick, black, sticky substance", cat: "general", diff: 1 },
+  { w: "TAX", c: "A mandatory payment to the government", cat: "general", diff: 1 },
+  { w: "TEA", c: "A hot drink brewed from leaves", cat: "general", diff: 1 },
+  { w: "TEN", c: "The number after nine", cat: "general", diff: 1 },
+  { w: "TIP", c: "A pointed end, or a gratuity", cat: "general", diff: 1 },
+  { w: "TOE", c: "A digit on the foot", cat: "general", diff: 1 },
+  { w: "TON", c: "A unit of weight equal to 2,000 pounds", cat: "general", diff: 1 },
+  { w: "TOW", c: "To pull a vehicle behind another", cat: "general", diff: 1 },
+  { w: "TRY", c: "To attempt something", cat: "general", diff: 1 },
+  { w: "TUB", c: "A container for bathing", cat: "general", diff: 1 },
+  { w: "TUG", c: "To pull with force", cat: "general", diff: 1 },
+  { w: "TWO", c: "The number after one", cat: "general", diff: 1 },
+  { w: "USE", c: "To put something into service", cat: "general", diff: 1 },
+  { w: "VAN", c: "A boxy vehicle used for hauling", cat: "general", diff: 1 },
+  { w: "VAT", c: "A large tank for liquids", cat: "general", diff: 1 },
+  { w: "VET", c: "An animal doctor", cat: "general", diff: 1 },
+  { w: "VOW", c: "A solemn promise", cat: "general", diff: 1 },
+  { w: "WAG", c: "To swing back and forth, like a dog's tail", cat: "general", diff: 1 },
+  { w: "WAX", c: "A substance used in candles and polish", cat: "general", diff: 1 },
+  { w: "WED", c: "To marry", cat: "general", diff: 1 },
+  { w: "WIG", c: "A hairpiece", cat: "general", diff: 1 },
+  { w: "WIT", c: "Quick and clever humor", cat: "general", diff: 1 },
+  { w: "WOK", c: "A round-bottomed pan used in stir-frying", cat: "general", diff: 1 },
+  { w: "WON", c: "Past tense of win", cat: "general", diff: 1 },
+  { w: "ZIP", c: "To fasten with a sliding closure, or move quickly", cat: "general", diff: 1 },
+  { w: "ZOO", c: "A park where animals are kept for viewing", cat: "general", diff: 1 },
+  { w: "IDLE", c: "Not doing anything; inactive", cat: "general", diff: 2 },
+  { w: "IDOL", c: "Someone greatly admired, or an object of worship", cat: "general", diff: 2 },
+  { w: "INCH", c: "A small unit of length", cat: "general", diff: 2 },
+  { w: "ITCH", c: "A tingling skin sensation that makes you want to scratch", cat: "general", diff: 2 },
+  { w: "JADE", c: "A green gemstone", cat: "general", diff: 2 },
+  { w: "JEEP", c: "A rugged off-road vehicle", cat: "general", diff: 2 },
+  { w: "JELL", c: "To take shape or firm up", cat: "general", diff: 2 },
+  { w: "JUMP", c: "To spring off the ground", cat: "general", diff: 2 },
+  { w: "JURY", c: "A group of citizens who decide a legal verdict", cat: "general", diff: 2 },
+  { w: "JUST", c: "Fair, or merely", cat: "general", diff: 2 },
+  { w: "KELP", c: "A large brown seaweed", cat: "general", diff: 2 },
+  { w: "KEPT", c: "Past tense of keep", cat: "general", diff: 2 },
+  { w: "KICK", c: "To strike with the foot", cat: "general", diff: 2 },
+  { w: "KILN", c: "An oven used to fire pottery", cat: "general", diff: 2 },
+  { w: "KILT", c: "A traditional Scottish garment worn like a skirt", cat: "general", diff: 2 },
+  { w: "KISS", c: "A touch of the lips as a sign of affection", cat: "general", diff: 2 },
+  { w: "KNEE", c: "The joint between thigh and lower leg", cat: "general", diff: 2 },
+  { w: "KNIT", c: "To create fabric by looping yarn", cat: "general", diff: 2 },
+  { w: "KNOB", c: "A rounded handle", cat: "general", diff: 2 },
+  { w: "LACE", c: "Delicate patterned fabric, or a shoe fastener", cat: "general", diff: 2 },
+  { w: "LACK", c: "To be without something needed", cat: "general", diff: 2 },
+  { w: "LAMB", c: "A young sheep", cat: "general", diff: 2 },
+  { w: "LAMP", c: "A device that produces light", cat: "general", diff: 2 },
+  { w: "LAND", c: "The solid ground, as opposed to sea", cat: "general", diff: 2 },
+  { w: "LANE", c: "A narrow road or marked path", cat: "general", diff: 2 },
+  { w: "LARK", c: "A songbird, or a playful adventure", cat: "general", diff: 2 },
+  { w: "LAVA", c: "Molten rock from a volcano", cat: "general", diff: 2 },
+  { w: "LEAK", c: "An unwanted escape of liquid or gas", cat: "general", diff: 2 },
+  { w: "LEAN", c: "To tilt to one side, or having little fat", cat: "general", diff: 2 },
+  { w: "LOAF", c: "A shaped mass of baked bread", cat: "general", diff: 2 },
+  { w: "LOAN", c: "Money lent to be repaid", cat: "general", diff: 2 },
+  { w: "LOOM", c: "A machine for weaving cloth, or to appear ominously close", cat: "general", diff: 2 },
+  { w: "LOOP", c: "A closed curve of rope or wire", cat: "general", diff: 2 },
+  { w: "LORD", c: "A nobleman, or a title of authority", cat: "general", diff: 2 },
+  { w: "LOSS", c: "The state of losing something", cat: "general", diff: 2 },
+  { w: "LUCK", c: "Good or bad fortune", cat: "general", diff: 2 },
+  { w: "LUMP", c: "A small, irregular mass", cat: "general", diff: 2 },
+  { w: "LUNG", c: "An organ used for breathing", cat: "general", diff: 2 },
+  { w: "LURE", c: "Something used to tempt or attract", cat: "general", diff: 2 },
+  { w: "LUSH", c: "Rich and full of growth", cat: "general", diff: 2 },
+  { w: "MALL", c: "A large shopping complex", cat: "general", diff: 2 },
+  { w: "MANE", c: "The long hair on a lion's or horse's neck", cat: "general", diff: 2 },
+  { w: "MAST", c: "A tall pole that holds a ship's sails", cat: "general", diff: 2 },
+  { w: "MEAL", c: "A occasion of eating food", cat: "general", diff: 2 },
+  { w: "MELT", c: "To turn from solid to liquid with heat", cat: "general", diff: 2 },
+  { w: "MEND", c: "To repair", cat: "general", diff: 2 },
+  { w: "MESH", c: "An open, woven material", cat: "general", diff: 2 },
+  { w: "MESS", c: "A state of untidiness", cat: "general", diff: 2 },
+  { w: "MICE", c: "Plural of mouse", cat: "general", diff: 2 },
+  { w: "MILD", c: "Gentle in intensity", cat: "general", diff: 2 },
+  { w: "MILK", c: "A white liquid produced by mammals", cat: "general", diff: 2 },
+  { w: "MILL", c: "A building that grinds grain, or a factory", cat: "general", diff: 2 },
+  { w: "MIND", c: "The part of you that thinks", cat: "general", diff: 2 },
+  { w: "MINE", c: "A place where minerals are dug, or belonging to me", cat: "general", diff: 2 },
+  { w: "MOAN", c: "A low, mournful sound", cat: "general", diff: 2 },
+  { w: "MOLD", c: "A fungus that grows on damp surfaces, or a shaping form", cat: "general", diff: 2 },
+  { w: "MOOD", c: "One's emotional state", cat: "general", diff: 2 },
+  { w: "MOSS", c: "A small, soft green plant that grows on damp surfaces", cat: "general", diff: 2 },
+  { w: "MOTH", c: "A nocturnal insect related to the butterfly", cat: "general", diff: 2 },
+  { w: "MULE", c: "A hybrid of a horse and donkey", cat: "general", diff: 2 },
+  { w: "MUTE", c: "Unable or unwilling to speak", cat: "general", diff: 2 },
+  { w: "NAVY", c: "A dark blue color, or a country's sea-based military", cat: "general", diff: 2 },
+  { w: "NECK", c: "The part connecting head to body", cat: "general", diff: 2 },
+  { w: "NEST", c: "A structure birds build to lay eggs in", cat: "general", diff: 2 },
+  { w: "NOSE", c: "The organ used for smelling", cat: "general", diff: 2 },
+  { w: "NUDE", c: "Without clothing", cat: "general", diff: 2 },
+  { w: "OATH", c: "A solemn promise", cat: "general", diff: 2 },
+  { w: "ODOR", c: "A smell, often unpleasant", cat: "general", diff: 2 },
+  { w: "OMEN", c: "A sign of something to come", cat: "general", diff: 2 },
+  { w: "ORAL", c: "Spoken, or relating to the mouth", cat: "general", diff: 2 },
+  { w: "OVAL", c: "Egg-shaped", cat: "general", diff: 2 },
+  { w: "OVEN", c: "An appliance used for baking", cat: "general", diff: 2 },
+  { w: "PACE", c: "The speed of movement", cat: "general", diff: 2 },
+  { w: "PAIL", c: "A bucket", cat: "general", diff: 2 },
+  { w: "PAIN", c: "Physical or emotional suffering", cat: "general", diff: 2 },
+  { w: "PALE", c: "Light in color, lacking intensity", cat: "general", diff: 2 },
+  { w: "PALM", c: "The inner surface of the hand, or a tropical tree", cat: "general", diff: 2 },
+  { w: "PANE", c: "A single sheet of glass in a window", cat: "general", diff: 2 },
+  { w: "PARK", c: "A public green space", cat: "general", diff: 2 },
+  { w: "PART", c: "A piece of a whole", cat: "general", diff: 2 },
+  { w: "PASS", c: "To go by, or to succeed at a test", cat: "general", diff: 2 },
+  { w: "PAST", c: "The time before now", cat: "general", diff: 2 },
+  { w: "PATH", c: "A track for walking", cat: "general", diff: 2 },
+  { w: "PAVE", c: "To cover a surface with a hard material", cat: "general", diff: 2 },
+  { w: "PEEL", c: "To remove the outer skin of a fruit", cat: "general", diff: 2 },
+  { w: "PIER", c: "A structure extending into the water", cat: "general", diff: 2 },
+  { w: "PILE", c: "A stack of things", cat: "general", diff: 2 },
+  { w: "PILL", c: "A small tablet of medicine", cat: "general", diff: 2 },
+  { w: "PINE", c: "An evergreen tree, or to long for something", cat: "general", diff: 2 },
+  { w: "PINK", c: "A pale reddish color", cat: "general", diff: 2 },
+  { w: "PINT", c: "A unit of liquid measure", cat: "general", diff: 2 },
+  { w: "PIPE", c: "A tube used to carry liquid or gas", cat: "general", diff: 2 },
+  { w: "PLOW", c: "A farming tool used to turn soil", cat: "general", diff: 2 },
+  { w: "PLUG", c: "A device inserted into an outlet or a hole", cat: "general", diff: 2 },
+  { w: "POEM", c: "A piece of writing with rhythm and often rhyme", cat: "general", diff: 2 },
+  { w: "POKE", c: "To jab with a finger or pointed object", cat: "general", diff: 2 },
+  { w: "POLE", c: "A long, slender rod", cat: "general", diff: 2 },
+  { w: "PORE", c: "A tiny opening in skin", cat: "general", diff: 2 },
+  { w: "PORK", c: "Meat from a pig", cat: "general", diff: 2 },
+  { w: "PORT", c: "A harbor town, or a connector on a device", cat: "general", diff: 2 },
+  { w: "POSE", c: "To position oneself for a photo or artwork", cat: "general", diff: 2 },
+  { w: "POUR", c: "To make liquid flow from a container", cat: "general", diff: 2 },
+  { w: "PRAY", c: "To speak to a deity", cat: "general", diff: 2 },
+  { w: "PREY", c: "An animal hunted by another for food", cat: "general", diff: 2 },
+  { w: "PULL", c: "To draw something toward you", cat: "general", diff: 2 },
+  { w: "PULP", c: "The soft, moist part of a fruit", cat: "general", diff: 2 },
+  { w: "PUMP", c: "A device that moves fluid or air", cat: "general", diff: 2 },
+  { w: "PUSH", c: "To press something away from you", cat: "general", diff: 2 },
+  { w: "QUIT", c: "To stop doing something", cat: "general", diff: 2 },
+  { w: "QUIZ", c: "A short test of knowledge", cat: "general", diff: 2 },
+  { w: "RAFT", c: "A flat structure used to float on water", cat: "general", diff: 2 },
+  { w: "RAID", c: "A sudden attack", cat: "general", diff: 2 },
+  { w: "RAIL", c: "A metal bar used for tracks or fences", cat: "general", diff: 2 },
+  { w: "RANK", c: "A position in a hierarchy", cat: "general", diff: 2 },
+  { w: "RASH", c: "A skin irritation, or reckless", cat: "general", diff: 2 },
+  { w: "RENT", c: "A regular payment for using property", cat: "general", diff: 2 },
+  { w: "RIDE", c: "To travel in or on a vehicle or animal", cat: "general", diff: 2 },
+  { w: "RIFT", c: "A crack or split", cat: "general", diff: 2 },
+  { w: "RING", c: "A circular band, often worn on a finger", cat: "general", diff: 2 },
+  { w: "RISE", c: "To move upward", cat: "general", diff: 2 },
+  { w: "RISK", c: "The chance of danger or loss", cat: "general", diff: 2 },
+  { w: "ROAM", c: "To wander freely", cat: "general", diff: 2 },
+  { w: "ROAR", c: "A loud, deep sound made by a lion or crowd", cat: "general", diff: 2 },
+  { w: "ROBE", c: "A loose-fitting outer garment", cat: "general", diff: 2 },
+  { w: "ROCK", c: "A hard mineral mass", cat: "general", diff: 2 },
+  { w: "ROLL", c: "To move by turning over and over", cat: "general", diff: 2 },
+  { w: "ROOF", c: "The covering on top of a building", cat: "general", diff: 2 },
+  { w: "ROOM", c: "An enclosed space inside a building", cat: "general", diff: 2 },
+  { w: "ROOT", c: "The part of a plant underground", cat: "general", diff: 2 },
+  { w: "ROSE", c: "A flower known for its thorns and fragrance", cat: "general", diff: 2 },
+  { w: "RUDE", c: "Lacking good manners", cat: "general", diff: 2 },
+  { w: "RUIN", c: "To destroy or spoil", cat: "general", diff: 2 },
+  { w: "RUST", c: "Reddish-brown corrosion on iron", cat: "general", diff: 2 },
+  { w: "SACK", c: "A large bag", cat: "general", diff: 2 },
+  { w: "SAGE", c: "A wise person, or an aromatic herb", cat: "general", diff: 2 },
+  { w: "SAIL", c: "A sheet of fabric that catches wind to move a boat", cat: "general", diff: 2 },
+  { w: "SALE", c: "The exchange of goods for money", cat: "general", diff: 2 },
+  { w: "SANE", c: "Mentally sound", cat: "general", diff: 2 },
+  { w: "SASH", c: "A band of cloth worn around the waist or shoulder", cat: "general", diff: 2 },
+  { w: "SEAL", c: "A marine mammal, or an official stamp", cat: "general", diff: 2 },
+  { w: "SEAT", c: "A place to sit", cat: "general", diff: 2 },
+  { w: "SEED", c: "The part of a plant from which a new plant grows", cat: "general", diff: 2 },
+  { w: "SHED", c: "A small outdoor storage building", cat: "general", diff: 2 },
+  { w: "SHIN", c: "The front of the lower leg", cat: "general", diff: 2 },
+  { w: "SHOE", c: "Footwear", cat: "general", diff: 2 },
+  { w: "SHOP", c: "A store where goods are sold", cat: "general", diff: 2 },
+  { w: "SHOT", c: "A single firing of a gun, or an attempt", cat: "general", diff: 2 },
+  { w: "SHOW", c: "A performance, or to display", cat: "general", diff: 2 },
+  { w: "SICK", c: "Unwell", cat: "general", diff: 2 },
+  { w: "SIDE", c: "One face or edge of something", cat: "general", diff: 2 },
+  { w: "CRANE", c: "A tall bird, or a machine for lifting", cat: "general", diff: 2 },
+  { w: "CRASH", c: "A violent collision", cat: "general", diff: 2 },
+  { w: "CRAWL", c: "To move on hands and knees", cat: "general", diff: 2 },
+  { w: "CREEP", c: "To move slowly and carefully", cat: "general", diff: 2 },
+  { w: "CREST", c: "The top of a hill or wave", cat: "general", diff: 2 },
+  { w: "CRISP", c: "Firm and brittle, pleasantly so", cat: "general", diff: 2 },
+  { w: "CROSS", c: "A shape with intersecting lines, or to go over", cat: "general", diff: 2 },
+  { w: "CROWD", c: "A large group of people gathered together", cat: "general", diff: 2 },
+  { w: "CRUEL", c: "Causing pain deliberately", cat: "general", diff: 2 },
+  { w: "CRUSH", c: "To press with great force", cat: "general", diff: 2 },
+  { w: "CURVE", c: "A smoothly bending line", cat: "general", diff: 2 },
+  { w: "DAILY", c: "Happening every day", cat: "general", diff: 2 },
+  { w: "DEBUT", c: "A first public appearance", cat: "general", diff: 2 },
+  { w: "DECAY", c: "To rot or break down gradually", cat: "general", diff: 2 },
+  { w: "DELAY", c: "To postpone", cat: "general", diff: 2 },
+  { w: "DEPTH", c: "How deep something is", cat: "general", diff: 2 },
+  { w: "DERBY", c: "A horse race, or a type of hat", cat: "general", diff: 2 },
+  { w: "DEVIL", c: "A figure of evil", cat: "general", diff: 2 },
+  { w: "DITCH", c: "A narrow trench, or to abandon", cat: "general", diff: 2 },
+  { w: "DIZZY", c: "Feeling unsteady or faint", cat: "general", diff: 2 },
+  { w: "DODGE", c: "To avoid something by moving quickly", cat: "general", diff: 2 },
+  { w: "DONOR", c: "A person who gives something, like blood or money", cat: "general", diff: 2 },
+  { w: "DOUBT", c: "A feeling of uncertainty", cat: "general", diff: 2 },
+  { w: "DRAIN", c: "A pipe that carries away liquid", cat: "general", diff: 2 },
+  { w: "DRAMA", c: "A serious play or an intense situation", cat: "general", diff: 2 },
+  { w: "DRAWN", c: "Past participle of draw", cat: "general", diff: 2 },
+  { w: "DRESS", c: "A one-piece garment worn by women", cat: "general", diff: 2 },
+  { w: "DRIFT", c: "To move slowly, carried by current or wind", cat: "general", diff: 2 },
+  { w: "DRILL", c: "A tool for boring holes, or repeated practice", cat: "general", diff: 2 },
+  { w: "DRINK", c: "A liquid consumed for hydration or pleasure", cat: "general", diff: 2 },
+  { w: "DROVE", c: "Past tense of drive", cat: "general", diff: 2 },
+  { w: "EARLY", c: "Before the usual time", cat: "general", diff: 2 },
+  { w: "EARTH", c: "The planet we live on", cat: "general", diff: 2 },
+  { w: "ELBOW", c: "The joint between upper and lower arm", cat: "general", diff: 2 },
+  { w: "ENJOY", c: "To take pleasure in", cat: "general", diff: 2 },
+  { w: "ENTER", c: "To go into a place", cat: "general", diff: 2 },
+  { w: "ENTRY", c: "The act of entering, or a written item in a log", cat: "general", diff: 2 },
+  { w: "ERROR", c: "A mistake", cat: "general", diff: 2 },
+  { w: "EVENT", c: "A planned or notable occurrence", cat: "general", diff: 2 },
+  { w: "EXACT", c: "Precisely correct", cat: "general", diff: 2 },
+  { w: "FAINT", c: "Weak, or to lose consciousness briefly", cat: "general", diff: 2 },
+  { w: "FALSE", c: "Not true", cat: "general", diff: 2 },
+  { w: "FAULT", c: "A mistake or flaw", cat: "general", diff: 2 },
+  { w: "FENCE", c: "A barrier enclosing an area", cat: "general", diff: 2 },
+  { w: "FIERY", c: "Full of fire or intense passion", cat: "general", diff: 2 },
+  { w: "FIFTH", c: "The ordinal number after fourth", cat: "general", diff: 2 },
+  { w: "FIGHT", c: "A physical or verbal conflict", cat: "general", diff: 2 },
+  { w: "FINAL", c: "Last in a series", cat: "general", diff: 2 },
+  { w: "FIRST", c: "Coming before all others", cat: "general", diff: 2 },
+  { w: "FLASH", c: "A brief burst of light", cat: "general", diff: 2 },
+  { w: "FLEET", c: "A group of ships, or swift", cat: "general", diff: 2 },
+  { w: "FLESH", c: "The soft substance of a body", cat: "general", diff: 2 },
+  { w: "FLING", c: "To throw with force", cat: "general", diff: 2 },
+  { w: "FLOAT", c: "To rest on the surface of a liquid without sinking", cat: "general", diff: 2 },
+  { w: "FLOCK", c: "A group of birds or sheep", cat: "general", diff: 2 },
+  { w: "FLOOD", c: "An overflow of water onto land", cat: "general", diff: 2 },
+  { w: "FLOOR", c: "The surface you stand on inside a room", cat: "general", diff: 2 },
+  { w: "FLUID", c: "A substance that flows, like a liquid or gas", cat: "general", diff: 2 },
+  { w: "FOCUS", c: "To concentrate attention on something", cat: "general", diff: 2 },
+  { w: "FORGE", c: "To shape metal with heat, or to counterfeit", cat: "general", diff: 2 },
+  { w: "FRAME", c: "A structure that surrounds or supports something", cat: "general", diff: 2 },
+  { w: "FRESH", c: "Newly made or gathered", cat: "general", diff: 2 },
+  { w: "FROWN", c: "A facial expression showing displeasure", cat: "general", diff: 2 },
+  { w: "FRUIT", c: "The sweet, edible part of a plant", cat: "general", diff: 2 },
+  { w: "GLIDE", c: "To move smoothly and effortlessly", cat: "general", diff: 2 },
+  { w: "GLORY", c: "Great honor or renown", cat: "general", diff: 2 },
+  { w: "GLOVE", c: "A covering for the hand", cat: "general", diff: 2 },
+  { w: "GOOSE", c: "A large water bird related to the duck", cat: "general", diff: 2 },
+  { w: "GRACE", c: "Elegance of movement, or a blessing said before meals", cat: "general", diff: 2 },
+  { w: "GRADE", c: "A level of quality, or a school year", cat: "general", diff: 2 },
+  { w: "GRAIN", c: "A small hard seed, or the texture of wood", cat: "general", diff: 2 },
+  { w: "GRANT", c: "To give formally, or a sum of money awarded", cat: "general", diff: 2 },
+  { w: "GRAPE", c: "A small round fruit that grows in clusters", cat: "general", diff: 2 },
+  { w: "GRASP", c: "To seize firmly, or to understand", cat: "general", diff: 2 },
+  { w: "GRASS", c: "Green ground-covering plants", cat: "general", diff: 2 },
+  { w: "GRAVE", c: "A burial site, or serious", cat: "general", diff: 2 },
+  { w: "GRAZE", c: "To feed on grass, or a minor scrape", cat: "general", diff: 2 },
+  { w: "GREED", c: "An excessive desire for wealth", cat: "general", diff: 2 },
+  { w: "GREEN", c: "The color of grass", cat: "general", diff: 2 },
+  { w: "GRIEF", c: "Deep sorrow", cat: "general", diff: 2 },
+  { w: "GRILL", c: "A cooking device that uses direct heat", cat: "general", diff: 2 },
+  { w: "GRIND", c: "To crush into small pieces", cat: "general", diff: 2 },
+  { w: "GROOM", c: "To care for one's appearance, or a man about to marry", cat: "general", diff: 2 },
+  { w: "GROSS", c: "Disgusting, or a total before deductions", cat: "general", diff: 2 },
+  { w: "GROUP", c: "A number of things gathered together", cat: "general", diff: 2 },
+  { w: "GROWL", c: "A low, threatening sound", cat: "general", diff: 2 },
+  { w: "GUARD", c: "To protect, or a person who protects", cat: "general", diff: 2 },
+  { w: "GUESS", c: "To estimate without certain knowledge", cat: "general", diff: 2 },
+  { w: "GUEST", c: "A visitor invited to a place", cat: "general", diff: 2 },
+  { w: "GUIDE", c: "A person or book that shows the way", cat: "general", diff: 2 },
+  { w: "HAPPY", c: "Feeling pleasure or contentment", cat: "general", diff: 2 },
+  { w: "HARSH", c: "Severe or unpleasant", cat: "general", diff: 2 },
+  { w: "HEART", c: "The organ that pumps blood", cat: "general", diff: 2 },
+  { w: "HEAVY", c: "Having great weight", cat: "general", diff: 2 },
+  { w: "HEDGE", c: "A boundary formed by closely growing shrubs", cat: "general", diff: 2 },
+  { w: "HONOR", c: "Great respect, or to keep a promise", cat: "general", diff: 2 },
+  { w: "HORSE", c: "A large animal used for riding", cat: "general", diff: 2 },
+  { w: "HOTEL", c: "A building offering paid lodging", cat: "general", diff: 2 },
+  { w: "HOUSE", c: "A building where people live", cat: "general", diff: 2 },
+  { w: "HUMAN", c: "A member of the species Homo sapiens", cat: "general", diff: 2 },
+  { w: "HUMID", c: "Containing a lot of moisture in the air", cat: "general", diff: 2 },
+  { w: "HUMOR", c: "The quality of being funny", cat: "general", diff: 2 },
+  { w: "IDEAL", c: "Perfect or most suitable", cat: "general", diff: 2 },
+  { w: "IMAGE", c: "A visual representation", cat: "general", diff: 2 },
+  { w: "INDEX", c: "An alphabetical list, or a measure", cat: "general", diff: 2 },
+  { w: "INNER", c: "Located further inside", cat: "general", diff: 2 },
+  { w: "ISSUE", c: "A topic for discussion, or a single edition", cat: "general", diff: 2 },
+  { w: "JOINT", c: "A place where two parts connect", cat: "general", diff: 2 },
+  { w: "JUDGE", c: "A person who decides a case in court", cat: "general", diff: 2 },
+  { w: "JUICE", c: "The liquid extracted from fruit", cat: "general", diff: 2 },
+  { w: "KNEEL", c: "To go down on one's knees", cat: "general", diff: 2 },
+  { w: "KNIFE", c: "A tool with a sharp blade used for cutting", cat: "general", diff: 2 },
+  { w: "LABEL", c: "A small piece of paper attached to identify something", cat: "general", diff: 2 },
+  { w: "LARGE", c: "Big in size", cat: "general", diff: 2 },
+  { w: "LAUGH", c: "To make sounds expressing amusement", cat: "general", diff: 2 },
+  { w: "LAYER", c: "A single thickness of material covering a surface", cat: "general", diff: 2 },
+  { w: "LEASE", c: "A contract for renting property", cat: "general", diff: 2 },
+  { w: "LEDGE", c: "A narrow horizontal surface projecting from a wall", cat: "general", diff: 2 },
+  { w: "LEGAL", c: "Permitted or required by law", cat: "general", diff: 2 },
+  { w: "LEMON", c: "A sour yellow citrus fruit", cat: "general", diff: 2 },
+  { w: "LEVEL", c: "A flat, horizontal surface, or a stage in a game", cat: "general", diff: 2 },
+  { w: "LIMIT", c: "The furthest extent allowed", cat: "general", diff: 2 },
+  { w: "LIVER", c: "An organ that filters blood", cat: "general", diff: 2 },
+  { w: "LOOSE", c: "Not tightly fastened", cat: "general", diff: 2 },
+  { w: "LOWER", c: "To move down", cat: "general", diff: 2 },
+  { w: "LOYAL", c: "Faithful to a person or cause", cat: "general", diff: 2 },
+  { w: "LUNAR", c: "Relating to the moon", cat: "general", diff: 2 },
+  { w: "LUNCH", c: "A midday meal", cat: "general", diff: 2 },
+  { w: "LYRIC", c: "The words of a song", cat: "general", diff: 2 },
+  { w: "MAGIC", c: "Supernatural power, or the art of illusion", cat: "general", diff: 2 },
+  { w: "MAJOR", c: "Significant, or a military rank", cat: "general", diff: 2 },
+  { w: "MERCY", c: "Compassion shown toward someone", cat: "general", diff: 2 },
+  { w: "MERGE", c: "To combine into one", cat: "general", diff: 2 },
+  { w: "METAL", c: "A hard, shiny material like iron or gold", cat: "general", diff: 2 },
+  { w: "MODEL", c: "A representation, or a person who poses for art", cat: "general", diff: 2 },
+  { w: "MOIST", c: "Slightly wet", cat: "general", diff: 2 },
+  { w: "MOTOR", c: "A machine that produces motion", cat: "general", diff: 2 },
+  { w: "MOUSE", c: "A small rodent, or a computer pointing device", cat: "general", diff: 2 },
+  { w: "MOUTH", c: "The opening used for eating and speaking", cat: "general", diff: 2 },
+  { w: "MOVIE", c: "A film shown for entertainment", cat: "general", diff: 2 },
+  { w: "NAKED", c: "Without clothing", cat: "general", diff: 2 },
+  { w: "NASTY", c: "Very unpleasant", cat: "general", diff: 2 },
+  { w: "NERVE", c: "A fiber that carries signals in the body, or courage", cat: "general", diff: 2 },
+  { w: "NIGHT", c: "The time when the sun is down", cat: "general", diff: 2 },
+  { w: "NOBLE", c: "Having high moral qualities, or of high rank", cat: "general", diff: 2 },
+  { w: "NORTH", c: "The direction toward the top of a map", cat: "general", diff: 2 },
+  { w: "NOVEL", c: "A long fictional book, or something new", cat: "general", diff: 2 },
+  { w: "NURSE", c: "A person trained to care for the sick", cat: "general", diff: 2 },
+  { w: "OFFER", c: "To present something for acceptance", cat: "general", diff: 2 },
+  { w: "ONION", c: "A pungent bulb vegetable", cat: "general", diff: 2 },
+  { w: "OUTER", c: "Located on the outside", cat: "general", diff: 2 },
+  { w: "OWNER", c: "A person who possesses something", cat: "general", diff: 2 },
+  { w: "PANEL", c: "A flat section of a surface, or a group of experts", cat: "general", diff: 2 },
+  { w: "PATCH", c: "A small piece used to cover a hole", cat: "general", diff: 2 },
+  { w: "PAUSE", c: "A brief stop", cat: "general", diff: 2 },
+  { w: "PEARL", c: "A smooth gem formed inside an oyster", cat: "general", diff: 2 },
+  { w: "PHASE", c: "A distinct stage in a process", cat: "general", diff: 2 },
+  { w: "PHOTO", c: "A picture taken with a camera", cat: "general", diff: 2 },
+  { w: "PIANO", c: "A keyboard instrument played by striking strings", cat: "general", diff: 2 },
+  { w: "PIECE", c: "A part of a whole", cat: "general", diff: 2 },
+  { w: "PITCH", c: "The highness or lowness of a sound, or to throw", cat: "general", diff: 2 },
+  { w: "PIXEL", c: "The smallest unit of a digital image", cat: "general", diff: 2 },
+  { w: "PLANT", c: "A living organism that grows in soil", cat: "general", diff: 2 },
+  { w: "PLATE", c: "A flat dish used for serving food", cat: "general", diff: 2 },
+  { w: "POINT", c: "A sharp end, or a specific location", cat: "general", diff: 2 },
+  { w: "POUND", c: "A unit of weight, or to strike heavily", cat: "general", diff: 2 },
+  { w: "POWER", c: "The ability to do something, or electricity", cat: "general", diff: 2 },
+  { w: "PRICE", c: "The amount of money needed to buy something", cat: "general", diff: 2 },
+  { w: "PRIDE", c: "A feeling of satisfaction with achievement", cat: "general", diff: 2 },
+  { w: "PRIZE", c: "A reward for winning", cat: "general", diff: 2 },
+  { w: "PROOF", c: "Evidence that something is true", cat: "general", diff: 2 },
+  { w: "PULSE", c: "The rhythmic beating of the heart", cat: "general", diff: 2 },
+  { w: "PUPIL", c: "A student, or the opening in the eye", cat: "general", diff: 2 },
+  { w: "QUICK", c: "Fast", cat: "general", diff: 2 },
+  { w: "QUOTE", c: "A repeated statement, or a price estimate", cat: "general", diff: 2 },
+  { w: "RADAR", c: "A system that detects objects using radio waves", cat: "general", diff: 2 },
+  { w: "RADIO", c: "A device that receives broadcast sound", cat: "general", diff: 2 },
+  { w: "RAISE", c: "To lift up", cat: "general", diff: 2 },
+  { w: "RANCH", c: "A large farm for raising livestock", cat: "general", diff: 2 },
+  { w: "RANGE", c: "The extent of variation, or a cooking stove", cat: "general", diff: 2 },
+  { w: "RAPID", c: "Happening very quickly", cat: "general", diff: 2 },
+  { w: "RATIO", c: "The relationship between two quantities", cat: "general", diff: 2 },
+  { w: "REACH", c: "To extend far enough to touch", cat: "general", diff: 2 },
+  { w: "READY", c: "Prepared for action", cat: "general", diff: 2 },
+  { w: "REBEL", c: "A person who resists authority", cat: "general", diff: 2 },
+  { w: "RELAX", c: "To become less tense", cat: "general", diff: 2 },
+  { w: "RIGID", c: "Stiff and unbending", cat: "general", diff: 2 },
+  { w: "RIVAL", c: "A competitor", cat: "general", diff: 2 },
+  { w: "ROUGH", c: "Not smooth", cat: "general", diff: 2 },
+  { w: "ROUND", c: "Shaped like a circle", cat: "general", diff: 2 },
+  { w: "ROUTE", c: "A path taken to get somewhere", cat: "general", diff: 2 },
+  { w: "ROYAL", c: "Relating to a king or queen", cat: "general", diff: 2 },
+  { w: "RUMOR", c: "Unverified information passed by word of mouth", cat: "general", diff: 2 },
+  { w: "SALAD", c: "A cold dish of mixed vegetables", cat: "general", diff: 2 },
+  { w: "SCALE", c: "A device for weighing, or the size of something", cat: "general", diff: 2 },
+  { w: "SCARE", c: "To frighten", cat: "general", diff: 2 },
+  { w: "SCARF", c: "A strip of fabric worn around the neck", cat: "general", diff: 2 },
+  { w: "SCENT", c: "A distinctive smell", cat: "general", diff: 2 },
+  { w: "SCOLD", c: "To criticize someone sharply", cat: "general", diff: 2 },
+  { w: "SCOPE", c: "The extent of an area or subject", cat: "general", diff: 2 },
+  { w: "SCRUB", c: "To clean by rubbing hard", cat: "general", diff: 2 },
+  { w: "SENSE", c: "One of the faculties like sight or hearing", cat: "general", diff: 2 },
+  { w: "SHADE", c: "An area sheltered from sunlight", cat: "general", diff: 2 },
+  { w: "SHAKE", c: "To move rapidly back and forth", cat: "general", diff: 2 },
+  { w: "SHAME", c: "A feeling of embarrassment", cat: "general", diff: 2 },
+  { w: "SHARE", c: "To divide among several people", cat: "general", diff: 2 },
+  { w: "SHARK", c: "A large predatory fish", cat: "general", diff: 2 },
+  { w: "SHEEP", c: "A woolly farm animal", cat: "general", diff: 2 },
+  { w: "SHEET", c: "A large piece of thin material", cat: "general", diff: 2 },
+  { w: "SHELF", c: "A flat surface for storing objects", cat: "general", diff: 2 },
+  { w: "SHELL", c: "A hard outer covering", cat: "general", diff: 2 },
+  { w: "SHIFT", c: "A change, or a work period", cat: "general", diff: 2 },
+  { w: "SHINE", c: "To give off light", cat: "general", diff: 2 },
+  { w: "SHIRT", c: "An upper-body garment with sleeves", cat: "general", diff: 2 },
+  { w: "SHOCK", c: "A sudden, surprising event", cat: "general", diff: 2 },
+  { w: "SHORT", c: "Not long in length or duration", cat: "general", diff: 2 },
+  { w: "SHOUT", c: "To speak loudly", cat: "general", diff: 2 },
+  { w: "SIGHT", c: "The ability to see", cat: "general", diff: 2 },
+  { w: "SIXTH", c: "The ordinal number after fifth", cat: "general", diff: 2 },
+  { w: "SKATE", c: "To glide on blades or wheels", cat: "general", diff: 2 },
+  { w: "SKIRT", c: "A garment that hangs from the waist", cat: "general", diff: 2 },
+  { w: "SKULL", c: "The bony framework of the head", cat: "general", diff: 2 },
+  { w: "SLEEP", c: "A state of rest with reduced consciousness", cat: "general", diff: 2 },
+  { w: "SLICE", c: "A thin piece cut from something larger", cat: "general", diff: 2 },
+  { w: "SMALL", c: "Little in size", cat: "general", diff: 2 },
+  { w: "SMART", c: "Intelligent", cat: "general", diff: 2 },
+  { w: "SMELL", c: "The sense used to detect odors", cat: "general", diff: 2 },
+  { w: "SMOKE", c: "The visible cloud from something burning", cat: "general", diff: 2 },
+  { w: "SNAKE", c: "A long, legless reptile", cat: "general", diff: 2 },
+  { w: "SOLAR", c: "Relating to the sun", cat: "general", diff: 2 },
+  { w: "SOUND", c: "Vibrations that can be heard", cat: "general", diff: 2 },
+  { w: "SOUTH", c: "The direction opposite north", cat: "general", diff: 2 },
+  { w: "SPACE", c: "The area beyond earth's atmosphere, or room", cat: "general", diff: 2 },
+  { w: "SPEAK", c: "To say words aloud", cat: "general", diff: 2 },
+  { w: "SPEED", c: "The rate at which something moves", cat: "general", diff: 2 },
+  { w: "SPEND", c: "To pay out money", cat: "general", diff: 2 },
+  { w: "SPICE", c: "A flavorful seasoning made from plants", cat: "general", diff: 2 },
+  { w: "SPINE", c: "The backbone", cat: "general", diff: 2 },
+  { w: "SPLIT", c: "To divide into parts", cat: "general", diff: 2 },
+  { w: "SPOIL", c: "To ruin, or to indulge excessively", cat: "general", diff: 2 },
+  { w: "SPOON", c: "A utensil with a shallow bowl for eating", cat: "general", diff: 2 },
+  { w: "SPORT", c: "A physical activity governed by rules", cat: "general", diff: 2 },
+  { w: "SPRAY", c: "A fine mist of liquid", cat: "general", diff: 2 },
+  { w: "SQUAD", c: "A small organized group", cat: "general", diff: 2 },
+  { w: "STACK", c: "A neat pile", cat: "general", diff: 2 },
+  { w: "STAFF", c: "Employees, or a long stick", cat: "general", diff: 2 },
+  { w: "STAGE", c: "A platform for performances, or a phase", cat: "general", diff: 2 },
+  { w: "STAIN", c: "A discolored mark that is hard to remove", cat: "general", diff: 2 },
+  { w: "STAIR", c: "A single step in a flight of stairs", cat: "general", diff: 2 },
+  { w: "STALE", c: "No longer fresh", cat: "general", diff: 2 },
+  { w: "STALL", c: "A small stand for selling goods, or to delay", cat: "general", diff: 2 },
+  { w: "STAMP", c: "A small adhesive label for mail, or to press down", cat: "general", diff: 2 },
+  { w: "STAND", c: "To be upright, or a small structure for selling goods", cat: "general", diff: 2 },
+  { w: "STARE", c: "To look fixedly at something", cat: "general", diff: 2 },
+  { w: "STEAM", c: "The vapor produced by boiling water", cat: "general", diff: 2 },
+  { w: "STEEL", c: "A strong metal alloy of iron and carbon", cat: "general", diff: 2 },
+  { w: "STEEP", c: "Having a sharp slope", cat: "general", diff: 2 },
+  { w: "STICK", c: "A thin piece of wood, or to adhere", cat: "general", diff: 2 },
+  { w: "STIFF", c: "Rigid and hard to bend", cat: "general", diff: 2 },
+  { w: "STING", c: "A sharp pain from an insect bite, or to hurt sharply", cat: "general", diff: 2 },
+  { w: "STOCK", c: "Goods kept for sale, or a broth", cat: "general", diff: 2 },
+  { w: "STOOL", c: "A seat without a back or arms", cat: "general", diff: 2 },
+  { w: "STORE", c: "A place where goods are sold", cat: "general", diff: 2 },
+  { w: "STOVE", c: "An appliance used for cooking", cat: "general", diff: 2 },
+  { w: "STRAW", c: "A dried plant stalk, or a tube for drinking", cat: "general", diff: 2 },
+  { w: "STRAY", c: "To wander off course", cat: "general", diff: 2 },
+  { w: "STUDY", c: "To learn about a subject", cat: "general", diff: 2 },
+  { w: "STUFF", c: "Items or material of an unspecified kind", cat: "general", diff: 2 },
+  { w: "STYLE", c: "A distinctive manner or fashion", cat: "general", diff: 2 },
+  { w: "SWEAT", c: "Moisture produced by the skin when hot", cat: "general", diff: 2 },
+  { w: "SWEEP", c: "To clean using a broom", cat: "general", diff: 2 },
+  { w: "SWEET", c: "Having a sugary taste", cat: "general", diff: 2 },
+  { w: "SWELL", c: "To expand in size, or a large ocean wave", cat: "general", diff: 2 },
+  { w: "SWIFT", c: "Moving very fast", cat: "general", diff: 2 },
+  { w: "TASTE", c: "The sense used to perceive flavor", cat: "general", diff: 2 },
+  { w: "TEACH", c: "To help someone learn", cat: "general", diff: 2 },
+  { w: "THEFT", c: "The act of stealing", cat: "general", diff: 2 },
+  { w: "THICK", c: "Having a large distance between opposite sides", cat: "general", diff: 2 },
+  { w: "THIEF", c: "A person who steals", cat: "general", diff: 2 },
+  { w: "THING", c: "An object or matter", cat: "general", diff: 2 },
+  { w: "THINK", c: "To use one's mind to consider something", cat: "general", diff: 2 },
+  { w: "THIRD", c: "The ordinal number after second", cat: "general", diff: 2 },
+  { w: "THORN", c: "A sharp point on a plant stem", cat: "general", diff: 2 },
+  { w: "THROW", c: "To propel something through the air", cat: "general", diff: 2 },
+  { w: "THUMB", c: "The short, thick digit of the hand", cat: "general", diff: 2 },
+  { w: "TIGHT", c: "Fitting closely", cat: "general", diff: 2 },
+  { w: "TITLE", c: "The name of a work, or a legal right to property", cat: "general", diff: 2 },
+  { w: "TODAY", c: "The current day", cat: "general", diff: 2 },
+  { w: "TOKEN", c: "A symbolic object, or a substitute for currency", cat: "general", diff: 2 },
+  { w: "TOPIC", c: "The subject of a discussion", cat: "general", diff: 2 },
+  { w: "TOUCH", c: "To make physical contact with", cat: "general", diff: 2 },
+  { w: "TOWEL", c: "A cloth used for drying", cat: "general", diff: 2 },
+  { w: "TOXIC", c: "Poisonous", cat: "general", diff: 2 },
+  { w: "TRACE", c: "A small remaining sign of something", cat: "general", diff: 2 },
+  { w: "TRADE", c: "The exchange of goods, or a skilled occupation", cat: "general", diff: 2 },
+  { w: "TRAIL", c: "A path through a natural area", cat: "general", diff: 2 },
+  { w: "TREAT", c: "To handle in a particular way, or a small gift", cat: "general", diff: 2 },
+  { w: "TREND", c: "A general direction of change", cat: "general", diff: 2 },
+  { w: "TRIAL", c: "A legal proceeding, or a test", cat: "general", diff: 2 },
+  { w: "TRICK", c: "A clever act meant to deceive or entertain", cat: "general", diff: 2 },
+  { w: "TROOP", c: "A group of soldiers", cat: "general", diff: 2 },
+  { w: "TRUCK", c: "A large motor vehicle for hauling goods", cat: "general", diff: 2 },
+  { w: "TRUNK", c: "The main stem of a tree, or a storage box", cat: "general", diff: 2 },
+  { w: "TRUTH", c: "The state of being true", cat: "general", diff: 2 },
+  { w: "TULIP", c: "A cup-shaped spring flower", cat: "general", diff: 2 },
+  { w: "TWICE", c: "Two times", cat: "general", diff: 2 },
+  { w: "ULTRA", c: "Extreme or beyond the usual", cat: "general", diff: 2 },
+  { w: "UNCLE", c: "The brother of one's parent", cat: "general", diff: 2 },
+  { w: "UNDER", c: "Below something", cat: "general", diff: 2 },
+  { w: "UNION", c: "A group joined together for a common purpose", cat: "general", diff: 2 },
+  { w: "UNITE", c: "To join together", cat: "general", diff: 2 },
+  { w: "UPPER", c: "Higher in position", cat: "general", diff: 2 },
+  { w: "URBAN", c: "Relating to a city", cat: "general", diff: 2 },
+  { w: "USUAL", c: "Habitually occurring", cat: "general", diff: 2 },
+  { w: "VALID", c: "Legally or logically acceptable", cat: "general", diff: 2 },
+  { w: "VIDEO", c: "Recorded visual media", cat: "general", diff: 2 },
+  { w: "VILLA", c: "A large, comfortable country house", cat: "general", diff: 2 },
+  { w: "VISIT", c: "To go to see a person or place", cat: "general", diff: 2 },
+  { w: "VOCAL", c: "Relating to the voice", cat: "general", diff: 2 },
+  { w: "VOICE", c: "The sound produced when speaking", cat: "general", diff: 2 },
+  { w: "WAGON", c: "A four-wheeled vehicle for hauling", cat: "general", diff: 2 },
+  { w: "WASTE", c: "To use carelessly, or unwanted material", cat: "general", diff: 2 },
+  { w: "WATCH", c: "A device for telling time, or to observe", cat: "general", diff: 2 },
+  { w: "WEIGH", c: "To measure the heaviness of", cat: "general", diff: 2 },
+  { w: "WHALE", c: "A large marine mammal", cat: "general", diff: 2 },
+  { w: "WHEAT", c: "A cereal grain used to make flour", cat: "general", diff: 2 },
+  { w: "WHEEL", c: "A circular object that rotates to allow movement", cat: "general", diff: 2 },
+  { w: "WHILE", c: "During the time that", cat: "general", diff: 2 },
+  { w: "WHITE", c: "The color of snow", cat: "general", diff: 2 },
+  { w: "WHOLE", c: "Complete, with nothing missing", cat: "general", diff: 2 },
+  { w: "WOMAN", c: "An adult female human", cat: "general", diff: 2 },
+  { w: "WOODY", c: "Resembling or made of wood", cat: "general", diff: 2 },
+  { w: "WORRY", c: "To feel anxious about something", cat: "general", diff: 2 },
+  { w: "WORTH", c: "The value of something", cat: "general", diff: 2 },
+  { w: "WOUND", c: "An injury that breaks the skin", cat: "general", diff: 2 },
+  { w: "WOVEN", c: "Past participle of weave", cat: "general", diff: 2 },
+  { w: "WRIST", c: "The joint between hand and forearm", cat: "general", diff: 2 },
+  { w: "WRONG", c: "Not correct", cat: "general", diff: 2 },
+  { w: "YIELD", c: "To give way, or a crop's output", cat: "general", diff: 2 },
+  { w: "YOUTH", c: "The period of being young", cat: "general", diff: 2 },
+
+  // ---- general (more short fill, round 3) ----
+  { w: "SIGH", c: "A long, audible breath expressing emotion", cat: "general", diff: 2 },
+  { w: "SIGN", c: "A symbol conveying information", cat: "general", diff: 2 },
+  { w: "SILK", c: "A soft, smooth fabric made from fibers spun by worms", cat: "general", diff: 2 },
+  { w: "SINK", c: "A basin for washing, or to go underwater", cat: "general", diff: 2 },
+  { w: "SITE", c: "A location", cat: "general", diff: 2 },
+  { w: "SIZE", c: "The measurements of something", cat: "general", diff: 2 },
+  { w: "SLAB", c: "A flat, thick piece of material", cat: "general", diff: 2 },
+  { w: "SLAM", c: "To shut forcefully", cat: "general", diff: 2 },
+  { w: "SLAP", c: "A quick strike with an open hand", cat: "general", diff: 2 },
+  { w: "SLIM", c: "Thin", cat: "general", diff: 2 },
+  { w: "SLIP", c: "To slide accidentally", cat: "general", diff: 2 },
+  { w: "SLOT", c: "A narrow opening", cat: "general", diff: 2 },
+  { w: "SMOG", c: "Polluted, hazy air", cat: "general", diff: 2 },
+  { w: "SNAG", c: "An unexpected obstacle", cat: "general", diff: 2 },
+  { w: "SNAP", c: "A quick, sharp break, or a photo", cat: "general", diff: 2 },
+  { w: "SOAK", c: "To immerse in liquid", cat: "general", diff: 2 },
+  { w: "SOAP", c: "A substance used to wash with", cat: "general", diff: 2 },
+  { w: "SOIL", c: "The top layer of earth used to grow plants", cat: "general", diff: 2 },
+  { w: "SOLD", c: "Past tense of sell", cat: "general", diff: 2 },
+  { w: "SOLE", c: "The bottom of a shoe or foot, or being the only one", cat: "general", diff: 2 },
+  { w: "SOOT", c: "Black powder left by burning", cat: "general", diff: 2 },
+  { w: "SORE", c: "Painful, especially from strain", cat: "general", diff: 2 },
+  { w: "SORT", c: "To arrange into groups", cat: "general", diff: 2 },
+  { w: "SOUR", c: "Having a sharp, acidic taste", cat: "general", diff: 2 },
+  { w: "SPAN", c: "The full extent of something", cat: "general", diff: 2 },
+  { w: "SPIN", c: "To turn rapidly around an axis", cat: "general", diff: 2 },
+  { w: "SPOT", c: "A small mark, or a particular place", cat: "general", diff: 2 },
+  { w: "STAB", c: "To pierce with a pointed object", cat: "general", diff: 2 },
+  { w: "STAG", c: "A male deer", cat: "general", diff: 2 },
+  { w: "STIR", c: "To mix by moving a spoon in circles", cat: "general", diff: 2 },
+  { w: "STUB", c: "A short remaining piece, like a ticket receipt", cat: "general", diff: 2 },
+  { w: "SUIT", c: "A matching set of formal clothing", cat: "general", diff: 2 },
+  { w: "SWAP", c: "To trade one thing for another", cat: "general", diff: 2 },
+  { w: "SWAY", c: "To rock gently from side to side", cat: "general", diff: 2 },
+  { w: "SWIM", c: "To move through water using your limbs", cat: "general", diff: 2 },
+  { w: "TALE", c: "A story, often fictional", cat: "general", diff: 2 },
+  { w: "TANK", c: "A large container for liquid, or an armored vehicle", cat: "general", diff: 2 },
+  { w: "TAPE", c: "A strip of adhesive material", cat: "general", diff: 2 },
+  { w: "TEAR", c: "A drop of liquid from the eye, or to rip", cat: "general", diff: 2 },
+  { w: "TENT", c: "A portable shelter made of fabric", cat: "general", diff: 2 },
+  { w: "TERM", c: "A word or phrase, or a period of time", cat: "general", diff: 2 },
+  { w: "TEXT", c: "Written words, or to send a written message", cat: "general", diff: 2 },
+  { w: "THUD", c: "A dull, heavy sound", cat: "general", diff: 2 },
+  { w: "TILE", c: "A flat piece used to cover floors or walls", cat: "general", diff: 2 },
+  { w: "TILL", c: "Until, or to cultivate soil", cat: "general", diff: 2 },
+  { w: "TILT", c: "To lean at an angle", cat: "general", diff: 2 },
+  { w: "TINY", c: "Extremely small", cat: "general", diff: 2 },
+  { w: "TONE", c: "The quality of a sound or a shade of color", cat: "general", diff: 2 },
+  { w: "TOOL", c: "An implement used to do work", cat: "general", diff: 2 },
+  { w: "TORE", c: "Past tense of tear", cat: "general", diff: 2 },
+  { w: "TOSS", c: "To throw lightly", cat: "general", diff: 2 },
+  { w: "TOUR", c: "A trip to see various places", cat: "general", diff: 2 },
+  { w: "TRAM", c: "A vehicle that runs on rails through a city", cat: "general", diff: 2 },
+  { w: "TRAP", c: "A device used to catch something", cat: "general", diff: 2 },
+  { w: "TRAY", c: "A flat surface used to carry items", cat: "general", diff: 2 },
+  { w: "TREK", c: "A long, difficult journey", cat: "general", diff: 2 },
+  { w: "TRIM", c: "To cut something neatly", cat: "general", diff: 2 },
+  { w: "TRIP", c: "A journey, or to stumble", cat: "general", diff: 2 },
+  { w: "TUBE", c: "A hollow cylinder", cat: "general", diff: 2 },
+  { w: "TURF", c: "A layer of grass and soil", cat: "general", diff: 2 },
+  { w: "TUSK", c: "A long, pointed tooth on an elephant or walrus", cat: "general", diff: 2 },
+  { w: "TWIN", c: "One of two children born at the same birth", cat: "general", diff: 2 },
+  { w: "VAIN", c: "Excessively proud of one's appearance", cat: "general", diff: 2 },
+  { w: "VASE", c: "A decorative container for flowers", cat: "general", diff: 2 },
+  { w: "VEAL", c: "Meat from a young calf", cat: "general", diff: 2 },
+  { w: "VEIL", c: "A piece of fabric worn over the face", cat: "general", diff: 2 },
+  { w: "VEIN", c: "A blood vessel carrying blood to the heart", cat: "general", diff: 2 },
+  { w: "VENT", c: "An opening that allows air to pass through", cat: "general", diff: 2 },
+  { w: "VERB", c: "A word describing an action or state", cat: "general", diff: 2 },
+  { w: "VEST", c: "A sleeveless garment worn over a shirt", cat: "general", diff: 2 },
+  { w: "VETO", c: "To officially reject a proposal", cat: "general", diff: 2 },
+  { w: "VIEW", c: "What you can see from a place", cat: "general", diff: 2 },
+  { w: "VINE", c: "A climbing or trailing plant", cat: "general", diff: 2 },
+  { w: "VOID", c: "Completely empty", cat: "general", diff: 2 },
+  { w: "WADE", c: "To walk through water", cat: "general", diff: 2 },
+  { w: "WAGE", c: "Payment for work done", cat: "general", diff: 2 },
+  { w: "WAIL", c: "A long, loud cry of grief", cat: "general", diff: 2 },
+  { w: "WAIT", c: "To stay in place until something happens", cat: "general", diff: 2 },
+  { w: "WAKE", c: "To stop sleeping", cat: "general", diff: 2 },
+  { w: "WALK", c: "To move on foot at a normal pace", cat: "general", diff: 2 },
+  { w: "WALL", c: "A vertical structure that divides or encloses space", cat: "general", diff: 2 },
+  { w: "WANT", c: "To desire something", cat: "general", diff: 2 },
+  { w: "WARD", c: "A hospital section, or to fend off", cat: "general", diff: 2 },
+  { w: "WARN", c: "To alert someone of danger", cat: "general", diff: 2 },
+  { w: "WASH", c: "To clean with water", cat: "general", diff: 2 },
+  { w: "WASP", c: "A stinging flying insect related to bees", cat: "general", diff: 2 },
+  { w: "WEED", c: "An unwanted plant", cat: "general", diff: 2 },
+  { w: "WEEK", c: "A period of seven days", cat: "general", diff: 2 },
+  { w: "WEST", c: "The direction the sun sets in", cat: "general", diff: 2 },
+  { w: "WHEN", c: "At what time", cat: "general", diff: 2 },
+  { w: "WHIP", c: "A flexible strap used to strike, or to beat quickly", cat: "general", diff: 2 },
+  { w: "WICK", c: "The string in a candle that burns", cat: "general", diff: 2 },
+  { w: "WINE", c: "An alcoholic drink made from grapes", cat: "general", diff: 2 },
+  { w: "WING", c: "The limb a bird uses to fly", cat: "general", diff: 2 },
+  { w: "WIRE", c: "A thin strand of metal", cat: "general", diff: 2 },
+  { w: "WOOD", c: "The hard material that trees are made of", cat: "general", diff: 2 },
+  { w: "WOOL", c: "The soft, curly hair of sheep", cat: "general", diff: 2 },
+  { w: "WORD", c: "A unit of language with meaning", cat: "general", diff: 2 },
+  { w: "WORE", c: "Past tense of wear", cat: "general", diff: 2 },
+  { w: "WORM", c: "A long, legless invertebrate", cat: "general", diff: 2 },
+  { w: "WORN", c: "Showing the effects of use", cat: "general", diff: 2 },
+  { w: "WRAP", c: "To cover something by folding material around it", cat: "general", diff: 2 },
+  { w: "YARD", c: "A unit of length, or the area around a house", cat: "general", diff: 2 },
+  { w: "YARN", c: "Spun thread used for knitting", cat: "general", diff: 2 },
+  { w: "YEAR", c: "A period of twelve months", cat: "general", diff: 2 },
+  { w: "YELL", c: "To shout loudly", cat: "general", diff: 2 },
+  { w: "YOGA", c: "An exercise practice involving stretching and breathing", cat: "general", diff: 2 },
+  { w: "YOLK", c: "The yellow center of an egg", cat: "general", diff: 2 },
+  { w: "ZERO", c: "The number representing nothing", cat: "general", diff: 2 },
+  { w: "ZONE", c: "A specific area or region", cat: "general", diff: 2 },
+  { w: "ZOOM", c: "To move very quickly, or to enlarge a view", cat: "general", diff: 2 },
+  { w: "CREW", c: "A team that works together on a vessel or project", cat: "general", diff: 2 },
 ];
 
 
 // Across — crossword grid generator.
 //
-// A simplified constraint-based fill: place the longest candidate word,
-// then greedily place further words wherever they can validly intersect
-// what's already down, backtracking-free (skip and move to the next
-// candidate on failure rather than undoing prior placements). This is not
-// the symmetric-block-pattern-first approach a real NYT-style constructor
-// uses — grids will be sparser and less uniformly shaped — but it's real
-// interlocking generation from the word bank, constrained by keywords,
-// size, and difficulty.
+// Template-first, NYT-style density: a hardcoded set of symmetric block
+// patterns fixes the fill ratio *before* any word is placed (70-85%+ white
+// cells by construction), then a backtracking solver with MRV ordering and
+// forward checking fills the slots from the word bank. This replaces the
+// old greedy "place the longest word, then bolt more on wherever they fit"
+// approach, which topped out around 50-60% fill because nothing forced the
+// grid to stay dense.
 //
-// Density is improved three cost-bounded ways (kept bounded rather than
-// exhaustive because this runs as pure CPU-bound JS inside a Cloudflare
-// Worker request, which has a real — and on the free plan, tight — CPU
-// time budget per invocation; unlike I/O waits, computation time here
-// counts directly against that budget):
-//   1. findPlacement prefers a placement that overlaps 2+ existing letters
-//      over one that only overlaps 1, instead of just taking whichever
-//      valid spot is scanned first.
-//   2. attemptFill sweeps the candidate list up to 3 times — a word that
-//      couldn't intersect anything on pass 1 often can once more letters
-//      are down from later passes.
-//   3. generatePuzzle tries a few full reshuffled attempts and keeps
-//      whichever produced the tightest-packed (highest fill-ratio) grid.
-// Together that's at most a 3x3=9x multiplier over the original
-// single-pass/single-attempt cost, not an unbounded search.
+// Cost control: this runs as CPU-bound JS inside a Cloudflare Worker
+// request, which has a hard per-invocation CPU budget. The backtracking
+// solver is bounded by both a step count and a wall-clock deadline, tries
+// templates in shuffled order, and only accepts a fully-filled grid (never
+// emits a partially-filled template). If every template attempt fails
+// within budget, generation falls back to the legacy greedy algorithm
+// (kept below, unmodified in spirit) so puzzle creation never just fails.
 
 const SIZE_MAP = { mini: 5, standard: 11, large: 15 };
 const DIFFICULTY_MAP = { easy: 1, medium: 2, hard: 3 };
-// Aspirational caps — the fill loop stops early if the candidate pool (esp.
-// a narrow single-category one) runs out before reaching these.
-const TARGET_WORDS = { mini: 8, standard: 24, large: 38 };
-const FILL_ATTEMPTS = 5;
-const FILL_PASSES = 4;
 
-function generatePuzzle({ keywords = [], size = "standard", difficulty = "medium", wordBank }) {
+// ---------------------------------------------------------------------
+// 1. Symmetric block templates (180-degree rotational symmetry).
+//    '.' = white/fillable, '#' = block. Each satisfies (validated by
+//    validateTemplate, see test script): symmetric, single connected
+//    white region, no white run <3 in either direction, every white cell
+//    belongs to both an across and a down slot.
+// ---------------------------------------------------------------------
+
+// Generated by scripts/gen-templates.mjs, which builds valid symmetric
+// templates *incrementally* (start from the all-white grid — always valid —
+// and add one randomly-placed symmetric block-pair at a time, keeping each
+// addition only if the template is still valid) rather than gambling on a
+// single from-scratch random placement, which almost never satisfies the
+// connectivity + min-run-length + full-coverage constraints simultaneously
+// at 11x11/15x15 scale. Each candidate is additionally scored by
+// "tightness" — how many same-length slots it demands versus how many
+// words of that length the corpus actually has — and the lowest-tightness
+// survivor per block count is kept. This matters: the original hand-written
+// templates all leaned on 4-6 simultaneous 11-letter slots against a
+// ~42-word pool for that length, which is *why* the backtracking solver
+// below never found a solution within budget (empirically 0 successes in
+// testing, not merely slow) — it wasn't a solver bug, it was structurally
+// unsolvable-in-practice for this corpus. Re-run the script (and eyeball
+// the printed tightness/fill numbers) if the corpus's length distribution
+// changes significantly.
+const TEMPLATES = {
+  mini: [
+    // blocks=4 fill=84% tightness=0.07 lens={"3":2,"4":4,"5":4}
+    ["...##", ".....", ".....", ".....", "##..."],
+    // blocks=6 fill=76% tightness=0.09 lens={"3":4,"4":4,"5":2}
+    ["##...", "#....", ".....", "....#", "...##"],
+  ],
+  standard: [
+    // blocks=28 fill=77% tightness=0.64 lens={"3":6,"4":10,"5":4,"6":6,"7":2,"8":2,"10":2,"11":2}
+    ["...####...#", ".....##....", "......#....", "......#....", "##........#", "##.......##", "#........##", "....#......", "....#......", "....##.....", "#...####..."],
+    // blocks=24 fill=80% tightness=0.67 lens={"3":8,"4":6,"5":4,"6":6,"7":2,"8":2,"9":2,"10":2,"11":2}
+    ["#......####", "#........##", "...........", ".....#.....", "...##......", "...#...#...", "......##...", ".....#.....", "...........", "##........#", "####......#"],
+    // blocks=30 fill=75% tightness=0.67 lens={"3":8,"4":8,"5":4,"6":6,"8":4,"9":2,"10":2}
+    ["###......##", "##........#", "#.........#", "#....#.....", "...##......", "...#...#...", "......##...", ".....#....#", "#.........#", "#........##", "##......###"],
+    // blocks=20 fill=83% tightness=0.68 lens={"3":5,"4":12,"5":6,"6":4,"8":2,"9":3,"10":2,"11":2}
+    ["#....##....", "#.....#....", "......#....", "..........#", ".........##", "...#...#...", "##.........", "#..........", "....#......", "....#.....#", "....##....#"],
+    // blocks=26 fill=79% tightness=0.73 lens={"3":9,"4":4,"6":6,"7":4,"8":2,"9":4,"10":2,"11":1}
+    ["###.......#", "###........", "#..........", "#....###...", "......#....", "...........", "....#......", "...###....#", "..........#", "........###", "#.......###"],
+    // blocks=22 fill=82% tightness=0.74 lens={"3":4,"4":8,"5":6,"6":2,"7":2,"8":2,"9":2,"10":2,"11":4}
+    ["....###...#", ".....#.....", "...........", "#..........", "###........", "##.......##", "........###", "..........#", "...........", ".....#.....", "#...###...."],
+  ],
+  large: [
+    // blocks=38 fill=83% tightness=1.98 lens={"3":12,"4":10,"5":12,"6":8,"7":9,"8":2,"9":4,"10":4,"11":1,"12":2}
+    [".......##.....#", ".......##......", "........#......", "#.........#....", "###............", "#...###.......#", "......#....#...", "...#.......#...", "...#....#......", "#.......###...#", "............###", "....#.........#", "......#........", "......##.......", "#.....##......."],
+    // blocks=50 fill=78% tightness=2.64 lens={"3":19,"4":16,"5":8,"6":10,"7":4,"8":4,"9":2,"10":4,"11":1}
+    ["#...#.........#", "#...#..........", "....#..........", ".....##...#....", "......#####....", "...#...##......", "####....#.....#", "##...........##", "#.....#....####", "......##...#...", "....#####......", "....#...##.....", "..........#....", "..........#...#", "#.........#...#"],
+    // blocks=42 fill=81% tightness=2.65 lens={"3":15,"4":12,"5":20,"6":8,"7":2,"8":10,"9":2,"13":1}
+    ["##.....##.....#", "........#.....#", "........#......", ".....#.........", "...##.....##...", "#...#.....#....", "###.....#......", ".....#...#.....", "......#.....###", "....#.....#...#", "...##.....##...", ".........#.....", "......#........", "#.....#........", "#.....##.....##"],
+    // blocks=46 fill=80% tightness=2.80 lens={"3":18,"4":16,"5":16,"6":12,"7":2,"8":4,"10":2,"11":2}
+    ["...##.....##...", "....#.....##...", "..........#....", "......##.......", "###....#......#", ".....#........#", ".....#......###", "...##.....##...", "###......#.....", "#........#.....", "#......#....###", ".......##......", "....#..........", "...##.....#....", "...##.....##..."],
+  ],
+};
+
+// Validates every symmetry/connectivity/min-run-length/coverage invariant a
+// template must satisfy. Exported so the test script can assert it holds
+// for every hardcoded template above; not on the hot path at runtime.
+function validateTemplate(rows) {
+  const n = rows.length;
+  for (const row of rows) if (row.length !== n) return { ok: false, reason: "not square" };
+  const isBlock = (r, c) => rows[r][c] === "#";
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (isBlock(r, c) !== isBlock(n - 1 - r, n - 1 - c)) return { ok: false, reason: "asymmetric" };
+    }
+  }
+
+  let total = 0;
+  let start = null;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (!isBlock(r, c)) {
+        total++;
+        if (!start) start = [r, c];
+      }
+    }
+  }
+  if (total === 0) return { ok: false, reason: "no white cells" };
+  const seen = new Set([start[0] * n + start[1]]);
+  const stack = [start];
+  while (stack.length) {
+    const [r, c] = stack.pop();
+    for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (nr < 0 || nr >= n || nc < 0 || nc >= n || isBlock(nr, nc)) continue;
+      const key = nr * n + nc;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      stack.push([nr, nc]);
+    }
+  }
+  if (seen.size !== total) return { ok: false, reason: "disconnected" };
+
+  const acrossCover = new Set();
+  const downCover = new Set();
+  for (let r = 0; r < n; r++) {
+    let runStart = null;
+    for (let c = 0; c <= n; c++) {
+      const white = c < n && !isBlock(r, c);
+      if (white) {
+        if (runStart === null) runStart = c;
+      } else if (runStart !== null) {
+        const len = c - runStart;
+        if (len === 1 || len === 2) return { ok: false, reason: `short across run at row ${r}` };
+        if (len >= 3) for (let cc = runStart; cc < c; cc++) acrossCover.add(r * n + cc);
+        runStart = null;
+      }
+    }
+  }
+  for (let c = 0; c < n; c++) {
+    let runStart = null;
+    for (let r = 0; r <= n; r++) {
+      const white = r < n && !isBlock(r, c);
+      if (white) {
+        if (runStart === null) runStart = r;
+      } else if (runStart !== null) {
+        const len = r - runStart;
+        if (len === 1 || len === 2) return { ok: false, reason: `short down run at col ${c}` };
+        if (len >= 3) for (let rr = runStart; rr < r; rr++) downCover.add(rr * n + c);
+        runStart = null;
+      }
+    }
+  }
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (!isBlock(r, c)) {
+        const key = r * n + c;
+        if (!acrossCover.has(key) || !downCover.has(key)) return { ok: false, reason: `cell ${r},${c} missing across/down slot` };
+      }
+    }
+  }
+
+  return { ok: true, whiteCount: total, blockCount: n * n - total };
+}
+
+// ---------------------------------------------------------------------
+// 2. Slot extraction + crossing map
+// ---------------------------------------------------------------------
+
+function extractSlots(rows) {
+  const n = rows.length;
+  const isBlock = (r, c) => rows[r][c] === "#";
+  const slots = [];
+  let id = 0;
+
+  for (let r = 0; r < n; r++) {
+    let c = 0;
+    while (c < n) {
+      if (isBlock(r, c)) { c++; continue; }
+      const start = c;
+      while (c < n && !isBlock(r, c)) c++;
+      const len = c - start;
+      if (len >= 3) {
+        const cells = [];
+        for (let i = 0; i < len; i++) cells.push([r, start + i]);
+        slots.push({ id: id++, direction: "across", row: r, col: start, length: len, cells, crossings: new Array(len).fill(null) });
+      }
+    }
+  }
+  for (let c = 0; c < n; c++) {
+    let r = 0;
+    while (r < n) {
+      if (isBlock(r, c)) { r++; continue; }
+      const start = r;
+      while (r < n && !isBlock(r, c)) r++;
+      const len = r - start;
+      if (len >= 3) {
+        const cells = [];
+        for (let i = 0; i < len; i++) cells.push([start + i, c]);
+        slots.push({ id: id++, direction: "down", row: start, col: c, length: len, cells, crossings: new Array(len).fill(null) });
+      }
+    }
+  }
+
+  const cellMap = new Map();
+  for (const slot of slots) {
+    slot.cells.forEach(([r, c], idx) => {
+      const key = r * n + c;
+      let entry = cellMap.get(key);
+      if (!entry) { entry = {}; cellMap.set(key, entry); }
+      entry[slot.direction] = { slotId: slot.id, idx };
+    });
+  }
+  for (const entry of cellMap.values()) {
+    if (entry.across && entry.down) {
+      const a = slots[entry.across.slotId];
+      const d = slots[entry.down.slotId];
+      a.crossings[entry.across.idx] = { otherSlotId: d.id, theirIndex: entry.down.idx };
+      d.crossings[entry.down.idx] = { otherSlotId: a.id, theirIndex: entry.across.idx };
+    }
+  }
+
+  return slots;
+}
+
+// The longest ~30% of slots get strong theme preference; the rest are
+// treated as ordinary short fill and may draw from the whole corpus.
+function computeLongSlotIds(slots) {
+  const sorted = [...slots].sort((a, b) => b.length - a.length);
+  const count = Math.max(1, Math.round(sorted.length * 0.3));
+  return new Set(sorted.slice(0, count).map((s) => s.id));
+}
+
+// ---------------------------------------------------------------------
+// 3 + 4. Word index + theme scoring
+// ---------------------------------------------------------------------
+
+const STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "are", "was", "were", "your", "you", "its", "into", "onto", "our"]);
+
+function tokenize(str) {
+  return (str || "")
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
+}
+
+// Naive-singular handling ("capitals" -> also matches "capital") reused
+// from the original buildCandidateGroups tokenization logic.
+function withSingulars(tokens) {
+  return [...new Set(tokens.flatMap((t) => (t.endsWith("s") && t.length > 4 ? [t, t.slice(0, -1)] : [t])))];
+}
+
+// Builds the deduped, size/difficulty-filtered candidate pool, scored by
+// theme relevance: title tokens match (tier 2) > category/keyword match
+// (tier 1) > general (tier 0). Crucially, nothing is *excluded* by
+// relevance — tier only affects ordering — so a narrow topic never starves
+// the grid of fill words the way the old keyword-filtered pool could.
+function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
+  const seen = new Set();
+  const all = [];
+  for (const entry of wordBank) {
+    const w = entry.w.toUpperCase();
+    if (!/^[A-Z]+$/.test(w)) continue;
+    if (w.length < 3 || w.length > n) continue;
+    if (entry.diff > maxDiff) continue;
+    if (seen.has(w)) continue;
+    seen.add(w);
+    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), tier: 0 });
+  }
+
+  const categoryTokens = withSingulars(tokenize((keywords || []).join(" ")));
+  const titleTokens = withSingulars(tokenize(title));
+
+  for (const e of all) {
+    const hay = `${e.word.toLowerCase()} ${e.clue.toLowerCase()} ${e.cat}`;
+    const titleHit = titleTokens.length > 0 && titleTokens.some((t) => hay.includes(t));
+    const catHit = categoryTokens.length > 0 && categoryTokens.some((t) => hay.includes(t));
+    e.tier = titleHit ? 2 : catHit ? 1 : 0;
+  }
+
+  return all;
+}
+
+function buildWordIndex(entries) {
+  const byLength = new Map();
+  const byLenPosLetter = new Map();
+  for (const e of entries) {
+    const len = e.word.length;
+    if (!byLength.has(len)) byLength.set(len, []);
+    byLength.get(len).push(e);
+    for (let i = 0; i < len; i++) {
+      const key = `${len}:${i}:${e.word[i]}`;
+      if (!byLenPosLetter.has(key)) byLenPosLetter.set(key, []);
+      byLenPosLetter.get(key).push(e);
+    }
+  }
+  return { byLength, byLenPosLetter };
+}
+
+// ---------------------------------------------------------------------
+// 2b. Arc-consistency preprocessing (AC-3-lite)
+//
+// Before any word gets placed, prune each slot's candidate domain down to
+// only words that have *some* supporting match in every crossing slot's
+// domain, and repeat until nothing more can be removed. Without this, plain
+// backtracking with only forward-checking regularly reached 90%+ of the way
+// through a grid and then died on a single slot needing an letter-position
+// combination (e.g. a 4-letter word starting "TRE") that plain doesn't
+// exist in this word bank — a dead end that arc consistency rules out
+// *before* search starts, instead of search discovering it empirically deep
+// in the tree, over and over, across thousands of restarts. This is the
+// standard AC-3 algorithm restricted to this problem's binary constraints
+// (one shared letter per crossing pair), which keeps it cheap: cost is
+// roughly iterations x slots x domain-size x crossings, all O(1) set
+// lookups, not the exponential cost backtracking search has.
+function pruneDomains(slots, index) {
+  const domains = new Map();
+  for (const slot of slots) domains.set(slot.id, (index.byLength.get(slot.length) || []).slice());
+
+  let changed = true;
+  let iterations = 0;
+  const MAX_ITERATIONS = 6;
+  while (changed && iterations < MAX_ITERATIONS) {
+    changed = false;
+    iterations++;
+
+    // Letter-present-at-position sets, derived from the *current* (possibly
+    // already-pruned) domains — recomputed each round so a removal in one
+    // slot can cascade into further removals elsewhere on the next pass.
+    const letterSets = new Map();
+    for (const slot of slots) {
+      const dom = domains.get(slot.id);
+      const sets = Array.from({ length: slot.length }, () => new Set());
+      for (const e of dom) for (let i = 0; i < slot.length; i++) sets[i].add(e.word[i]);
+      letterSets.set(slot.id, sets);
+    }
+
+    for (const slot of slots) {
+      const dom = domains.get(slot.id);
+      const kept = [];
+      for (const entry of dom) {
+        let ok = true;
+        for (let i = 0; i < slot.length; i++) {
+          const cross = slot.crossings[i];
+          if (!cross) continue;
+          const otherSets = letterSets.get(cross.otherSlotId);
+          if (!otherSets[cross.theirIndex].has(entry.word[i])) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) kept.push(entry);
+      }
+      if (kept.length !== dom.length) {
+        domains.set(slot.id, kept);
+        changed = true;
+      }
+    }
+  }
+
+  return domains;
+}
+
+// ---------------------------------------------------------------------
+// 3. Backtracking fill with MRV + forward checking
+// ---------------------------------------------------------------------
+
+const CANDIDATE_CAP = 15;
+const STEP_BUDGET_PER_TEMPLATE = 150000;
+// A single DFS attempt can get stuck deep in a subtree that "looks"
+// promising (lots of locally-valid partial assignments) but has no complete
+// solution, and burn the *entire* shared step budget without ever
+// backtracking out far enough to try a different top-level word. Capping
+// steps per attempt forces a fresh reshuffle — a cheap, different dice
+// roll — instead of over-investing in one unlucky branch. This is the
+// standard "restart with cutoff" strategy for hard CSP search.
+const STEPS_PER_ATTEMPT = 1500;
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Runs the backtracking DFS, restarting with a freshly-shuffled candidate
+// order whenever a full attempt exhausts its search tree without finding a
+// solution. A single DFS attempt on a tightly-constrained grid (e.g. a
+// wide-open mini template) can dead-end after visiting only a few dozen
+// nodes — far short of the step budget — simply because the top-level
+// slot's candidate cap (14) didn't happen to include a workable word this
+// shuffle. Restarting with a new shuffle is what actually spends the rest
+// of the budget productively, the same way random-restart search does for
+// any CSP with a large but not-fully-explorable branching factor.
+function runBacktrackFill(slots, index, longIds, deadline, domains) {
+  let steps = 0; // shared across restarts, bounds total work for this template
+  let aborted = false; // budget fully exhausted — stop restarting entirely
+  let attemptSteps = 0; // steps used by the current attempt only
+
+  function budgetOk() {
+    steps++;
+    attemptSteps++;
+    if (steps > STEP_BUDGET_PER_TEMPLATE || Date.now() > deadline) {
+      aborted = true;
+      return false;
+    }
+    if (attemptSteps > STEPS_PER_ATTEMPT) return false; // cut this attempt short, try a fresh shuffle
+    return true;
+  }
+
+  // One DFS attempt with a fresh, freshly-shuffled assignment. Returns the
+  // filled assignment array on success, or null if this attempt's search
+  // tree was exhausted (cutoff or otherwise) without a solution.
+  function attempt() {
+    attemptSteps = 0;
+    const assignment = new Array(slots.length).fill(null);
+    const usedWords = new Set();
+    // Candidate-count cache, keyed by slot id, invalidated only for the
+    // slots whose fixed letters actually changed (i.e. the crossings of
+    // whichever slot was just assigned/unassigned). Without this, MRV
+    // selection would recompute candidatesFor() for every unfilled slot on
+    // every node — O(slots) full recomputations per step — which is by far
+    // the dominant cost and made real backtracking depth unreachable within
+    // budget. With it, an assign/unassign only touches that slot's actual
+    // crossings (typically a handful), the same locality forward-checking
+    // already relies on.
+    const candCache = new Map();
+
+    function invalidateCrossingsOf(slot) {
+      for (let i = 0; i < slot.length; i++) {
+        const cross = slot.crossings[i];
+        if (cross) candCache.delete(cross.otherSlotId);
+      }
+    }
+
+    function fixedLettersFor(slot) {
+      const letters = new Array(slot.length).fill(null);
+      for (let i = 0; i < slot.length; i++) {
+        const cross = slot.crossings[i];
+        if (!cross) continue;
+        const other = assignment[cross.otherSlotId];
+        if (other) letters[i] = other.word[cross.theirIndex];
+      }
+      return letters;
+    }
+
+    function matchesFixed(word, letters) {
+      for (let i = 0; i < letters.length; i++) {
+        if (letters[i] && word[i] !== letters[i]) return false;
+      }
+      return true;
+    }
+
+    // Matches for a slot's currently-fixed letters, ignoring which words are
+    // already used elsewhere in the grid — this is what gets cached, since
+    // it only depends on crossing letters (invalidated precisely on those).
+    // usedWords is filtered separately at lookup time (cheap: a pass over
+    // an already letter-narrowed list) so the cache never goes stale when
+    // some unrelated slot uses/frees a word.
+    function lettersMatchesFor(slot) {
+      const letters = fixedLettersFor(slot);
+      const fixedPositions = [];
+      for (let i = 0; i < letters.length; i++) if (letters[i]) fixedPositions.push(i);
+
+      let base;
+      if (fixedPositions.length === 0) {
+        // Arc-consistency-pruned domain, not the raw length bucket — see
+        // pruneDomains. Falls back to the raw bucket if no domains map was
+        // passed in (keeps this function usable standalone/in tests).
+        base = (domains ? domains.get(slot.id) : null) || index.byLength.get(slot.length) || [];
+      } else {
+        const lists = fixedPositions
+          .map((i) => index.byLenPosLetter.get(`${slot.length}:${i}:${letters[i]}`) || [])
+          .sort((a, b) => a.length - b.length);
+        base = lists[0];
+        for (let k = 1; k < lists.length && base.length > 0; k++) {
+          const s = new Set(lists[k]);
+          base = base.filter((e) => s.has(e));
+        }
+      }
+
+      const out = [];
+      for (const e of base) {
+        if (!matchesFixed(e.word, letters)) continue;
+        out.push(e);
+      }
+      return out;
+    }
+
+    function getLetterMatches(slot) {
+      const cached = candCache.get(slot.id);
+      if (cached) return cached;
+      const c = lettersMatchesFor(slot);
+      candCache.set(slot.id, c);
+      return c;
+    }
+
+    function getCandidates(slot) {
+      const matches = getLetterMatches(slot);
+      if (usedWords.size === 0) return matches;
+      const out = [];
+      for (const e of matches) {
+        if (!usedWords.has(e.word)) out.push(e);
+      }
+      return out;
+    }
+
+    function orderCandidates(slot, candidates) {
+      if (longIds.has(slot.id)) {
+        const t2 = [], t1 = [], t0 = [];
+        for (const e of candidates) (e.tier === 2 ? t2 : e.tier === 1 ? t1 : t0).push(e);
+        shuffleInPlace(t2);
+        shuffleInPlace(t1);
+        shuffleInPlace(t0);
+        return [...t2, ...t1, ...t0];
+      }
+      return shuffleInPlace(candidates.slice());
+    }
+
+    function selectSlot() {
+      let best = null;
+      let bestCandidates = null;
+      let bestCount = Infinity;
+      for (const slot of slots) {
+        if (assignment[slot.id] !== null) continue;
+        const cands = getCandidates(slot);
+        if (cands.length === 0) {
+          return { slot, candidates: cands, deadEnd: true };
+        }
+        if (cands.length < bestCount) {
+          bestCount = cands.length;
+          best = slot;
+          bestCandidates = cands;
+        }
+      }
+      if (!best) return null; // all slots filled
+      return { slot: best, candidates: bestCandidates, deadEnd: false };
+    }
+
+    function forwardCheckOk(justFilled) {
+      for (let i = 0; i < justFilled.length; i++) {
+        const cross = justFilled.crossings[i];
+        if (!cross) continue;
+        const other = slots[cross.otherSlotId];
+        if (assignment[other.id]) continue;
+        if (getCandidates(other).length === 0) return false;
+      }
+      return true;
+    }
+
+    function solve() {
+      if (!budgetOk()) return false;
+      const sel = selectSlot();
+      if (sel === null) return true; // every slot filled
+      if (sel.deadEnd) return false;
+
+      const ordered = orderCandidates(sel.slot, sel.candidates);
+      const cap = Math.min(ordered.length, CANDIDATE_CAP);
+      for (let i = 0; i < cap; i++) {
+        const entry = ordered[i];
+        assignment[sel.slot.id] = entry;
+        usedWords.add(entry.word);
+        invalidateCrossingsOf(sel.slot);
+        if (forwardCheckOk(sel.slot) && solve()) return true;
+        assignment[sel.slot.id] = null;
+        usedWords.delete(entry.word);
+        invalidateCrossingsOf(sel.slot);
+        if (aborted) return false;
+      }
+      return false;
+    }
+
+    return solve() ? assignment : null;
+  }
+
+  // Random-restart loop: a single DFS attempt on a tightly-constrained grid
+  // (e.g. a wide-open mini template) can exhaust its whole search tree
+  // after only a few dozen nodes — far short of the step budget — simply
+  // because the root slot's capped candidate sample (CANDIDATE_CAP) didn't
+  // happen to include a workable word this shuffle. Restarting with a
+  // freshly-shuffled order spends the rest of the budget productively,
+  // the same way random-restart search does for any CSP whose branching
+  // factor is too large to fully explore.
+  const MAX_RESTARTS = 5000;
+  for (let r = 0; r < MAX_RESTARTS && !aborted && Date.now() <= deadline; r++) {
+    const result = attempt();
+    if (result) return { success: true, assignment: result };
+  }
+  return { success: false, assignment: null };
+}
+
+function buildOutputFromSlots(rows, slots, assignment, n) {
+  const isBlock = (r, c) => rows[r][c] === "#";
+  const startKeys = new Set();
+  for (const slot of slots) startKeys.add(`${slot.row},${slot.col}`);
+
+  const cells = [];
+  const numberAt = new Map();
+  let next = 1;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const block = isBlock(r, c);
+      let number = null;
+      if (!block && startKeys.has(`${r},${c}`)) {
+        number = next++;
+        numberAt.set(`${r},${c}`, number);
+      }
+      cells.push({ row: r, col: c, letter: null, block, number });
+    }
+  }
+  for (const slot of slots) {
+    const entry = assignment[slot.id];
+    for (let i = 0; i < slot.length; i++) {
+      const [r, c] = slot.cells[i];
+      cells[r * n + c].letter = entry.word[i];
+    }
+  }
+
+  const words = slots
+    .map((slot) => {
+      const entry = assignment[slot.id];
+      return {
+        number: numberAt.get(`${slot.row},${slot.col}`) ?? null,
+        direction: slot.direction,
+        answer: entry.word,
+        clue: entry.clue,
+        row: slot.row,
+        col: slot.col,
+        length: slot.length,
+        cells: slot.cells.map(([r, c]) => [r, c]),
+      };
+    })
+    .sort((a, b) => a.number - b.number || (a.direction === "across" ? 0 : 1) - (b.direction === "across" ? 0 : 1));
+
+  return { rows: n, cols: n, cells, words };
+}
+
+// ---------------------------------------------------------------------
+// Top-level entry point
+// ---------------------------------------------------------------------
+
+const TIME_BUDGET_MS = 3000;
+
+function generatePuzzle({ keywords = [], title = "", size = "standard", difficulty = "medium", wordBank }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
-  const targetWords = TARGET_WORDS[size] || TARGET_WORDS.standard;
 
-  const groups = buildCandidateGroups(wordBank, keywords, maxDiff, n);
-  let result = attemptBest(groups, n, targetWords);
+  const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
+  const index = buildWordIndex(pool);
+
+  const templates = shuffleInPlace([...(TEMPLATES[size] || TEMPLATES.standard)]);
+  const overallDeadline = Date.now() + TIME_BUDGET_MS;
+  // Each template gets its own fair slice of the total budget — critical,
+  // because template difficulty varies wildly for a given word pool (two
+  // templates that both validate fine and look similarly dense can differ
+  // from "solves instantly" to "never solves" purely by luck of which
+  // letter-position constraints they demand). A single shared deadline let
+  // whichever template got tried *first* silently burn the entire budget
+  // on a hard/unsolvable-for-this-corpus case, starving every other
+  // template — including easy ones — of any chance to even be attempted.
+  const perTemplateBudget = Math.max(50, Math.floor(TIME_BUDGET_MS / templates.length));
+
+  for (const rows of templates) {
+    if (Date.now() > overallDeadline) break;
+    const slots = extractSlots(rows);
+    const longIds = computeLongSlotIds(slots);
+    const domains = pruneDomains(slots, index);
+    // Arc consistency can prove a template unsolvable for this exact word
+    // pool outright (some slot's domain pruned to nothing) — skip straight
+    // to the next template instead of burning its time slice on
+    // backtracking search that's guaranteed to fail.
+    if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
+    const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
+    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains);
+    if (success) return buildOutputFromSlots(rows, slots, assignment, n);
+  }
+
+  // Fallback chain: no template filled completely within budget (e.g. a
+  // very narrow/thin word bank for this size+difficulty). Fall back to the
+  // legacy greedy algorithm rather than fail puzzle creation outright.
+  const legacy = legacyGenerate(wordBank, keywords, size, difficulty);
+  if (legacy.words.length >= 3) return legacy;
+
+  throw new Error("could not generate enough interlocking words for this size/difficulty");
+}
+
+// =======================================================================
+// Legacy greedy algorithm — kept as the last-resort fallback for when the
+// template+backtracking approach above can't fully fill any template
+// within its CPU budget (e.g. an extremely thin word bank). This is the
+// original implementation, functionally unchanged.
+// =======================================================================
+
+const LEGACY_TARGET_WORDS = { mini: 8, standard: 24, large: 38 };
+const LEGACY_FILL_ATTEMPTS = 5;
+const LEGACY_FILL_PASSES = 4;
+
+function legacyGenerate(wordBank, keywords, size, difficulty) {
+  const n = SIZE_MAP[size] || SIZE_MAP.standard;
+  const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
+  const targetWords = LEGACY_TARGET_WORDS[size] || LEGACY_TARGET_WORDS.standard;
+
+  const groups = legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n);
+  let result = legacyAttemptBest(groups, n, targetWords);
 
   if (result.words.length < 3 && keywords.length > 0) {
-    // Keywords were too restrictive to build a real grid — retry with the
-    // full corpus so puzzle creation doesn't just fail on a niche topic.
-    const fallbackGroups = buildCandidateGroups(wordBank, [], maxDiff, n);
-    result = attemptBest(fallbackGroups, n, targetWords);
+    const fallbackGroups = legacyBuildCandidateGroups(wordBank, [], maxDiff, n);
+    result = legacyAttemptBest(fallbackGroups, n, targetWords);
   }
 
   if (result.words.length < 3) {
-    throw new Error("could not generate enough interlocking words for this size/difficulty");
+    return { words: [] };
   }
 
-  return cropAndNumber(result.grid, result.words, n);
+  return legacyCropAndNumber(result.grid, result.words, n);
 }
 
-// Runs a few independently-reshuffled fill attempts and keeps whichever
-// packed the most letters into the tightest bounding box — a cheap stand-in
-// for real backtracking search.
-function attemptBest(groups, n, targetWords) {
+function legacyAttemptBest(groups, n, targetWords) {
   let best = null;
   let bestScore = -1;
-  for (let i = 0; i < FILL_ATTEMPTS; i++) {
-    const candidates = groups.flatMap((g) => shuffleByLength(g));
-    const result = attemptFill(candidates, n, targetWords);
-    const score = densityScore(result.grid, n);
+  for (let i = 0; i < LEGACY_FILL_ATTEMPTS; i++) {
+    const candidates = groups.flatMap((g) => legacyShuffleByLength(g));
+    const result = legacyAttemptFill(candidates, n, targetWords);
+    const score = legacyDensityScore(result.grid, n);
     if (score > bestScore) {
       bestScore = score;
       best = result;
@@ -1752,7 +3452,7 @@ function attemptBest(groups, n, targetWords) {
   return best;
 }
 
-function densityScore(grid, n) {
+function legacyDensityScore(grid, n) {
   let minRow = n, maxRow = -1, minCol = n, maxCol = -1, filled = 0;
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
@@ -1767,17 +3467,10 @@ function densityScore(grid, n) {
   }
   if (filled === 0) return 0;
   const area = (maxRow - minRow + 1) * (maxCol - minCol + 1);
-  // Filled-cell count weighted by how tightly packed they are — rewards
-  // both "more words" and "less white space" together, since either alone
-  // is a bad proxy (a tiny fully-packed cluster shouldn't beat a bigger,
-  // still-reasonably-dense grid).
   return filled * (filled / area);
 }
 
-// Returns priority-ordered *groups* (not a flat shuffled list) so
-// attemptBest can reshuffle within each group per attempt while preserving
-// the strong/weak keyword-match priority across every attempt.
-function buildCandidateGroups(wordBank, keywords, maxDiff, n) {
+function legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n) {
   const seen = new Set();
   const deduped = [];
   for (const entry of wordBank) {
@@ -1790,17 +3483,10 @@ function buildCandidateGroups(wordBank, keywords, maxDiff, n) {
     deduped.push({ word: w, clue: entry.c, cat: entry.cat });
   }
 
-  // Multi-word topics ("European capitals") almost never appear as one
-  // exact substring in a clue, so match on individual significant words
-  // instead (dropping short stopwords that would otherwise match almost
-  // everything).
-  const STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "are", "was", "were"]);
+  const STOPWORDS_LOCAL = new Set(["the", "and", "for", "with", "from", "that", "this", "are", "was", "were"]);
   const rawTokens = keywords
     .flatMap((k) => k.toLowerCase().split(/\s+/))
-    .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
-  // A plain substring check misses "capitals" against a clue that says
-  // "capital" (singular) — add the naive-singular form of any plural-looking
-  // token so simple pluralization doesn't cause a miss.
+    .filter((t) => t.length >= 3 && !STOPWORDS_LOCAL.has(t));
   const keywordTokens = [...new Set(rawTokens.flatMap((t) => (t.endsWith("s") && t.length > 4 ? [t, t.slice(0, -1)] : [t])))];
   const matchCount = (entry) => {
     if (keywordTokens.length === 0) return 0;
@@ -1810,28 +3496,17 @@ function buildCandidateGroups(wordBank, keywords, maxDiff, n) {
 
   if (keywordTokens.length === 0) return [deduped];
 
-  // Keyword-topic puzzles stay 100% on-topic — no silent padding from the
-  // rest of the word bank. If that's too sparse to build a real grid,
-  // generatePuzzle()'s caller-level fallback retries with the full corpus.
-  //
-  // Entries matching more than one keyword token (e.g. both "european" and
-  // "capital" for the topic "European capitals") are placed first, so a
-  // compound topic prioritizes its most specifically-relevant words as
-  // anchors before falling back to single-token matches to fill the grid.
   const strong = [];
   const weak = [];
   for (const entry of deduped) {
-    const n = matchCount(entry);
-    if (n >= 2) strong.push(entry);
-    else if (n === 1) weak.push(entry);
+    const n2 = matchCount(entry);
+    if (n2 >= 2) strong.push(entry);
+    else if (n2 === 1) weak.push(entry);
   }
   return [strong, weak];
 }
 
-function shuffleByLength(list) {
-  // Sort longest-first (better anchors / more intersection surface),
-  // shuffling within each length band so regenerating the same request
-  // doesn't always produce an identical grid.
+function legacyShuffleByLength(list) {
   const byLength = new Map();
   for (const entry of list) {
     if (!byLength.has(entry.word.length)) byLength.set(entry.word.length, []);
@@ -1850,47 +3525,43 @@ function shuffleByLength(list) {
   return out;
 }
 
-function attemptFill(candidates, n, targetWords) {
-  if (candidates.length === 0) return { grid: makeEmptyGrid(n), words: [] };
+function legacyAttemptFill(candidates, n, targetWords) {
+  if (candidates.length === 0) return { grid: legacyMakeEmptyGrid(n), words: [] };
 
-  const grid = makeEmptyGrid(n);
+  const grid = legacyMakeEmptyGrid(n);
   const words = [];
   const placedSet = new Set();
 
   const first = candidates[0];
   const startRow = Math.floor(n / 2);
   const startCol = Math.floor((n - first.word.length) / 2);
-  placeWord(grid, first.word, startRow, startCol, "across");
-  words.push(makeWordRecord(first, startRow, startCol, "across", words.length));
+  legacyPlaceWord(grid, first.word, startRow, startCol, "across");
+  words.push(legacyMakeWordRecord(first, startRow, startCol, "across", words.length));
   placedSet.add(first.word);
 
-  // Multiple sweeps: a word that couldn't intersect anything on pass 1 may
-  // become placeable once later words in that same pass opened up new
-  // letters, so re-sweep the still-unplaced candidates a bounded number of
-  // times rather than a single forward pass.
-  for (let pass = 0; pass < FILL_PASSES && words.length < targetWords; pass++) {
+  for (let pass = 0; pass < LEGACY_FILL_PASSES && words.length < targetWords; pass++) {
     let placedThisPass = false;
     for (let idx = 1; idx < candidates.length && words.length < targetWords; idx++) {
       const entry = candidates[idx];
       if (placedSet.has(entry.word)) continue;
-      const placement = findPlacement(grid, entry.word, n);
+      const placement = legacyFindPlacement(grid, entry.word, n);
       if (!placement) continue;
-      placeWord(grid, entry.word, placement.row, placement.col, placement.direction);
-      words.push(makeWordRecord(entry, placement.row, placement.col, placement.direction, words.length));
+      legacyPlaceWord(grid, entry.word, placement.row, placement.col, placement.direction);
+      words.push(legacyMakeWordRecord(entry, placement.row, placement.col, placement.direction, words.length));
       placedSet.add(entry.word);
       placedThisPass = true;
     }
-    if (!placedThisPass) break; // no point sweeping again if nothing changed
+    if (!placedThisPass) break;
   }
 
   return { grid, words };
 }
 
-function makeWordRecord(entry, row, col, direction, tempId) {
+function legacyMakeWordRecord(entry, row, col, direction, tempId) {
   return { id: tempId, answer: entry.word, clue: entry.clue, row, col, direction, length: entry.word.length };
 }
 
-function makeEmptyGrid(n) {
+function legacyMakeEmptyGrid(n) {
   const grid = [];
   for (let r = 0; r < n; r++) {
     const row = [];
@@ -1900,18 +3571,11 @@ function makeEmptyGrid(n) {
   return grid;
 }
 
-function inBounds(n, r, c) {
+function legacyInBounds(n, r, c) {
   return r >= 0 && r < n && c >= 0 && c < n;
 }
 
-// Prefers a placement that overlaps 2+ existing letters (denser — it's
-// pulling double duty crossing two words) over one that only overlaps the
-// single letter it was found from, but doesn't exhaustively search for the
-// true best — stops as soon as it finds a "good enough" (2+) one, falling
-// back to the first valid placement seen if nothing better ever turns up.
-// Same overall scan cost as plain first-fit, just smarter about which hit
-// it commits to.
-function findPlacement(grid, word, n) {
+function legacyFindPlacement(grid, word, n) {
   let fallback = null;
   for (let i = 0; i < word.length; i++) {
     const letter = word[i];
@@ -1923,12 +3587,12 @@ function findPlacement(grid, word, n) {
         let direction = null;
         if (cell.across && !cell.down) direction = "down";
         else if (cell.down && !cell.across) direction = "across";
-        else continue; // both taken, or neither (shouldn't happen for a filled cell)
+        else continue;
 
         const row = direction === "down" ? r - i : r;
         const col = direction === "across" ? c - i : c;
-        const overlaps = validPlacementOverlaps(grid, word, row, col, direction, n);
-        if (overlaps === 0) continue; // invalid
+        const overlaps = legacyValidPlacementOverlaps(grid, word, row, col, direction, n);
+        if (overlaps === 0) continue;
         if (overlaps >= 2) return { row, col, direction };
         if (!fallback) fallback = { row, col, direction };
       }
@@ -1937,14 +3601,11 @@ function findPlacement(grid, word, n) {
   return fallback;
 }
 
-// Returns the number of existing letters this placement would overlap
-// (always >=1 for a valid placement, since it must intersect something to
-// be valid at all), or 0 if the placement isn't valid.
-function validPlacementOverlaps(grid, word, row, col, direction, n) {
-  return isValidPlacement(grid, word, row, col, direction, n) ? countOverlaps(grid, word, row, col, direction) : 0;
+function legacyValidPlacementOverlaps(grid, word, row, col, direction, n) {
+  return legacyIsValidPlacement(grid, word, row, col, direction, n) ? legacyCountOverlaps(grid, word, row, col, direction) : 0;
 }
 
-function countOverlaps(grid, word, row, col, direction) {
+function legacyCountOverlaps(grid, word, row, col, direction) {
   const dRow = direction === "down" ? 1 : 0;
   const dCol = direction === "across" ? 1 : 0;
   let overlaps = 0;
@@ -1954,20 +3615,20 @@ function countOverlaps(grid, word, row, col, direction) {
   return overlaps;
 }
 
-function isValidPlacement(grid, word, row, col, direction, n) {
+function legacyIsValidPlacement(grid, word, row, col, direction, n) {
   const dRow = direction === "down" ? 1 : 0;
   const dCol = direction === "across" ? 1 : 0;
 
   const endRow = row + dRow * (word.length - 1);
   const endCol = col + dCol * (word.length - 1);
-  if (!inBounds(n, row, col) || !inBounds(n, endRow, endCol)) return false;
+  if (!legacyInBounds(n, row, col) || !legacyInBounds(n, endRow, endCol)) return false;
 
   const beforeRow = row - dRow;
   const beforeCol = col - dCol;
-  if (inBounds(n, beforeRow, beforeCol) && grid[beforeRow][beforeCol].letter) return false;
+  if (legacyInBounds(n, beforeRow, beforeCol) && grid[beforeRow][beforeCol].letter) return false;
   const afterRow = row + dRow * word.length;
   const afterCol = col + dCol * word.length;
-  if (inBounds(n, afterRow, afterCol) && grid[afterRow][afterCol].letter) return false;
+  if (legacyInBounds(n, afterRow, afterCol) && grid[afterRow][afterCol].letter) return false;
 
   let hasIntersection = false;
   for (let i = 0; i < word.length; i++) {
@@ -1977,28 +3638,24 @@ function isValidPlacement(grid, word, row, col, direction, n) {
 
     if (cell.letter) {
       if (cell.letter !== word[i]) return false;
-      // Existing cell being crossed — must not already have this same
-      // direction occupied (would mean overlapping parallel words).
       if (direction === "across" && cell.across) return false;
       if (direction === "down" && cell.down) return false;
       hasIntersection = true;
       continue;
     }
 
-    // New cell for this word — its perpendicular neighbors must be empty,
-    // otherwise it would silently run alongside another word.
     const perp1r = r + dCol;
     const perp1c = c + dRow;
     const perp2r = r - dCol;
     const perp2c = c - dRow;
-    if (inBounds(n, perp1r, perp1c) && grid[perp1r][perp1c].letter) return false;
-    if (inBounds(n, perp2r, perp2c) && grid[perp2r][perp2c].letter) return false;
+    if (legacyInBounds(n, perp1r, perp1c) && grid[perp1r][perp1c].letter) return false;
+    if (legacyInBounds(n, perp2r, perp2c) && grid[perp2r][perp2c].letter) return false;
   }
 
   return hasIntersection;
 }
 
-function placeWord(grid, word, row, col, direction) {
+function legacyPlaceWord(grid, word, row, col, direction) {
   const dRow = direction === "down" ? 1 : 0;
   const dCol = direction === "across" ? 1 : 0;
   for (let i = 0; i < word.length; i++) {
@@ -2010,7 +3667,7 @@ function placeWord(grid, word, row, col, direction) {
   }
 }
 
-function cropAndNumber(grid, words, n) {
+function legacyCropAndNumber(grid, words, n) {
   let minRow = n, maxRow = -1, minCol = n, maxCol = -1;
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
@@ -2047,16 +3704,18 @@ function cropAndNumber(grid, words, n) {
     }
   }
 
-  const finalWords = words.map((w) => {
-    const row = w.row - minRow;
-    const col = w.col - minCol;
-    const number = numberAt.get(`${row}-${col}`) || null;
-    const wordCells = [];
-    for (let i = 0; i < w.length; i++) {
-      wordCells.push(w.direction === "across" ? [row, col + i] : [row + i, col]);
-    }
-    return { number, direction: w.direction, answer: w.answer, clue: w.clue, row, col, length: w.length, cells: wordCells };
-  }).filter((w) => w.number !== null)
+  const finalWords = words
+    .map((w) => {
+      const row = w.row - minRow;
+      const col = w.col - minCol;
+      const number = numberAt.get(`${row}-${col}`) || null;
+      const wordCells = [];
+      for (let i = 0; i < w.length; i++) {
+        wordCells.push(w.direction === "across" ? [row, col + i] : [row + i, col]);
+      }
+      return { number, direction: w.direction, answer: w.answer, clue: w.clue, row, col, length: w.length, cells: wordCells };
+    })
+    .filter((w) => w.number !== null)
     .sort((a, b) => a.number - b.number || (a.direction === "across" ? 0 : 1) - (b.direction === "across" ? 0 : 1));
 
   return { rows, cols, cells, words: finalWords };
