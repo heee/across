@@ -371,6 +371,31 @@
           "letter": "J",
           "owner": "Alex",
           "revealed": false
+        },
+        "2-1": {
+          "letter": "A",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "2-2": {
+          "letter": "P",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "2-3": {
+          "letter": "A",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "2-4": {
+          "letter": "N",
+          "owner": "Alex",
+          "revealed": false
+        },
+        "0-4": {
+          "letter": "D",
+          "owner": "Alex",
+          "revealed": false
         }
       },
       "players": [
@@ -378,12 +403,12 @@
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 5,
-          "correctLetters": 4,
+          "lettersEntered": 10,
+          "correctLetters": 9,
           "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 1,
+          "wordsCompleted": 2,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T00:09:33.631Z"
         }
