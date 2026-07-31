@@ -3875,6 +3875,11 @@
           "letter": "G",
           "owner": "Henning",
           "revealed": false
+        },
+        "8-1": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -3882,15 +3887,15 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 4,
-          "correctLetters": 4,
+          "lettersEntered": 5,
+          "correctLetters": 5,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 1,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T01:49:11.109Z",
-          "timeSpentMs": 48215
+          "timeSpentMs": 63216
         }
       },
       "state": "open",
