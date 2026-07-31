@@ -2376,6 +2376,21 @@
           "letter": "B",
           "owner": "Henning",
           "revealed": false
+        },
+        "0-1": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-2": {
+          "letter": "P",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-2": {
+          "letter": "B",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -2394,9 +2409,9 @@
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 1,
-          "correctLetters": 1,
-          "incorrectLetters": 0,
+          "lettersEntered": 4,
+          "correctLetters": 3,
+          "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 0,
