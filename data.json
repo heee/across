@@ -2418,7 +2418,37 @@
           "revealed": false
         },
         "2-4": {
-          "letter": "S",
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-5": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-6": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-7": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-8": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-9": {
+          "letter": "",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-0": {
+          "letter": "H",
           "owner": "Henning",
           "revealed": false
         }
@@ -2439,9 +2469,9 @@
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 10,
-          "correctLetters": 8,
-          "incorrectLetters": 2,
+          "lettersEntered": 16,
+          "correctLetters": 9,
+          "incorrectLetters": 7,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 1,
