@@ -2364,7 +2364,8 @@
         }
       },
       "players": [
-        "Alex"
+        "Alex",
+        "Henning"
       ],
       "sessions": {
         "Alex": {
@@ -2376,6 +2377,16 @@
           "wordsCompleted": 2,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T01:43:25.556Z"
+        },
+        "Henning": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T01:46:04.364Z"
         }
       },
       "state": "open",
