@@ -5235,6 +5235,21 @@
           "letter": "E",
           "owner": "Henning",
           "revealed": false
+        },
+        "8-4": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "8-5": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-3": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -5242,13 +5257,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 5,
-          "correctLetters": 3,
-          "incorrectLetters": 2,
+          "lettersEntered": 8,
+          "correctLetters": 4,
+          "incorrectLetters": 4,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 1,
-          "autoCheckUsed": false,
+          "autoCheckUsed": true,
           "joinedAt": "2026-07-31T01:49:44.374Z"
         }
       },
