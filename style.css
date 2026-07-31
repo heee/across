@@ -83,7 +83,8 @@ button, input, textarea {
 #app {
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--bg-screen);
   display: flex;
   flex-direction: column;
@@ -91,11 +92,19 @@ button, input, textarea {
   overflow: hidden;
 }
 
+/* Each screen fills the viewport exactly (not min-height) so its
+   .scroll-area child is the only thing that scrolls — .screen-header and
+   .bottom-nav stay put as ordinary flex siblings above/below it, no
+   position:sticky needed. With min-height instead, a screen taller than
+   the viewport made the whole page scroll, and .bottom-nav (last in DOM)
+   scrolled off with it. */
 .screen {
   display: none;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   padding-top: env(safe-area-inset-top, 0px);
+  overflow: hidden;
 }
 .screen.active { display: flex; }
 
@@ -234,7 +243,19 @@ button, input, textarea {
 
 .chevron { font: 600 16px var(--font); color: var(--muted-25); flex: none; }
 
-.completed-row { display: flex; align-items: center; gap: 10px; padding: 6px 2px; }
+.completed-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
 .completed-check {
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--block-cell); flex: none;
@@ -432,21 +453,21 @@ button, input, textarea {
 .header-actions { display: flex; align-items: center; gap: 16px; }
 .icon-btn-pair { display: flex; align-items: center; gap: 2px; }
 .icon-btn {
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 34px; height: 34px; border-radius: 50%;
   background: var(--bg-card);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-card-soft);
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: var(--ink);
+  font-size: 15px; color: var(--ink);
   cursor: pointer;
 }
-.icon-btn.assist { color: var(--assist); font-size: 14px; }
+.icon-btn.assist { color: var(--assist); font-size: 16px; }
 
 .player-avatars { display: flex; }
 .player-avatar {
-  width: 24px; height: 24px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   color: #fff; display: flex; align-items: center; justify-content: center;
-  font: 700 10px var(--font);
+  font: 700 11px var(--font);
   border: 2px solid var(--bg-screen);
   margin-left: -8px;
   background: oklch(58% .1 var(--player-hue));
@@ -480,7 +501,10 @@ button, input, textarea {
 }
 .cell.block { visibility: hidden; cursor: default; }
 .cell.empty {
-  background: var(--accent-tint);
+  /* Neutral, not tied to any player's hue — --accent-tint happens to equal
+     player-1's (blue, hue 250) light tint, so an empty cell and a cell that
+     player has filled were visually identical. */
+  background: var(--block-cell);
   border: 1px solid var(--hairline-soft);
   box-shadow: var(--emboss-locked);
 }

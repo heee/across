@@ -50,16 +50,42 @@ function buildCandidateList(wordBank, keywords, maxDiff, n) {
     deduped.push({ word: w, clue: entry.c, cat: entry.cat });
   }
 
-  const lowerKeywords = keywords.map((k) => k.toLowerCase());
-  const matches = (entry) => {
-    if (lowerKeywords.length === 0) return false;
+  // Multi-word topics ("European capitals") almost never appear as one
+  // exact substring in a clue, so match on individual significant words
+  // instead (dropping short stopwords that would otherwise match almost
+  // everything).
+  const STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "are", "was", "were"]);
+  const rawTokens = keywords
+    .flatMap((k) => k.toLowerCase().split(/\s+/))
+    .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
+  // A plain substring check misses "capitals" against a clue that says
+  // "capital" (singular) — add the naive-singular form of any plural-looking
+  // token so simple pluralization doesn't cause a miss.
+  const keywordTokens = [...new Set(rawTokens.flatMap((t) => (t.endsWith("s") && t.length > 4 ? [t, t.slice(0, -1)] : [t])))];
+  const matchCount = (entry) => {
+    if (keywordTokens.length === 0) return 0;
     const hay = `${entry.word.toLowerCase()} ${entry.clue.toLowerCase()} ${entry.cat.toLowerCase()}`;
-    return lowerKeywords.some((k) => hay.includes(k));
+    return keywordTokens.reduce((n, t) => n + (hay.includes(t) ? 1 : 0), 0);
   };
 
-  const keywordMatches = shuffleByLength(deduped.filter(matches));
-  const rest = shuffleByLength(deduped.filter((e) => !matches(e)));
-  return [...keywordMatches, ...rest];
+  if (keywordTokens.length === 0) return shuffleByLength(deduped);
+
+  // Keyword-topic puzzles stay 100% on-topic — no silent padding from the
+  // rest of the word bank. If that's too sparse to build a real grid,
+  // generatePuzzle()'s caller-level fallback retries with the full corpus.
+  //
+  // Entries matching more than one keyword token (e.g. both "european" and
+  // "capital" for the topic "European capitals") are placed first, so a
+  // compound topic prioritizes its most specifically-relevant words as
+  // anchors before falling back to single-token matches to fill the grid.
+  const strong = [];
+  const weak = [];
+  for (const entry of deduped) {
+    const n = matchCount(entry);
+    if (n >= 2) strong.push(entry);
+    else if (n === 1) weak.push(entry);
+  }
+  return [...shuffleByLength(strong), ...shuffleByLength(weak)];
 }
 
 function shuffleByLength(list) {

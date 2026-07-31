@@ -50,6 +50,7 @@ function newSession() {
     correctionsMade: 0,
     revealsUsed: 0,
     wordsCompleted: 0,
+    timeSpentMs: 0,
     autoCheckUsed: false,
     joinedAt: nowIso(),
   };
@@ -156,6 +157,8 @@ const LocalBackend = {
         handlers.onCursor?.({ user: msg.user, row: msg.row, col: msg.col, direction: msg.direction });
       } else if (msg.type === "completed") {
         handlers.onCompleted?.();
+      } else if (msg.type === "time-update") {
+        handlers.onTimeUpdate?.({ sessions: p.sessions, totalTimeMs: p.totalTimeMs });
       }
     };
 
@@ -216,6 +219,17 @@ const LocalBackend = {
           saveLocalData(fresh);
         }
       },
+      sendTimeHeartbeat(deltaMs) {
+        if (!(deltaMs > 0)) return;
+        const fresh = loadLocalData();
+        const p = fresh.puzzles[puzzleId];
+        if (!p) return;
+        if (!p.sessions[user]) p.sessions[user] = newSession();
+        p.sessions[user].timeSpentMs = (p.sessions[user].timeSpentMs || 0) + deltaMs;
+        p.totalTimeMs = Object.values(p.sessions).reduce((s, sess) => s + (sess.timeSpentMs || 0), 0);
+        saveLocalData(fresh);
+        channel.postMessage({ type: "time-update", user });
+      },
       close() {
         clearInterval(heartbeat);
         channel.close();
@@ -272,6 +286,7 @@ const RemoteBackend = {
       else if (msg.type === "presence") handlers.onPresence?.(msg.players);
       else if (msg.type === "cursor") handlers.onCursor?.(msg);
       else if (msg.type === "completed") handlers.onCompleted?.();
+      else if (msg.type === "time-update") handlers.onTimeUpdate?.({ sessions: msg.sessions, totalTimeMs: msg.totalTimeMs });
     };
     const send = (msg) => {
       if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
@@ -282,6 +297,7 @@ const RemoteBackend = {
       sendCursor(row, col, direction) { send({ type: "cursor", row, col, direction }); },
       sendReveal(row, col, letter) { send({ type: "reveal", row, col, letter }); },
       sendAutoCheckOn() { send({ type: "auto-check-on" }); },
+      sendTimeHeartbeat(deltaMs) { if (deltaMs > 0) send({ type: "time-heartbeat", deltaMs }); },
       close() { socket.close(); },
     };
   },
@@ -501,9 +517,14 @@ $("#name-entry-input").addEventListener("keydown", (e) => { if (e.key === "Enter
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-action='go-home']")) {
-    if (currentPuzzleConn) { currentPuzzleConn.close(); currentPuzzleConn = null; }
-    renderHome();
-    navigate("screen-home");
+    if (currentPuzzleConn) {
+      flushTime(true);
+      clearInterval(timeFlushHandle);
+      currentPuzzleConn.close();
+      currentPuzzleConn = null;
+    }
+    renderProfilePicker();
+    navigate("screen-name-entry");
   }
 });
 
@@ -522,33 +543,28 @@ function renderHome() {
     .filter((p) => p.state === "open" && p.visibility === "open" && !p.players.includes(currentUser.name))
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  scroll.appendChild(section("Continue playing", continuing, "No puzzles in progress — tap + to start one.", (list) => {
-    const wrap = el("div", { class: "puzzle-list" });
-    for (const p of list) wrap.appendChild(continueRow(p));
-    return wrap;
-  }));
-
-  scroll.appendChild(section("New open crosswords", openToJoin, "No open crosswords yet — tap + to start one.", (list) => {
-    const wrap = el("div", { class: "puzzle-list" });
-    for (const p of list.slice(0, 6)) wrap.appendChild(openRow(p));
-    return wrap;
-  }));
-
-  scroll.appendChild(section("Recently completed", completed, "Nothing finished yet.", (list) => {
-    const wrap = el("div", { class: "puzzle-list" });
-    for (const p of list.slice(0, 6)) wrap.appendChild(completedRow(p));
-    return wrap;
-  }));
+  scroll.appendChild(section("Continue playing", continuing, "No puzzles in progress — tap + to start one.", Infinity, continueRow));
+  scroll.appendChild(section("New open crosswords", openToJoin, "No open crosswords yet — tap + to start one.", 6, openRow));
+  scroll.appendChild(section("Recently completed", completed, "Nothing finished yet.", 6, completedRow));
 }
 
-function section(title, list, emptyText, buildBody) {
+// `cap` is how many rows this section shows at once — the "More" pill only
+// renders when the list actually has more than that (previously it always
+// showed, even on an empty section).
+function section(title, list, emptyText, cap, renderRow) {
   const wrap = el("div");
-  const header = el("div", { class: "section-header" }, [
-    el("div", { class: "section-title", text: title }),
-    el("button", { class: "pill-more", onclick: () => showToast(`${title} — full list coming soon`) }, "More"),
-  ]);
-  wrap.appendChild(header);
-  wrap.appendChild(list.length === 0 ? el("div", { class: "empty-note", text: emptyText }) : buildBody(list));
+  const headerChildren = [el("div", { class: "section-title", text: title })];
+  if (list.length > cap) {
+    headerChildren.push(el("button", { class: "pill-more", onclick: () => showToast(`${title} — full list coming soon`) }, "More"));
+  }
+  wrap.appendChild(el("div", { class: "section-header" }, headerChildren));
+  if (list.length === 0) {
+    wrap.appendChild(el("div", { class: "empty-note", text: emptyText }));
+  } else {
+    const rowsWrap = el("div", { class: "puzzle-list" });
+    for (const p of list.slice(0, cap)) rowsWrap.appendChild(renderRow(p));
+    wrap.appendChild(rowsWrap);
+  }
   return wrap;
 }
 
@@ -583,12 +599,20 @@ function openRow(p) {
 }
 
 function completedRow(p) {
-  const row = el("div", { class: "completed-row" });
+  const row = el("button", { class: "completed-row", onclick: () => viewCompletedPuzzle(p.id) });
   row.appendChild(el("div", { class: "completed-check", text: "✓" }));
   row.appendChild(el("div", { class: "completed-title", text: p.title }));
   const mins = p.totalTimeMs ? formatMinSec(p.totalTimeMs) : "—";
   row.appendChild(el("div", { class: "completed-meta", text: `${mins} · ${p.players.length}p` }));
   return row;
+}
+
+function viewCompletedPuzzle(puzzleId) {
+  const p = dataCache.puzzles[puzzleId];
+  if (!p) return;
+  currentPuzzle = p;
+  renderCompletion(p);
+  navigate("screen-completion");
 }
 
 function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
@@ -657,12 +681,32 @@ function openCreate() {
   createVisibility = "open";
   $("#create-title").value = "";
   $("#create-description").value = "";
+  renderCreateCategoryChips();
   renderCreateKeywords();
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
   renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderCreatePreview(); });
   $("#create-visibility").textContent = "Open · anyone with the link can join";
   renderCreatePreview();
   navigate("screen-create");
+}
+
+// Category chips are just a quick-pick shortcut for the same keywords list
+// free-text chips populate — tapping one toggles its name in/out of
+// createKeywords, same as typing it via "+ Add".
+function renderCreateCategoryChips() {
+  const row = $("#create-category-chips");
+  row.innerHTML = "";
+  for (const cat of SEARCH_CATEGORIES) {
+    const active = createKeywords.some((k) => k.toLowerCase() === cat.toLowerCase());
+    const chip = el("button", { class: "chip" + (active ? " active" : ""), text: cat });
+    chip.addEventListener("click", () => {
+      if (active) createKeywords = createKeywords.filter((k) => k.toLowerCase() !== cat.toLowerCase());
+      else createKeywords.push(cat);
+      renderCreateCategoryChips();
+      renderCreateKeywords();
+    });
+    row.appendChild(chip);
+  }
 }
 
 function renderSegmented(sel, value, onChange) {
@@ -678,13 +722,13 @@ function renderCreateKeywords() {
   for (const kw of createKeywords) {
     const chip = el("div", { class: "keyword-chip" }, [
       el("span", { text: kw }),
-      el("button", { text: "×", onclick: () => { createKeywords = createKeywords.filter((k) => k !== kw); renderCreateKeywords(); } }),
+      el("button", { text: "×", onclick: () => { createKeywords = createKeywords.filter((k) => k !== kw); renderCreateCategoryChips(); renderCreateKeywords(); } }),
     ]);
     wrap.appendChild(chip);
   }
   wrap.appendChild(el("button", { class: "add-chip-btn", text: "+ Add", onclick: () => {
     const kw = prompt("Add a keyword or topic (e.g. a place, movie, category):");
-    if (kw && kw.trim()) { createKeywords.push(kw.trim().slice(0, 24)); renderCreateKeywords(); }
+    if (kw && kw.trim()) { createKeywords.push(kw.trim().slice(0, 24)); renderCreateCategoryChips(); renderCreateKeywords(); }
   } }));
 }
 
@@ -716,11 +760,15 @@ $("#create-submit").addEventListener("click", async () => {
   const btn = $("#create-submit");
   btn.disabled = true;
   btn.textContent = "Generating…";
+  // No category/keywords picked — riff off the title itself instead of
+  // falling back to a totally random puzzle. The generator already
+  // tokenizes multi-word keywords, so the raw title works directly.
+  const keywords = createKeywords.length > 0 ? createKeywords : [title];
   try {
     const puzzle = await Backend.createPuzzle({
       title,
       description: $("#create-description").value.trim(),
-      keywords: createKeywords,
+      keywords,
       size: createSize,
       difficulty: createDifficulty,
       visibility: createVisibility,
@@ -740,6 +788,7 @@ function prefillCreateSimilar(puzzle) {
   openCreate();
   $("#create-title").value = `${puzzle.title} II`;
   createKeywords = [...(puzzle.keywords || [])];
+  renderCreateCategoryChips();
   renderCreateKeywords();
   createSize = puzzle.size;
   createDifficulty = puzzle.difficulty;
@@ -752,26 +801,57 @@ function prefillCreateSimilar(puzzle) {
 // Crossword solve screen
 // ===========================================================================
 
+// Personal time-on-puzzle persists across visits instead of resetting each
+// time you open it: myBaselineMs is the durable total from before this
+// visit (seeded from the session's persisted timeSpentMs in onInit),
+// sessionStartTime marks when the current visit's live-elapsed portion
+// started, and flushTime() periodically folds that live portion into
+// myBaselineMs while reporting the delta to the backend so it survives a
+// closed tab. "My time" displayed is always myBaselineMs + live elapsed.
+let myBaselineMs = 0;
+let timeFlushHandle = null;
+const TIME_FLUSH_INTERVAL_MS = 15000;
+
+function flushTime(final) {
+  if (!currentPuzzleConn || !sessionStartTime) return;
+  const now = Date.now();
+  const delta = now - sessionStartTime;
+  if (delta <= 0) return;
+  myBaselineMs += delta;
+  sessionStartTime = now;
+  currentPuzzleConn.sendTimeHeartbeat(delta);
+}
+
 function openPuzzle(puzzleId) {
-  if (currentPuzzleConn) { currentPuzzleConn.close(); currentPuzzleConn = null; }
+  if (currentPuzzleConn) {
+    flushTime(true);
+    currentPuzzleConn.close();
+    currentPuzzleConn = null;
+  }
+  clearInterval(timeFlushHandle);
   navigate("screen-puzzle");
   $("#puzzle-title").textContent = "Loading…";
   $("#puzzle-grid").innerHTML = "";
-  sessionStartTime = Date.now();
+  myBaselineMs = 0;
+  sessionStartTime = null; // set once onInit knows this session's persisted timeSpentMs
   autoCheckOn = false;
   clearInterval(sessionTimerHandle);
   sessionTimerHandle = setInterval(updatePuzzleTimers, 1000);
+  timeFlushHandle = setInterval(() => flushTime(false), TIME_FLUSH_INTERVAL_MS);
 
   currentPuzzleConn = Backend.connectPuzzle(puzzleId, currentUser.name, {
     onInit(puzzle, presence) {
       currentPuzzle = puzzle;
       completedWordKeys = new Set();
+      myBaselineMs = puzzle.sessions?.[currentUser.name]?.timeSpentMs || 0;
+      sessionStartTime = Date.now();
       selectedCell = firstFillableCell(puzzle.grid);
       selectedDirection = "across";
       renderPuzzleHeader(presence);
       renderPuzzleGrid();
       renderPuzzleKeyboard();
       updateClueBar();
+      updatePuzzleTimers();
     },
     onCellUpdate({ row, col, letter, owner, revealed }) {
       if (!currentPuzzle) return;
@@ -783,6 +863,12 @@ function openPuzzle(puzzleId) {
     },
     onCursor({ user, row, col }) {
       renderPresenceBadge(user, row, col);
+    },
+    onTimeUpdate({ sessions, totalTimeMs }) {
+      if (!currentPuzzle) return;
+      currentPuzzle.sessions = sessions;
+      currentPuzzle.totalTimeMs = totalTimeMs;
+      updatePuzzleTimers();
     },
     onCompleted() {
       handlePuzzleCompleted();
@@ -808,10 +894,24 @@ function renderPuzzleHeader(players) {
 }
 
 function updatePuzzleTimers() {
-  if (!sessionStartTime) return;
-  $("#puzzle-my-time").textContent = formatMinSec(Date.now() - sessionStartTime);
-  const base = currentPuzzle?.totalTimeMs || 0;
-  $("#puzzle-total-time").textContent = formatClock(base + (Date.now() - sessionStartTime));
+  if (!sessionStartTime || !currentPuzzle) return;
+  const myTimeMs = myBaselineMs + (Date.now() - sessionStartTime);
+  $("#puzzle-my-time").textContent = formatMinSec(myTimeMs);
+
+  const sessions = currentPuzzle.sessions || {};
+  const totalWrap = $(".total-time");
+  // Only meaningful once more than one person has actually played this
+  // puzzle — otherwise it's just your own time shown twice.
+  if (Object.keys(sessions).length > 1) {
+    let totalMs = 0;
+    for (const [name, sess] of Object.entries(sessions)) {
+      totalMs += name === currentUser.name ? myTimeMs : (sess.timeSpentMs || 0);
+    }
+    $("#puzzle-total-time").textContent = formatClock(totalMs);
+    totalWrap.style.display = "";
+  } else {
+    totalWrap.style.display = "none";
+  }
 }
 
 function wordCellsFor(cell, direction) {
@@ -1019,7 +1119,16 @@ function renderPuzzleKeyboard() {
     const rowEl = el("div", { class: "keyboard-row" + (i === 1 ? " indent" : "") });
     if (i === 2) rowEl.appendChild(el("button", { class: "key backspace", text: "⌫", onclick: backspace }));
     for (const l of letters) rowEl.appendChild(el("button", { class: "key", text: l, onclick: () => typeLetter(l) }));
-    if (i === 2) rowEl.appendChild(el("button", { class: "key done", text: "Done", onclick: () => { renderHome(); navigate("screen-home"); } }));
+    if (i === 2) rowEl.appendChild(el("button", { class: "key done", text: "Done", onclick: () => {
+      if (currentPuzzleConn) {
+        flushTime(true);
+        clearInterval(timeFlushHandle);
+        currentPuzzleConn.close();
+        currentPuzzleConn = null;
+      }
+      renderHome();
+      navigate("screen-home");
+    } }));
     kb.appendChild(rowEl);
   });
 }
@@ -1083,6 +1192,8 @@ function revealCells(cells) {
 
 async function handlePuzzleCompleted() {
   clearInterval(sessionTimerHandle);
+  clearInterval(timeFlushHandle);
+  flushTime(true);
   await refreshData();
   const fresh = dataCache.puzzles[currentPuzzle.id];
   if (fresh) currentPuzzle = fresh;
@@ -1152,7 +1263,11 @@ $("#completion-share").addEventListener("click", async () => {
   }
 });
 $("#completion-create-similar").addEventListener("click", () => prefillCreateSimilar(currentPuzzle));
-$("#completion-done").addEventListener("click", () => { renderHome(); navigate("screen-home"); });
+$("#completion-done").addEventListener("click", () => {
+  if (currentPuzzleConn) { currentPuzzleConn.close(); currentPuzzleConn = null; }
+  renderHome();
+  navigate("screen-home");
+});
 
 // ===========================================================================
 // Rankings screen

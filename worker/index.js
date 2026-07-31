@@ -304,6 +304,17 @@ export class PuzzleRoom {
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
       this.puzzle.sessions[user].autoCheckUsed = true;
       await this.persist(false);
+    } else if (msg.type === "time-heartbeat") {
+      // Bounded sanity check — a heartbeat should only ever cover the client's
+      // own flush interval (see FLUSH_INTERVAL_MS in app.js), never something
+      // wildly larger (clock skew, a resumed/suspended tab, a bad client).
+      const deltaMs = Number(msg.deltaMs);
+      if (!Number.isFinite(deltaMs) || deltaMs <= 0 || deltaMs > 120000) return;
+      if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
+      this.puzzle.sessions[user].timeSpentMs = (this.puzzle.sessions[user].timeSpentMs || 0) + deltaMs;
+      this.puzzle.totalTimeMs = Object.values(this.puzzle.sessions).reduce((s, sess) => s + (sess.timeSpentMs || 0), 0);
+      this.broadcast({ type: "time-update", sessions: this.puzzle.sessions, totalTimeMs: this.puzzle.totalTimeMs }, socket);
+      await this.persist(false);
     }
   }
 
@@ -412,6 +423,7 @@ function newSession() {
     correctionsMade: 0,
     revealsUsed: 0,
     wordsCompleted: 0,
+    timeSpentMs: 0,
     autoCheckUsed: false,
     joinedAt: new Date().toISOString(),
   };
