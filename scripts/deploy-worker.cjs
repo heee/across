@@ -101,7 +101,11 @@ async function main() {
     console.error(`Deploy failed: HTTP ${res.status} ${res.statusText}, and the response wasn't JSON.`);
     console.error(`URL requested: ${url}`);
     console.error(`Response body (first 500 chars):\n${bodyText.slice(0, 500)}`);
-    console.error("\nThis usually means CF_ACCOUNT_ID is wrong/malformed, or CF_API_TOKEN is invalid/expired. Double-check both against the Cloudflare dashboard.");
+    if (res.status >= 500) {
+      console.error("\nThis is a 5xx error — Cloudflare's own API had a transient problem (not your account ID or token). Just wait a minute and re-run this same command.");
+    } else {
+      console.error("\nThis usually means CF_ACCOUNT_ID is wrong/malformed, or CF_API_TOKEN is invalid/expired. Double-check both against the Cloudflare dashboard.");
+    }
     process.exit(1);
   }
 
