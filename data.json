@@ -10,5 +10,367 @@
       }
     }
   },
-  "puzzles": {}
+  "puzzles": {
+    "live-deploy-test-ms86qta7": {
+      "id": "live-deploy-test-ms86qta7",
+      "title": "Live Deploy Test",
+      "description": "",
+      "keywords": [],
+      "size": "mini",
+      "difficulty": "medium",
+      "visibility": "open",
+      "createdBy": "Alex",
+      "createdAt": "2026-07-31T00:09:33.631Z",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "H",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "J",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "V",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "HEN",
+            "clue": "Female chicken",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ERASE",
+            "clue": "Undo, as pencil marks",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "DANCE",
+            "clue": "Rhythmic movement to music",
+            "row": 0,
+            "col": 4,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "JAPAN",
+            "clue": "Land of the Rising Sun",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "SERVE",
+            "clue": "Opening shot in tennis or volleyball",
+            "row": 4,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "cells": {},
+      "players": [
+        "Alex"
+      ],
+      "sessions": {
+        "Alex": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T00:09:33.631Z"
+        }
+      },
+      "state": "open",
+      "completedAt": null,
+      "totalTimeMs": 0,
+      "highlights": []
+    }
+  }
 }
