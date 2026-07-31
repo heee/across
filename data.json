@@ -6294,6 +6294,11 @@
           "letter": "B",
           "owner": "Henning",
           "revealed": false
+        },
+        "4-0": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -6301,13 +6306,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 25,
-          "correctLetters": 17,
+          "lettersEntered": 26,
+          "correctLetters": 18,
           "incorrectLetters": 8,
           "correctionsMade": 3,
           "revealsUsed": 0,
           "wordsCompleted": 4,
-          "timeSpentMs": 119621,
+          "timeSpentMs": 123741,
           "autoCheckUsed": true,
           "joinedAt": "2026-07-31T03:24:39.404Z"
         }
