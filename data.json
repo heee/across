@@ -1,14 +1,5 @@
 {
   "users": {
-    "Alex": {
-      "hue": 250,
-      "createdAt": "2026-07-31T00:09:14.921Z",
-      "settings": {
-        "push": true,
-        "sound": true,
-        "haptic": true
-      }
-    },
     "Henning": {
       "hue": 30,
       "createdAt": "2026-07-31T01:45:17.797Z",
@@ -452,9 +443,7 @@
           "revealed": false
         }
       },
-      "players": [
-        "Alex"
-      ],
+      "players": [],
       "sessions": {
         "Alex": {
           "lettersEntered": 22,
@@ -878,9 +867,7 @@
           "revealed": true
         }
       },
-      "players": [
-        "Alex"
-      ],
+      "players": [],
       "sessions": {
         "Alex": {
           "lettersEntered": 9,
@@ -2489,7 +2476,6 @@
         }
       },
       "players": [
-        "Alex",
         "Henning"
       ],
       "sessions": {
