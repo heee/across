@@ -890,6 +890,1413 @@
       "highlights": [
         "Alex typed the most letters — 9 of 9"
       ]
+    },
+    "countries-ms8a3iwk": {
+      "id": "countries-ms8a3iwk",
+      "title": "Countries",
+      "description": "",
+      "keywords": [
+        "countries"
+      ],
+      "size": "standard",
+      "difficulty": "medium",
+      "visibility": "open",
+      "createdBy": "Alex",
+      "createdAt": "2026-07-31T01:43:25.556Z",
+      "grid": {
+        "rows": 11,
+        "cols": 11,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "M",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 5,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 6,
+            "letter": "S",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 0,
+            "col": 7,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 8,
+            "letter": "C",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 0,
+            "col": 9,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 10,
+            "letter": "L",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 6,
+            "letter": "W",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 8,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 10,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "H",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "T",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 2,
+            "col": 5,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 6,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 7,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 8,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 9,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 10,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 6,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 8,
+            "letter": "W",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 10,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 6,
+            "letter": "Z",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 8,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 10,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 5,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 5,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 6,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 7,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 10,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 0,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 2,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 6,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 8,
+            "letter": "D",
+            "block": false,
+            "number": 10
+          },
+          {
+            "row": 6,
+            "col": 9,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 10,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 0,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 2,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 4,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 6,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 11
+          },
+          {
+            "row": 8,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 5,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 6,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 7,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 8,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 4,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 6,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 4,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 6,
+            "letter": "D",
+            "block": false,
+            "number": 12
+          },
+          {
+            "row": 10,
+            "col": 7,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 8,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 9,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 10,
+            "letter": "H",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "BIB",
+            "clue": "A cloth worn to catch food spills",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "BLOCKBUSTER",
+            "clue": "A hugely successful hit film",
+            "row": 0,
+            "col": 2,
+            "length": 11,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                6,
+                2
+              ],
+              [
+                7,
+                2
+              ],
+              [
+                8,
+                2
+              ],
+              [
+                9,
+                2
+              ],
+              [
+                10,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "across",
+            "answer": "MUSICAL",
+            "clue": "Genre where characters break into song",
+            "row": 0,
+            "col": 4,
+            "length": 7,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                0,
+                5
+              ],
+              [
+                0,
+                6
+              ],
+              [
+                0,
+                7
+              ],
+              [
+                0,
+                8
+              ],
+              [
+                0,
+                9
+              ],
+              [
+                0,
+                10
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "METEOROLOGY",
+            "clue": "The scientific study of weather",
+            "row": 0,
+            "col": 4,
+            "length": 11,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ],
+              [
+                5,
+                4
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                7,
+                4
+              ],
+              [
+                8,
+                4
+              ],
+              [
+                9,
+                4
+              ],
+              [
+                10,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "SWITZERLAND",
+            "clue": "Alpine country famous for neutrality and watches",
+            "row": 0,
+            "col": 6,
+            "length": 11,
+            "cells": [
+              [
+                0,
+                6
+              ],
+              [
+                1,
+                6
+              ],
+              [
+                2,
+                6
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                6
+              ],
+              [
+                7,
+                6
+              ],
+              [
+                8,
+                6
+              ],
+              [
+                9,
+                6
+              ],
+              [
+                10,
+                6
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "CROWN",
+            "clue": "Headpiece worn by a king or queen",
+            "row": 0,
+            "col": 8,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                8
+              ],
+              [
+                1,
+                8
+              ],
+              [
+                2,
+                8
+              ],
+              [
+                3,
+                8
+              ],
+              [
+                4,
+                8
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "LOYALTY",
+            "clue": "Steadfast support for someone or something",
+            "row": 0,
+            "col": 10,
+            "length": 7,
+            "cells": [
+              [
+                0,
+                10
+              ],
+              [
+                1,
+                10
+              ],
+              [
+                2,
+                10
+              ],
+              [
+                3,
+                10
+              ],
+              [
+                4,
+                10
+              ],
+              [
+                5,
+                10
+              ],
+              [
+                6,
+                10
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "down",
+            "answer": "HIBERNATE",
+            "clue": "Spend winter in a dormant, low-energy state",
+            "row": 2,
+            "col": 0,
+            "length": 9,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                7,
+                0
+              ],
+              [
+                8,
+                0
+              ],
+              [
+                9,
+                0
+              ],
+              [
+                10,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "TRILOGY",
+            "clue": "A set of three related films",
+            "row": 2,
+            "col": 4,
+            "length": 7,
+            "cells": [
+              [
+                2,
+                4
+              ],
+              [
+                2,
+                5
+              ],
+              [
+                2,
+                6
+              ],
+              [
+                2,
+                7
+              ],
+              [
+                2,
+                8
+              ],
+              [
+                2,
+                9
+              ],
+              [
+                2,
+                10
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "BORDER",
+            "clue": "Line dividing two countries",
+            "row": 5,
+            "col": 2,
+            "length": 6,
+            "cells": [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                3
+              ],
+              [
+                5,
+                4
+              ],
+              [
+                5,
+                5
+              ],
+              [
+                5,
+                6
+              ],
+              [
+                5,
+                7
+              ]
+            ]
+          },
+          {
+            "number": 10,
+            "direction": "across",
+            "answer": "DRY",
+            "clue": "Not wet",
+            "row": 6,
+            "col": 8,
+            "length": 3,
+            "cells": [
+              [
+                6,
+                8
+              ],
+              [
+                6,
+                9
+              ],
+              [
+                6,
+                10
+              ]
+            ]
+          },
+          {
+            "number": 11,
+            "direction": "across",
+            "answer": "ASTRONAUT",
+            "clue": "A person trained to travel into space",
+            "row": 8,
+            "col": 0,
+            "length": 9,
+            "cells": [
+              [
+                8,
+                0
+              ],
+              [
+                8,
+                1
+              ],
+              [
+                8,
+                2
+              ],
+              [
+                8,
+                3
+              ],
+              [
+                8,
+                4
+              ],
+              [
+                8,
+                5
+              ],
+              [
+                8,
+                6
+              ],
+              [
+                8,
+                7
+              ],
+              [
+                8,
+                8
+              ]
+            ]
+          },
+          {
+            "number": 12,
+            "direction": "across",
+            "answer": "DOUGH",
+            "clue": "Unbaked bread mixture",
+            "row": 10,
+            "col": 6,
+            "length": 5,
+            "cells": [
+              [
+                10,
+                6
+              ],
+              [
+                10,
+                7
+              ],
+              [
+                10,
+                8
+              ],
+              [
+                10,
+                9
+              ],
+              [
+                10,
+                10
+              ]
+            ]
+          }
+        ]
+      },
+      "cells": {},
+      "players": [
+        "Alex"
+      ],
+      "sessions": {
+        "Alex": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T01:43:25.556Z"
+        }
+      },
+      "state": "open",
+      "completedAt": null,
+      "totalTimeMs": 0,
+      "highlights": []
     }
   }
 }
