@@ -3211,7 +3211,8 @@
         }
       },
       "players": [
-        "Henning"
+        "Henning",
+        "Christie"
       ],
       "sessions": {
         "Henning": {
@@ -3224,6 +3225,17 @@
           "timeSpentMs": 237633,
           "autoCheckUsed": true,
           "joinedAt": "2026-07-31T02:26:07.414Z"
+        },
+        "Christie": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "timeSpentMs": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T11:21:28.334Z"
         }
       },
       "state": "open",
