@@ -1979,6 +1979,7 @@ function cropAndNumber(grid, words, n) {
 //
 //   GET  /data                       -> current data.json contents (no auth to read)
 //   POST /register-user   { user }                              -> creates the user if new, assigns a stable color hue
+//   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
@@ -2049,6 +2050,25 @@ export default {
           user = data.users[name];
         }, `Register user: ${name}`);
         return json({ ok: true, user: { name, ...user } }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, 502, cors);
+      }
+    }
+
+    if (url.pathname === "/delete-user" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const name = typeof body?.user === "string" ? body.user.trim().slice(0, 40) : "";
+      if (!name) return json({ error: "invalid user" }, 400, cors);
+
+      try {
+        await commitMutation(env, (data) => {
+          delete data.users[name];
+          for (const p of Object.values(data.puzzles)) {
+            p.players = (p.players || []).filter((n) => n !== name);
+          }
+        }, `Delete user: ${name}`);
+        return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
       }

@@ -70,17 +70,17 @@
       <div class="screen-title">New crossword</div>
     </div>
     <div class="scroll-area no-scrollbar" style="padding-top:8px">
+      <div class="field-label">Category</div>
+      <div class="category-list" id="create-category-list"></div>
+
       <div class="field-label">Title</div>
-      <input id="create-title" class="text-field" type="text" placeholder="e.g. European Capitals" maxlength="60">
+      <div class="title-row">
+        <input id="create-title" class="text-field" type="text" placeholder="e.g. European Capitals" maxlength="60">
+        <button id="create-generate-title" class="generate-title-btn" title="Generate a title for this category" disabled>✨</button>
+      </div>
 
       <div class="field-label">Short description <span class="optional">(optional)</span></div>
       <input id="create-description" class="text-field description" type="text" placeholder="A one-line hint at the theme" maxlength="140">
-
-      <div class="field-label">Category <span class="optional">(optional — tap one, or skip and just use a title/keywords)</span></div>
-      <div class="chip-row no-scrollbar" id="create-category-chips" style="padding-top:0"></div>
-
-      <div class="field-label">Keywords <span class="optional">(optional — leave empty to riff off the title instead)</span></div>
-      <div class="chip-field" id="create-keywords"></div>
 
       <div class="field-label">Puzzle size</div>
       <div class="segmented" id="create-size">
@@ -96,7 +96,7 @@
         <button class="segmented-option" data-value="hard">Hard</button>
       </div>
 
-      <div class="toggle-row">
+      <div class="toggle-row disabled">
         <div class="toggle-row-label">Advanced controls</div>
         <button class="toggle" id="create-advanced-toggle" disabled title="Coming in a later update"></button>
       </div>
@@ -208,33 +208,32 @@
     </div>
   </div>
 
-  <!-- Profile -->
-  <div id="screen-profile" class="screen">
+  <!-- Settings: user management (view a specific player's profile via Rankings instead) -->
+  <div id="screen-settings" class="screen">
+    <div class="screen-header"><div class="screen-title">Settings</div></div>
+    <div class="scroll-area no-scrollbar">
+      <div class="field-label">Players on this device</div>
+      <div class="settings-card" id="settings-user-list"></div>
+    </div>
+    <nav class="bottom-nav" data-nav></nav>
+  </div>
+
+  <!-- Profile detail: opened by tapping a name in Rankings -->
+  <div id="screen-profile-detail" class="screen">
+    <div class="create-header">
+      <button class="back-btn" data-action="back-to-rankings">‹</button>
+      <div class="screen-title">Profile</div>
+    </div>
     <div class="profile-header">
-      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-avatar" id="profile-detail-avatar"></div>
       <div class="profile-name-row">
-        <div class="profile-name" id="profile-name"></div>
+        <div class="profile-name" id="profile-detail-name"></div>
       </div>
     </div>
     <div class="scroll-area no-scrollbar">
-      <div class="stat-grid" id="profile-stats"></div>
-      <div class="field-label" style="color:var(--muted-45)">Settings</div>
-      <div class="settings-card">
-        <div class="settings-row">
-          <div>Push notifications</div>
-          <button class="toggle" data-setting="push"></button>
-        </div>
-        <div class="settings-row">
-          <div>Sound effects</div>
-          <button class="toggle" data-setting="sound"></button>
-        </div>
-        <div class="settings-row">
-          <div>Haptic feedback</div>
-          <button class="toggle" data-setting="haptic"></button>
-        </div>
-      </div>
+      <div class="stat-grid" id="profile-detail-stats"></div>
+      <div id="profile-detail-settings-wrap"></div>
     </div>
-    <nav class="bottom-nav" data-nav></nav>
   </div>
 
   <div id="toast" class="toast"></div>

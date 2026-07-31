@@ -362,29 +362,42 @@ button, input, textarea {
 .text-field.description { font: 500 13px var(--font); }
 .text-field::placeholder { color: var(--muted-4); font-weight: 500; }
 
-.chip-field { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-.keyword-chip {
-  background: var(--accent-tint);
-  color: var(--accent);
-  font: 600 11.5px var(--font);
-  border-radius: var(--radius-pill);
-  padding: 6px 12px;
-  border: none;
+.category-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.category-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-}
-.keyword-chip button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; padding: 0; opacity: 0.7; }
-.add-chip-btn {
+  justify-content: space-between;
   background: var(--bg-card);
-  color: var(--muted-4);
-  font: 600 11.5px var(--font);
-  border-radius: var(--radius-pill);
-  padding: 6px 12px;
+  border-radius: var(--radius-card-sm);
+  padding: 12px 14px;
   box-shadow: var(--shadow-card);
-  border: none;
+  border: 2px solid transparent;
+  font: 600 13px var(--font);
+  color: var(--ink);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.category-row.selected { border-color: var(--accent); background: var(--accent-tint); color: var(--accent); }
+.category-row .check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--hairline); flex: none; position: relative; }
+.category-row.selected .check { border-color: var(--accent); background: var(--accent); }
+.category-row.selected .check::after {
+  content: "✓"; color: #fff; font-size: 11px; font-weight: 700;
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+}
+
+.title-row { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+.title-row .text-field { margin-bottom: 0; flex: 1; }
+.generate-title-btn {
+  width: 38px; height: 38px; border-radius: 50%; flex: none;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-card-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
   cursor: pointer;
 }
+.generate-title-btn:disabled { opacity: 0.4; cursor: default; }
 
 .segmented { display: flex; gap: 8px; margin-bottom: 16px; }
 .segmented-option {
@@ -433,6 +446,8 @@ button, input, textarea {
 }
 .toggle.on { background: var(--accent); }
 .toggle.on::after { left: auto; right: 2px; box-shadow: none; }
+.toggle:disabled { opacity: 0.4; cursor: default; }
+.toggle-row.disabled { opacity: 0.55; }
 
 .preview-card {
   background: var(--bg-card);
@@ -555,6 +570,19 @@ button, input, textarea {
   color: transparent !important;
 }
 .cell.revealed { color: var(--muted-4) !important; }
+.cell.wrong::after {
+  content: "";
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  background: linear-gradient(
+    to bottom right,
+    transparent calc(50% - 1px),
+    oklch(55% .18 25 / .7) calc(50% - 1px),
+    oklch(55% .18 25 / .7) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  pointer-events: none;
+}
 .cell-number {
   position: absolute; top: 2px; left: 3px;
   font: 600 8px var(--font); color: var(--muted-4);
@@ -579,12 +607,14 @@ button, input, textarea {
 }
 .clue-step { font: 600 18px var(--font); color: var(--muted-3); padding: 0 4px; background: none; border: none; cursor: pointer; }
 .clue-text { flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clue-number { font-weight: 400; color: var(--muted-5); }
 
 .keyboard {
   display: flex;
   flex-direction: column;
   gap: 5px;
   padding: 6px 8px calc(14px + env(safe-area-inset-bottom, 0px));
+  touch-action: manipulation;
 }
 .keyboard-row { display: flex; gap: 5px; }
 .keyboard-row.indent { padding: 0 10px; }
@@ -601,6 +631,13 @@ button, input, textarea {
   color: var(--ink);
   border: none;
   cursor: pointer;
+  /* Without this, rapid double-tapping a key (e.g. a double letter, or
+     several quick backspaces) gets interpreted as a double-tap-to-zoom
+     gesture on mobile browsers instead of two taps. */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .key.backspace { flex: 1.4; background: var(--bg-canvas); }
 .key.done { flex: 1.4; background: var(--accent); color: #fff; font-weight: 700; }
@@ -663,7 +700,12 @@ button, input, textarea {
 .metric-label { font: 600 12px var(--font); color: var(--muted-45); }
 .metric-change { font: 600 11px var(--font); color: var(--muted-4); background: none; border: none; cursor: pointer; }
 
-.ranking-row { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border-radius: var(--radius-card-sm); padding: 10px 12px; box-shadow: var(--shadow-card); }
+.ranking-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-card); border-radius: var(--radius-card-sm);
+  padding: 10px 12px; box-shadow: var(--shadow-card);
+  border: none; width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit;
+}
 .ranking-num { width: 22px; text-align: center; font: 800 14px var(--font); color: var(--muted-3); }
 .ranking-num.gold { color: var(--gold); }
 .ranking-avatar { width: 30px; height: 30px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font: 700 12px var(--font); background: oklch(58% .1 var(--player-hue)); }
@@ -686,6 +728,10 @@ button, input, textarea {
 .settings-card { display: flex; flex-direction: column; gap: 1px; background: var(--bg-card); border-radius: var(--radius-card-sm); overflow: hidden; box-shadow: var(--shadow-card); }
 .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; font: 500 13px var(--font); border-bottom: 1px solid var(--hairline-soft); }
 .settings-row:last-child { border-bottom: none; }
+
+.user-row-identity { display: flex; align-items: center; gap: 10px; font: 600 13px var(--font); }
+.user-row-avatar { width: 30px; height: 30px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font: 700 12px var(--font); flex: none; }
+.delete-user-btn { background: none; border: none; color: oklch(55% .18 25); font: 600 12px var(--font); cursor: pointer; padding: 4px 6px; }
 
 /* ---------- Name entry (first run) ---------- */
 

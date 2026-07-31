@@ -92,6 +92,14 @@ const LocalBackend = {
       saveLocalData(data);
     }
   },
+  async deleteUser(name) {
+    const data = loadLocalData();
+    delete data.users[name];
+    for (const p of Object.values(data.puzzles)) {
+      p.players = (p.players || []).filter((n) => n !== name);
+    }
+    saveLocalData(data);
+  },
   async createPuzzle(req) {
     const grid = generatePuzzle({ keywords: req.keywords, size: req.size, difficulty: req.difficulty, wordBank: WORD_BANK });
     const id = `${slugify(req.title) || "puzzle"}-${Date.now().toString(36)}`;
@@ -273,6 +281,9 @@ const RemoteBackend = {
     // Not implemented server-side yet — settings are UI-local for now
     // (README notes this as a follow-up if it needs to sync across devices).
   },
+  async deleteUser(name) {
+    await this.apiPost("/delete-user", { user: name });
+  },
   async createPuzzle(req) {
     const res = await this.apiPost("/create-puzzle", req);
     return res.puzzle;
@@ -321,7 +332,7 @@ let selectedDirection = "across";
 let sessionStartTime = null;
 let sessionTimerHandle = null;
 let autoCheckOn = false;
-let createKeywords = [];
+let createCategory = null;
 let rankingsWindow = "week";
 let rankingsMetric = "Contribution score";
 let lastSearchQuery = "";
@@ -334,6 +345,16 @@ const RANKING_METRICS = [
   "Average accuracy", "Average completion time", "Lowest reveal usage", "Lowest auto check usage",
 ];
 const SEARCH_CATEGORIES = ["Geography", "Movies", "History", "Sports", "Science", "Food", "Kids"];
+
+const TITLE_IDEAS = {
+  geography: ["European Capitals", "Rivers of the World", "Mountain Peaks", "Island Nations", "Deserts & Dunes", "World Landmarks", "Around the Globe"],
+  movies: ["Movie Night", "Animated Classics", "Superhero Showdown", "Sci-Fi Favorites", "Classic Comedies", "Blockbuster Hits", "Behind the Scenes"],
+  history: ["Ancient Civilizations", "Kings & Queens", "Empires & Explorers", "Renaissance Rewind", "Legends of the Past", "Turning Points"],
+  sports: ["Game Day", "Olympic Spirit", "Team Sports", "Track & Field", "Sporting Legends", "Play Ball", "Home Field Advantage"],
+  science: ["Space Explorers", "Under the Microscope", "Elements & Energy", "Wonders of Science", "Planet Earth", "Lab Notes"],
+  food: ["Foodie Favorites", "World Cuisine", "Sweet Treats", "Kitchen Classics", "Taste of the World", "Dinner Party"],
+  kids: ["Storybook Adventures", "Fairy Tale Fun", "Playground Games", "Once Upon a Time", "Kids' Corner", "Make-Believe"],
+};
 
 // ===========================================================================
 // Small helpers
@@ -397,7 +418,7 @@ function renderBottomNav(nav, activeScreen) {
       bars.append(el("span"), el("span"), el("span"));
       return el("div", { class: "nav-icon" }, bars);
     } },
-    { id: "screen-profile", label: "Profile", icon: () => {
+    { id: "screen-settings", label: "Settings", icon: () => {
       // Real player color + initial (matches the avatars used everywhere
       // else) instead of a generic silhouette — falls back to the plain
       // icon only in the brief window before a profile is picked.
@@ -421,7 +442,7 @@ function renderBottomNav(nav, activeScreen) {
       if (item.id === "screen-home") renderHome();
       if (item.id === "screen-search") renderSearch();
       if (item.id === "screen-rankings") renderRankings();
-      if (item.id === "screen-profile") renderProfile();
+      if (item.id === "screen-settings") renderSettings();
       navigate(item.id);
     });
     nav.appendChild(btn);
@@ -688,14 +709,14 @@ let createDifficulty = "medium";
 let createVisibility = "open";
 
 function openCreate() {
-  createKeywords = [];
+  createCategory = null;
   createSize = "standard";
   createDifficulty = "medium";
   createVisibility = "open";
   $("#create-title").value = "";
   $("#create-description").value = "";
-  renderCreateCategoryChips();
-  renderCreateKeywords();
+  renderCreateCategoryList();
+  updateGenerateTitleButton();
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
   renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderCreatePreview(); });
   $("#create-visibility").textContent = "Open · anyone with the link can join";
@@ -703,46 +724,42 @@ function openCreate() {
   navigate("screen-create");
 }
 
-// Category chips are just a quick-pick shortcut for the same keywords list
-// free-text chips populate — tapping one toggles its name in/out of
-// createKeywords, same as typing it via "+ Add".
-function renderCreateCategoryChips() {
-  const row = $("#create-category-chips");
-  row.innerHTML = "";
+// Category is now the required, primary driver of what a puzzle's words are
+// about — single-select, not the old multi-select keyword-chip shortcut.
+function renderCreateCategoryList() {
+  const list = $("#create-category-list");
+  list.innerHTML = "";
   for (const cat of SEARCH_CATEGORIES) {
-    const active = createKeywords.some((k) => k.toLowerCase() === cat.toLowerCase());
-    const chip = el("button", { class: "chip" + (active ? " active" : ""), text: cat });
-    chip.addEventListener("click", () => {
-      if (active) createKeywords = createKeywords.filter((k) => k.toLowerCase() !== cat.toLowerCase());
-      else createKeywords.push(cat);
-      renderCreateCategoryChips();
-      renderCreateKeywords();
+    const selected = createCategory === cat;
+    const row = el("button", { class: "category-row" + (selected ? " selected" : "") }, [
+      el("span", { text: cat }),
+      el("span", { class: "check" }),
+    ]);
+    row.addEventListener("click", () => {
+      createCategory = cat;
+      renderCreateCategoryList();
+      updateGenerateTitleButton();
     });
-    row.appendChild(chip);
+    list.appendChild(row);
   }
 }
+
+function updateGenerateTitleButton() {
+  $("#create-generate-title").disabled = !createCategory;
+}
+
+$("#create-generate-title").addEventListener("click", () => {
+  if (!createCategory) return;
+  const ideas = TITLE_IDEAS[createCategory.toLowerCase()] || [];
+  if (ideas.length === 0) return;
+  $("#create-title").value = ideas[Math.floor(Math.random() * ideas.length)];
+});
 
 function renderSegmented(sel, value, onChange) {
   $all(`${sel} .segmented-option`).forEach((btn) => {
     btn.classList.toggle("selected", btn.dataset.value === value);
     btn.onclick = () => { onChange(btn.dataset.value); renderSegmented(sel, btn.dataset.value, onChange); };
   });
-}
-
-function renderCreateKeywords() {
-  const wrap = $("#create-keywords");
-  wrap.innerHTML = "";
-  for (const kw of createKeywords) {
-    const chip = el("div", { class: "keyword-chip" }, [
-      el("span", { text: kw }),
-      el("button", { text: "×", onclick: () => { createKeywords = createKeywords.filter((k) => k !== kw); renderCreateCategoryChips(); renderCreateKeywords(); } }),
-    ]);
-    wrap.appendChild(chip);
-  }
-  wrap.appendChild(el("button", { class: "add-chip-btn", text: "+ Add", onclick: () => {
-    const kw = prompt("Add a keyword or topic (e.g. a place, movie, category):");
-    if (kw && kw.trim()) { createKeywords.push(kw.trim().slice(0, 24)); renderCreateCategoryChips(); renderCreateKeywords(); }
-  } }));
 }
 
 function renderCreatePreview() {
@@ -768,20 +785,17 @@ $("#create-visibility").addEventListener("click", () => {
 });
 
 $("#create-submit").addEventListener("click", async () => {
+  if (!createCategory) { showToast("Pick a category first"); return; }
   const title = $("#create-title").value.trim();
   if (!title) { showToast("Give your puzzle a title first"); return; }
   const btn = $("#create-submit");
   btn.disabled = true;
   btn.textContent = "Generating…";
-  // No category/keywords picked — riff off the title itself instead of
-  // falling back to a totally random puzzle. The generator already
-  // tokenizes multi-word keywords, so the raw title works directly.
-  const keywords = createKeywords.length > 0 ? createKeywords : [title];
   try {
     const puzzle = await Backend.createPuzzle({
       title,
       description: $("#create-description").value.trim(),
-      keywords,
+      keywords: [createCategory],
       size: createSize,
       difficulty: createDifficulty,
       visibility: createVisibility,
@@ -790,7 +804,7 @@ $("#create-submit").addEventListener("click", async () => {
     await refreshData();
     openPuzzle(puzzle.id);
   } catch (e) {
-    showToast(e.message || "Couldn't generate that puzzle — try different keywords");
+    showToast(e.message || "Couldn't generate that puzzle — try a different category");
   } finally {
     btn.disabled = false;
     btn.textContent = "Generate & publish";
@@ -800,9 +814,10 @@ $("#create-submit").addEventListener("click", async () => {
 function prefillCreateSimilar(puzzle) {
   openCreate();
   $("#create-title").value = `${puzzle.title} II`;
-  createKeywords = [...(puzzle.keywords || [])];
-  renderCreateCategoryChips();
-  renderCreateKeywords();
+  const prevCategory = (puzzle.keywords || [])[0];
+  createCategory = SEARCH_CATEGORIES.find((c) => c.toLowerCase() === prevCategory?.toLowerCase()) || null;
+  renderCreateCategoryList();
+  updateGenerateTitleButton();
   createSize = puzzle.size;
   createDifficulty = puzzle.difficulty;
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
@@ -1036,16 +1051,22 @@ function updateCellDisplay(row, col) {
   const node = cellNode(row, col);
   if (!node) return;
   const filled = currentPuzzle.cells[`${row}-${col}`];
+  const cellDef = currentPuzzle.grid.cells.find((c) => c.row === row && c.col === col);
   node.textContent = "";
-  if (currentPuzzle.grid.cells.find((c) => c.row === row && c.col === col)?.number) {
-    node.appendChild(el("span", { class: "cell-number", text: currentPuzzle.grid.cells.find((c) => c.row === row && c.col === col).number }));
+  if (cellDef?.number) {
+    node.appendChild(el("span", { class: "cell-number", text: cellDef.number }));
   }
-  node.classList.remove("empty", "filled", "revealed");
+  node.classList.remove("empty", "filled", "revealed", "wrong");
   const hue = filled?.owner ? dataCache.users[filled.owner]?.hue : null;
   if (filled?.letter) {
     node.appendChild(document.createTextNode(filled.letter));
     node.classList.add("filled");
     if (filled.revealed) node.classList.add("revealed");
+    // Auto Check is a purely local/visual toggle — no need to round-trip
+    // through the backend, we already have the correct answer client-side.
+    if (autoCheckOn && !filled.revealed && cellDef && filled.letter !== cellDef.letter) {
+      node.classList.add("wrong");
+    }
     node.style.background = filled.revealed || hue == null ? "#fff" : `oklch(94% .02 ${hue})`;
     node.style.color = filled.revealed ? "" : (hue != null ? `oklch(58% .1 ${hue})` : "");
   } else {
@@ -1054,6 +1075,13 @@ function updateCellDisplay(row, col) {
     node.style.color = "";
   }
   refreshGridState();
+}
+
+function refreshAllCellsForAutoCheck() {
+  if (!currentPuzzle) return;
+  for (const c of currentPuzzle.grid.cells) {
+    if (!c.block) updateCellDisplay(c.row, c.col);
+  }
 }
 
 function refreshGridState() {
@@ -1083,7 +1111,12 @@ function selectCell(row, col) {
 function updateClueBar() {
   const cells = currentWord();
   const entry = findWordEntry(cells, selectedDirection);
-  $("#clue-text").textContent = entry ? `${entry.number} ${cap(entry.direction)} · ${entry.clue}` : "";
+  const clueText = $("#clue-text");
+  clueText.innerHTML = "";
+  if (entry) {
+    clueText.appendChild(el("span", { class: "clue-number", text: `${entry.number} ${cap(entry.direction)}` }));
+    clueText.appendChild(document.createTextNode(` · ${entry.clue}`));
+  }
 }
 
 function stepClue(delta) {
@@ -1108,6 +1141,10 @@ function advanceSelection(reverse) {
   if (nextIdx >= 0 && nextIdx < cells.length) {
     selectedCell = cells[nextIdx];
     refreshGridState();
+  } else if (!reverse) {
+    // Typed the last letter of this word — jump straight to the next clue
+    // instead of just leaving the cursor stranded on the final cell.
+    stepClue(1);
   }
 }
 
@@ -1209,6 +1246,7 @@ $("#autocheck-toggle").addEventListener("click", () => {
   autoCheckOn = !autoCheckOn;
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
   if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
+  refreshAllCellsForAutoCheck();
 });
 
 function revealCells(cells) {
@@ -1412,7 +1450,7 @@ function renderRankingsList() {
   list.innerHTML = "";
   ranked.forEach((r, i) => {
     const hue = dataCache.users[r.name]?.hue ?? 250;
-    list.appendChild(el("div", { class: "ranking-row" }, [
+    list.appendChild(el("button", { class: "ranking-row", onclick: () => openProfileDetail(r.name) }, [
       el("div", { class: "ranking-num" + (i === 0 ? " gold" : ""), text: i + 1 }),
       el("div", { class: "ranking-avatar", style: `background:oklch(58% .1 ${hue})`, text: initials(r.name) }),
       el("div", { class: "ranking-name", text: r.name === currentUser.name ? "You" : r.name }),
@@ -1440,23 +1478,67 @@ document.addEventListener("click", (e) => {
 });
 
 // ===========================================================================
-// Profile screen
+// Settings screen (user management) + profile detail (viewed via Rankings)
 // ===========================================================================
 
-function renderProfile() {
-  const hue = currentUser.hue ?? 250;
-  $("#profile-avatar").style.background = `oklch(58% .1 ${hue})`;
-  $("#profile-avatar").textContent = initials(currentUser.name);
-  $("#profile-name").textContent = currentUser.name;
+function renderSettings() {
+  const list = $("#settings-user-list");
+  list.innerHTML = "";
+  const names = Object.keys(dataCache.users);
+  if (names.length === 0) {
+    list.appendChild(el("div", { class: "settings-row", text: "No players yet." }));
+    return;
+  }
+  for (const name of names) {
+    const hue = dataCache.users[name]?.hue ?? 250;
+    const deleteBtn = el("button", { class: "delete-user-btn", text: "Delete" });
+    deleteBtn.addEventListener("click", () => confirmDeleteUser(name));
+    list.appendChild(el("div", { class: "settings-row" }, [
+      el("div", { class: "user-row-identity" }, [
+        el("div", { class: "user-row-avatar", style: `background:oklch(58% .1 ${hue})`, text: initials(name) }),
+        el("span", { text: name === currentUser.name ? `${name} (you)` : name }),
+      ]),
+      deleteBtn,
+    ]));
+  }
+}
 
-  const myPuzzles = Object.values(dataCache.puzzles);
-  const completed = myPuzzles.filter((p) => p.state === "completed" && p.players.includes(currentUser.name));
-  const created = myPuzzles.filter((p) => p.createdBy === currentUser.name);
+async function confirmDeleteUser(name) {
+  if (!confirm(`Delete "${name}"? This can't be undone.`)) return;
+  await Backend.deleteUser(name);
+  await refreshData();
+  if (name === currentUser.name) {
+    // Deleted your own account — log out back to the profile picker.
+    localStorage.removeItem("across_user_name");
+    currentUser = null;
+    renderProfilePicker();
+    navigate("screen-name-entry");
+  } else {
+    renderSettings();
+  }
+}
+
+function openProfileDetail(name) {
+  renderProfileDetail(name);
+  navigate("screen-profile-detail");
+}
+
+function renderProfileDetail(name) {
+  const user = dataCache.users[name];
+  if (!user) return;
+  const hue = user.hue ?? 250;
+  $("#profile-detail-avatar").style.background = `oklch(58% .1 ${hue})`;
+  $("#profile-detail-avatar").textContent = initials(name);
+  $("#profile-detail-name").textContent = name === currentUser.name ? `${name} (you)` : name;
+
+  const allPuzzles = Object.values(dataCache.puzzles);
+  const completed = allPuzzles.filter((p) => p.state === "completed" && p.players.includes(name));
+  const created = allPuzzles.filter((p) => p.createdBy === name);
   const avgTime = completed.length ? formatMinSec(completed.reduce((s, p) => s + (p.totalTimeMs || 0), 0) / completed.length) : "—";
-  const myTotals = computeRankingTotals(0)[currentUser.name];
-  const avgAccuracy = myTotals ? METRIC_DEFS["Average accuracy"].get(myTotals) : null;
+  const totals = computeRankingTotals(0)[name];
+  const avgAccuracy = totals ? METRIC_DEFS["Average accuracy"].get(totals) : null;
 
-  const stats = $("#profile-stats");
+  const stats = $("#profile-detail-stats");
   stats.innerHTML = "";
   const tiles = [
     [completed.length, "Crosswords completed"],
@@ -1471,18 +1553,35 @@ function renderProfile() {
     ]));
   }
 
-  const settings = currentUser.settings || { push: true, sound: true, haptic: true };
-  $all("[data-setting]").forEach((btn) => {
-    const key = btn.dataset.setting;
-    btn.classList.toggle("on", !!settings[key]);
-    btn.onclick = async () => {
-      settings[key] = !settings[key];
-      btn.classList.toggle("on", settings[key]);
-      currentUser.settings = settings;
-      await Backend.updateUserSettings(currentUser.name, settings);
-    };
-  });
+  // Device settings only make sense for your own account, not someone
+  // else's profile you're just viewing via Rankings.
+  const settingsWrap = $("#profile-detail-settings-wrap");
+  settingsWrap.innerHTML = "";
+  if (name === currentUser.name) {
+    settingsWrap.appendChild(el("div", { class: "field-label", style: "color:var(--muted-45)", text: "Settings" }));
+    const card = el("div", { class: "settings-card" });
+    const settings = currentUser.settings || { push: true, sound: true, haptic: true };
+    const rows = [["push", "Push notifications"], ["sound", "Sound effects"], ["haptic", "Haptic feedback"]];
+    for (const [key, label] of rows) {
+      const toggle = el("button", { class: "toggle" + (settings[key] ? " on" : "") });
+      toggle.addEventListener("click", async () => {
+        settings[key] = !settings[key];
+        toggle.classList.toggle("on", settings[key]);
+        currentUser.settings = settings;
+        await Backend.updateUserSettings(currentUser.name, settings);
+      });
+      card.appendChild(el("div", { class: "settings-row" }, [el("div", { text: label }), toggle]));
+    }
+    settingsWrap.appendChild(card);
+  }
 }
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-action='back-to-rankings']")) {
+    renderRankings();
+    navigate("screen-rankings");
+  }
+});
 
 // ===========================================================================
 
