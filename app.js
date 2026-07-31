@@ -385,15 +385,24 @@ function navigate(screenId) {
 
 function renderBottomNav(nav, activeScreen) {
   const items = [
-    { id: "screen-home", label: "Home", icon: () => el("div", { class: "nav-icon", text: "⌂" }) },
-    { id: "screen-search", label: "Search", icon: () => el("div", { class: "nav-search-icon" }) },
+    { id: "screen-home", label: "Home", icon: () => el("div", { class: "nav-icon" }, el("div", { class: "nav-home-icon" })) },
+    { id: "screen-search", label: "Search", icon: () => el("div", { class: "nav-icon" }, el("div", { class: "nav-search-icon" })) },
     { id: "__create__", label: "", icon: null },
     { id: "screen-rankings", label: "Rankings", icon: () => {
-      const wrap = el("div", { class: "nav-rankings-icon" });
-      wrap.append(el("span"), el("span"), el("span"));
-      return wrap;
+      const bars = el("div", { class: "nav-rankings-icon" });
+      bars.append(el("span"), el("span"), el("span"));
+      return el("div", { class: "nav-icon" }, bars);
     } },
-    { id: "screen-profile", label: "Profile", icon: () => el("div", { class: "nav-profile-icon" }) },
+    { id: "screen-profile", label: "Profile", icon: () => {
+      // Real player color + initial (matches the avatars used everywhere
+      // else) instead of a generic silhouette — falls back to the plain
+      // icon only in the brief window before a profile is picked.
+      if (currentUser) {
+        const hue = currentUser.hue ?? 250;
+        return el("div", { class: "nav-icon" }, el("div", { class: "nav-profile-avatar", style: `background:oklch(58% .1 ${hue})`, text: initials(currentUser.name) }));
+      }
+      return el("div", { class: "nav-icon" }, el("div", { class: "nav-profile-icon" }));
+    } },
   ];
   nav.innerHTML = "";
   for (const item of items) {

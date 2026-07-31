@@ -147,9 +147,28 @@ button, input, textarea {
   padding: 0;
   cursor: pointer;
 }
-.nav-item .nav-icon { width: 20px; height: 20px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+/* Common bounding box every nav icon sits centered in, so Home/Search/
+   Rankings/Profile all read as the same visual size regardless of how
+   each one is actually drawn. */
+.nav-item .nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
 .nav-item .nav-label { font: 600 9.5px var(--font); margin-top: 2px; }
 .nav-item.active { color: var(--accent); }
+
+.nav-home-icon { position: relative; width: 18px; height: 16px; }
+.nav-home-icon::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 8px solid currentColor;
+}
+.nav-home-icon::after {
+  content: ""; position: absolute; bottom: 0; left: 3px;
+  width: 12px; height: 8px;
+  border: 2px solid currentColor;
+  border-top: none;
+  box-sizing: border-box;
+}
 
 .nav-search-icon { width: 15px; height: 15px; border: 2px solid currentColor; border-radius: 50%; position: relative; }
 .nav-search-icon::after { content: ""; position: absolute; bottom: -5px; right: -5px; width: 6px; height: 2px; background: currentColor; border-radius: 1px; transform: rotate(45deg); }
@@ -162,6 +181,16 @@ button, input, textarea {
 
 .nav-profile-icon { width: 18px; height: 18px; border-radius: 50%; background: currentColor; opacity: 0.35; }
 .nav-item.active .nav-profile-icon { opacity: 1; }
+
+/* Real player color + initial, same look as avatars elsewhere in the app —
+   already unambiguous, so the active state gets a ring instead of the
+   opacity toggle the generic silhouette icon used. */
+.nav-profile-avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font: 700 9.5px var(--font);
+}
+.nav-item.active .nav-profile-avatar { box-shadow: 0 0 0 2px var(--accent); }
 
 .nav-create {
   width: 44px;
