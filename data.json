@@ -698,33 +698,88 @@
       "cells": {
         "2-0": {
           "letter": "C",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
         },
         "2-1": {
           "letter": "H",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
         },
         "2-2": {
           "letter": "I",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
         },
         "2-3": {
           "letter": "N",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
         },
         "2-4": {
           "letter": "A",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
         },
         "0-2": {
+          "letter": "C",
+          "owner": null,
+          "revealed": true
+        },
+        "1-2": {
+          "letter": "A",
+          "owner": null,
+          "revealed": true
+        },
+        "3-2": {
+          "letter": "R",
+          "owner": null,
+          "revealed": true
+        },
+        "4-2": {
+          "letter": "O",
+          "owner": null,
+          "revealed": true
+        },
+        "0-0": {
+          "letter": "R",
+          "owner": null,
+          "revealed": true
+        },
+        "0-4": {
           "letter": "G",
-          "owner": "Alex",
-          "revealed": false
+          "owner": null,
+          "revealed": true
+        },
+        "1-0": {
+          "letter": "O",
+          "owner": null,
+          "revealed": true
+        },
+        "1-4": {
+          "letter": "R",
+          "owner": null,
+          "revealed": true
+        },
+        "3-0": {
+          "letter": "K",
+          "owner": null,
+          "revealed": true
+        },
+        "3-4": {
+          "letter": "V",
+          "owner": null,
+          "revealed": true
+        },
+        "4-0": {
+          "letter": "Y",
+          "owner": null,
+          "revealed": true
+        },
+        "4-4": {
+          "letter": "Y",
+          "owner": null,
+          "revealed": true
         }
       },
       "players": [
@@ -732,20 +787,22 @@
       ],
       "sessions": {
         "Alex": {
-          "lettersEntered": 6,
+          "lettersEntered": 9,
           "correctLetters": 5,
-          "incorrectLetters": 1,
+          "incorrectLetters": 4,
           "correctionsMade": 0,
-          "revealsUsed": 0,
+          "revealsUsed": 17,
           "wordsCompleted": 1,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T00:59:21.663Z"
         }
       },
-      "state": "open",
-      "completedAt": null,
+      "state": "completed",
+      "completedAt": "2026-07-31T01:01:37.629Z",
       "totalTimeMs": 0,
-      "highlights": []
+      "highlights": [
+        "Alex typed the most letters — 9 of 9"
+      ]
     }
   }
 }
