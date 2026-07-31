@@ -100,6 +100,12 @@ const LocalBackend = {
     }
     saveLocalData(data);
   },
+  async deletePuzzle(puzzleId) {
+    const data = loadLocalData();
+    delete data.puzzles[puzzleId];
+    saveLocalData(data);
+    new BroadcastChannel(`across-room-${puzzleId}`).postMessage({ type: "puzzle-deleted" });
+  },
   async createPuzzle(req) {
     const grid = generatePuzzle({ keywords: req.keywords, size: req.size, difficulty: req.difficulty, wordBank: WORD_BANK });
     const id = `${slugify(req.title) || "puzzle"}-${Date.now().toString(36)}`;
@@ -161,8 +167,13 @@ const LocalBackend = {
         handlers.onPresence?.([...presence.keys()]);
         return;
       }
+      if (msg.type === "puzzle-deleted") {
+        handlers.onPuzzleDeleted?.();
+        return;
+      }
       const fresh = loadLocalData();
       const p = fresh.puzzles[puzzleId];
+      if (!p) return;
       if (msg.type === "cell-update") {
         handlers.onCellUpdate?.({ row: msg.row, col: msg.col, letter: msg.letter, owner: msg.owner, revealed: msg.revealed });
       } else if (msg.type === "cursor") {
@@ -284,6 +295,9 @@ const RemoteBackend = {
   async deleteUser(name) {
     await this.apiPost("/delete-user", { user: name });
   },
+  async deletePuzzle(puzzleId) {
+    await this.apiPost("/delete-puzzle", { puzzleId });
+  },
   async createPuzzle(req) {
     const res = await this.apiPost("/create-puzzle", req);
     return res.puzzle;
@@ -302,6 +316,7 @@ const RemoteBackend = {
       else if (msg.type === "cursor") handlers.onCursor?.(msg);
       else if (msg.type === "completed") handlers.onCompleted?.();
       else if (msg.type === "time-update") handlers.onTimeUpdate?.({ sessions: msg.sessions, totalTimeMs: msg.totalTimeMs });
+      else if (msg.type === "puzzle-deleted") handlers.onPuzzleDeleted?.();
     };
     const send = (msg) => {
       if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
@@ -554,12 +569,7 @@ $("#name-entry-input").addEventListener("keydown", (e) => { if (e.key === "Enter
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-action='go-home']")) {
-    if (currentPuzzleConn) {
-      flushTime(true);
-      clearInterval(timeFlushHandle);
-      currentPuzzleConn.close();
-      currentPuzzleConn = null;
-    }
+    leavePuzzleConnection();
     renderProfilePicker();
     navigate("screen-name-entry");
   }
@@ -851,12 +861,7 @@ function flushTime(final) {
 }
 
 function openPuzzle(puzzleId) {
-  if (currentPuzzleConn) {
-    flushTime(true);
-    currentPuzzleConn.close();
-    currentPuzzleConn = null;
-  }
-  clearInterval(timeFlushHandle);
+  leavePuzzleConnection();
   navigate("screen-puzzle");
   $("#puzzle-title").textContent = "Loading…";
   $("#puzzle-grid").innerHTML = "";
@@ -908,6 +913,16 @@ function openPuzzle(puzzleId) {
     },
     onCompleted() {
       handlePuzzleCompleted();
+    },
+    onPuzzleDeleted() {
+      // Someone else deleted this puzzle while we had it open.
+      leavePuzzleConnection();
+      currentPuzzle = null;
+      showToast("This crossword was deleted");
+      refreshData().then(() => {
+        renderHome();
+        navigate("screen-home");
+      });
     },
   });
 }
@@ -1249,11 +1264,42 @@ document.addEventListener("click", (e) => {
   const action = e.target.closest("[data-assist]")?.dataset.assist;
   if (!action) return;
   if (action === "close") { $("#assist-menu").style.display = "none"; return; }
+  if (action === "delete-puzzle") { $("#assist-menu").style.display = "none"; confirmDeletePuzzle(); return; }
   if (action === "reveal-cell") revealCells(currentWord().length ? [selectedCell] : []);
   if (action === "reveal-word") revealCells(currentWord());
   if (action === "reveal-puzzle") revealCells(currentPuzzle.grid.cells.filter((c) => !c.block));
   $("#assist-menu").style.display = "none";
 });
+
+async function confirmDeletePuzzle() {
+  if (!currentPuzzle) return;
+  const title = currentPuzzle.title;
+  if (!confirm(`Delete "${title}"? This deletes it for everyone playing it, and can't be undone.`)) return;
+  const puzzleId = currentPuzzle.id;
+  leavePuzzleConnection();
+  try {
+    await Backend.deletePuzzle(puzzleId);
+    await refreshData();
+    showToast(`Deleted "${title}"`);
+  } catch (e) {
+    showToast(e.message || "Couldn't delete that crossword");
+  }
+  currentPuzzle = null;
+  renderHome();
+  navigate("screen-home");
+}
+
+// Shared teardown for every path that leaves an open puzzle — flushes the
+// pending time delta, stops the timers, and closes the socket.
+function leavePuzzleConnection() {
+  if (currentPuzzleConn) {
+    flushTime(true);
+    currentPuzzleConn.close();
+    currentPuzzleConn = null;
+  }
+  clearInterval(timeFlushHandle);
+  clearInterval(sessionTimerHandle);
+}
 $("#autocheck-toggle").addEventListener("click", () => {
   autoCheckOn = !autoCheckOn;
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);

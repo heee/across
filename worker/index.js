@@ -14,6 +14,8 @@
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
+//   POST /delete-puzzle   { puzzleId }                           -> removes the puzzle from data.json, wipes its PuzzleRoom DO
+//                                                                    state, and disconnects anyone still in it
 //   POST /complete-puzzle { puzzleId, cells, sessions, totalTimeMs, completed }
 //                                                                 -> manual/fallback snapshot commit; the PuzzleRoom DO normally
 //                                                                    commits snapshots directly (see commitSnapshot below) since it
@@ -101,6 +103,27 @@ export default {
             p.players = (p.players || []).filter((n) => n !== name);
           }
         }, `Delete user: ${name}`);
+        return json({ ok: true }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, 502, cors);
+      }
+    }
+
+    if (url.pathname === "/delete-puzzle" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const puzzleId = typeof body?.puzzleId === "string" ? body.puzzleId.slice(0, 64) : "";
+      if (!puzzleId) return json({ error: "invalid payload" }, 400, cors);
+
+      try {
+        await commitMutation(env, (data) => {
+          delete data.puzzles[puzzleId];
+        }, `Delete puzzle: ${puzzleId}`);
+        // Also clear the DO's own live copy and kick anyone still connected,
+        // otherwise it keeps serving (and re-committing) the deleted puzzle.
+        const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
+        const stub = env.PUZZLE_ROOM.get(roomId);
+        await stub.fetch("https://internal/delete", { method: "POST" });
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -198,9 +221,11 @@ export class PuzzleRoom {
     this.sockets = new Map(); // WebSocket -> { user }
     this.puzzle = null; // loaded lazily from storage
     this.lastPersist = 0;
+    this.deleted = false;
   }
 
   async loadPuzzle() {
+    if (this.deleted) return null;
     if (this.puzzle) return this.puzzle;
     this.puzzle = (await this.state.storage.get("puzzle")) || null;
     return this.puzzle;
@@ -213,6 +238,18 @@ export class PuzzleRoom {
       const puzzle = await request.json();
       await this.state.storage.put("puzzle", puzzle);
       this.puzzle = puzzle;
+      return new Response("ok");
+    }
+
+    if (url.pathname === "/delete" && request.method === "POST") {
+      this.deleted = true; // blocks any in-flight persist from re-committing it
+      this.broadcast({ type: "puzzle-deleted" }, null);
+      for (const socket of this.sockets.keys()) {
+        try { socket.close(1000, "puzzle deleted"); } catch (e) {}
+      }
+      this.sockets.clear();
+      this.puzzle = null;
+      await this.state.storage.deleteAll();
       return new Response("ok");
     }
 
@@ -362,6 +399,9 @@ export class PuzzleRoom {
   }
 
   async persist(completed) {
+    // A message that arrived just before/during deletion must not resurrect
+    // the puzzle in storage or re-commit it to data.json.
+    if (this.deleted || !this.puzzle) return;
     await this.state.storage.put("puzzle", this.puzzle);
     const now = Date.now();
     // Snapshot to GitHub on completion always; otherwise throttle to avoid
