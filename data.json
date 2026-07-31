@@ -7759,6 +7759,71 @@
           "letter": "",
           "owner": "Henning",
           "revealed": false
+        },
+        "0-9": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-9": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-9": {
+          "letter": "T",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-9": {
+          "letter": "Z",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-9": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "6-9": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "8-9": {
+          "letter": "A",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "9-9": {
+          "letter": "B",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "10-9": {
+          "letter": "D",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-3": {
+          "letter": "P",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-3": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-3": {
+          "letter": "P",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-3": {
+          "letter": "U",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -7766,13 +7831,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 30,
-          "correctLetters": 18,
-          "incorrectLetters": 12,
+          "lettersEntered": 45,
+          "correctLetters": 32,
+          "incorrectLetters": 13,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 4,
-          "timeSpentMs": 89272,
+          "timeSpentMs": 104273,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:35:34.495Z"
         }
