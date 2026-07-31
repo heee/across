@@ -6299,6 +6299,21 @@
           "letter": "S",
           "owner": "Henning",
           "revealed": false
+        },
+        "4-1": {
+          "letter": "C",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-3": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-4": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -6306,21 +6321,24 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 26,
-          "correctLetters": 18,
+          "lettersEntered": 30,
+          "correctLetters": 22,
           "incorrectLetters": 8,
           "correctionsMade": 3,
           "revealsUsed": 0,
-          "wordsCompleted": 4,
+          "wordsCompleted": 5,
           "timeSpentMs": 123741,
           "autoCheckUsed": true,
           "joinedAt": "2026-07-31T03:24:39.404Z"
         }
       },
-      "state": "open",
-      "completedAt": null,
+      "state": "completed",
+      "completedAt": "2026-07-31T03:44:49.497Z",
       "totalTimeMs": 0,
-      "highlights": []
+      "highlights": [
+        "Henning typed the most letters — 30 of 30",
+        "Henning played with Auto Check on (half credit this round)"
+      ]
     },
     "wanderlust-ms8e3qzj": {
       "id": "wanderlust-ms8e3qzj",
