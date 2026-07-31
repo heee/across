@@ -10476,7 +10476,17 @@
           "revealed": false
         },
         "0-2": {
-          "letter": "C",
+          "letter": "X",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-3": {
+          "letter": "A",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-4": {
+          "letter": "R",
           "owner": "Henning",
           "revealed": false
         }
@@ -10486,13 +10496,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 3,
-          "correctLetters": 3,
-          "incorrectLetters": 0,
+          "lettersEntered": 8,
+          "correctLetters": 5,
+          "incorrectLetters": 3,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 0,
-          "timeSpentMs": 0,
+          "wordsCompleted": 1,
+          "timeSpentMs": 14607,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:24:39.404Z"
         }
