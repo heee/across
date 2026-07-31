@@ -7669,6 +7669,11 @@
           "letter": "N",
           "owner": "Henning",
           "revealed": false
+        },
+        "0-0": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -7676,9 +7681,9 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 8,
+          "lettersEntered": 9,
           "correctLetters": 8,
-          "incorrectLetters": 0,
+          "incorrectLetters": 1,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 2,
