@@ -2425,7 +2425,7 @@
           "revealed": false
         },
         "2-8": {
-          "letter": "",
+          "letter": "O",
           "owner": "Henning",
           "revealed": false
         },
@@ -2473,6 +2473,26 @@
           "letter": "E",
           "owner": "Henning",
           "revealed": false
+        },
+        "0-8": {
+          "letter": "C",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-8": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-8": {
+          "letter": "W",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-8": {
+          "letter": "N",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -2490,15 +2510,15 @@
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 25,
-          "correctLetters": 15,
+          "lettersEntered": 30,
+          "correctLetters": 20,
           "incorrectLetters": 10,
           "correctionsMade": 1,
           "revealsUsed": 0,
-          "wordsCompleted": 1,
+          "wordsCompleted": 2,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T01:46:17.345Z",
-          "timeSpentMs": 618390
+          "timeSpentMs": 642900
         }
       },
       "state": "open",
