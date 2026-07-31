@@ -10139,6 +10139,16 @@
           "letter": "O",
           "owner": "Henning",
           "revealed": false
+        },
+        "0-0": {
+          "letter": "D",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "1-0": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -10146,8 +10156,8 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 9,
-          "correctLetters": 9,
+          "lettersEntered": 11,
+          "correctLetters": 11,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
