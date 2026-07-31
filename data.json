@@ -9563,6 +9563,2365 @@
       "completedAt": null,
       "totalTimeMs": 0,
       "highlights": []
+    },
+    "relics-and-ruins-ms8uj4eb": {
+      "id": "relics-and-ruins-ms8uj4eb",
+      "title": "Relics and ruins",
+      "description": "",
+      "keywords": [
+        "history"
+      ],
+      "size": "large",
+      "difficulty": "medium",
+      "visibility": "open",
+      "createdBy": "Henning",
+      "createdAt": "2026-07-31T11:15:25.571Z",
+      "grid": {
+        "rows": 15,
+        "cols": 15,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "C",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 5,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 6,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 12,
+            "letter": "V",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 14,
+            "letter": "F",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 6,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 12,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 14,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 5,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 6,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 9,
+            "letter": "B",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 10,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 11,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 12,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 13,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 14,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 6,
+            "letter": "M",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 12,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 14,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 5,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 6,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 7,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 8,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 9,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 10,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 11,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 12,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 14,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 3,
+            "letter": "X",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 6,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 12,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 5,
+            "col": 14,
+            "letter": "S",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 6,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 1,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 6,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 12,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 6,
+            "col": 14,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": 10
+          },
+          {
+            "row": 7,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 4,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 5,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 6,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 7,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 8,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 9,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 10,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 11,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 12,
+            "letter": "S",
+            "block": false,
+            "number": 11
+          },
+          {
+            "row": 7,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 7,
+            "col": 14,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 6,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 12,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 8,
+            "col": 14,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 0,
+            "letter": "U",
+            "block": false,
+            "number": 12
+          },
+          {
+            "row": 9,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 4,
+            "letter": "S",
+            "block": false,
+            "number": 13
+          },
+          {
+            "row": 9,
+            "col": 5,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 6,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 7,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 8,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 9,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 10,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 11,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 12,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 13,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 9,
+            "col": 14,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 6,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 12,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 10,
+            "col": 14,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 1,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 6,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 8,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 12,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 11,
+            "col": 14,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 1,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": 14
+          },
+          {
+            "row": 12,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 5,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 6,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 7,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 8,
+            "letter": "E",
+            "block": false,
+            "number": 15
+          },
+          {
+            "row": 12,
+            "col": 9,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 10,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 11,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 12,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 13,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 12,
+            "col": 14,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 5,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 6,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 7,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 8,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 9,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 10,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 11,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 12,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 13,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 13,
+            "col": 14,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 2,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 4,
+            "letter": "P",
+            "block": false,
+            "number": 16
+          },
+          {
+            "row": 14,
+            "col": 5,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 6,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 7,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 8,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 9,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 10,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 11,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 12,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 13,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 14,
+            "col": 14,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "CAESAR",
+            "clue": "Roman dictator stabbed on the Ides of March",
+            "row": 0,
+            "col": 0,
+            "length": 6,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ],
+              [
+                0,
+                5
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "COIN",
+            "clue": "Ancient (or modern) metal currency",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "SPHINX",
+            "clue": "Ancient Egyptian statue with a lion's body",
+            "row": 0,
+            "col": 3,
+            "length": 6,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                5,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "VIKING",
+            "clue": "Norse seafaring raider",
+            "row": 0,
+            "col": 12,
+            "length": 6,
+            "cells": [
+              [
+                0,
+                12
+              ],
+              [
+                1,
+                12
+              ],
+              [
+                2,
+                12
+              ],
+              [
+                3,
+                12
+              ],
+              [
+                4,
+                12
+              ],
+              [
+                5,
+                12
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "FORT",
+            "clue": "A fortified military post",
+            "row": 0,
+            "col": 14,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                14
+              ],
+              [
+                1,
+                14
+              ],
+              [
+                2,
+                14
+              ],
+              [
+                3,
+                14
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "SHIP",
+            "clue": "Vessel used by early explorers",
+            "row": 2,
+            "col": 2,
+            "length": 4,
+            "cells": [
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                2,
+                5
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "BUNKER",
+            "clue": "A fortified underground shelter",
+            "row": 2,
+            "col": 9,
+            "length": 6,
+            "cells": [
+              [
+                2,
+                9
+              ],
+              [
+                2,
+                10
+              ],
+              [
+                2,
+                11
+              ],
+              [
+                2,
+                12
+              ],
+              [
+                2,
+                13
+              ],
+              [
+                2,
+                14
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "down",
+            "answer": "MICHELANGELO",
+            "clue": "Renaissance artist who painted the Sistine Chapel",
+            "row": 3,
+            "col": 6,
+            "length": 12,
+            "cells": [
+              [
+                3,
+                6
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                6
+              ],
+              [
+                7,
+                6
+              ],
+              [
+                8,
+                6
+              ],
+              [
+                9,
+                6
+              ],
+              [
+                10,
+                6
+              ],
+              [
+                11,
+                6
+              ],
+              [
+                12,
+                6
+              ],
+              [
+                13,
+                6
+              ],
+              [
+                14,
+                6
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "CONSTITUTION",
+            "clue": "A nation's foundational set of laws",
+            "row": 4,
+            "col": 1,
+            "length": 12,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                4,
+                7
+              ],
+              [
+                4,
+                8
+              ],
+              [
+                4,
+                9
+              ],
+              [
+                4,
+                10
+              ],
+              [
+                4,
+                11
+              ],
+              [
+                4,
+                12
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "down",
+            "answer": "CENSORSHIP",
+            "clue": "Suppression of speech or information",
+            "row": 4,
+            "col": 1,
+            "length": 10,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                6,
+                1
+              ],
+              [
+                7,
+                1
+              ],
+              [
+                8,
+                1
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                11,
+                1
+              ],
+              [
+                12,
+                1
+              ],
+              [
+                13,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "down",
+            "answer": "SURRENDER",
+            "clue": "To give up in the face of defeat",
+            "row": 5,
+            "col": 14,
+            "length": 9,
+            "cells": [
+              [
+                5,
+                14
+              ],
+              [
+                6,
+                14
+              ],
+              [
+                7,
+                14
+              ],
+              [
+                8,
+                14
+              ],
+              [
+                9,
+                14
+              ],
+              [
+                10,
+                14
+              ],
+              [
+                11,
+                14
+              ],
+              [
+                12,
+                14
+              ],
+              [
+                13,
+                14
+              ]
+            ]
+          },
+          {
+            "number": 10,
+            "direction": "across",
+            "answer": "STAINEDGLASS",
+            "clue": "Colorful decorative window art in old churches",
+            "row": 7,
+            "col": 1,
+            "length": 12,
+            "cells": [
+              [
+                7,
+                1
+              ],
+              [
+                7,
+                2
+              ],
+              [
+                7,
+                3
+              ],
+              [
+                7,
+                4
+              ],
+              [
+                7,
+                5
+              ],
+              [
+                7,
+                6
+              ],
+              [
+                7,
+                7
+              ],
+              [
+                7,
+                8
+              ],
+              [
+                7,
+                9
+              ],
+              [
+                7,
+                10
+              ],
+              [
+                7,
+                11
+              ],
+              [
+                7,
+                12
+              ]
+            ]
+          },
+          {
+            "number": 11,
+            "direction": "down",
+            "answer": "STALIN",
+            "clue": "Soviet leader during much of the 20th century",
+            "row": 7,
+            "col": 12,
+            "length": 6,
+            "cells": [
+              [
+                7,
+                12
+              ],
+              [
+                8,
+                12
+              ],
+              [
+                9,
+                12
+              ],
+              [
+                10,
+                12
+              ],
+              [
+                11,
+                12
+              ],
+              [
+                12,
+                12
+              ]
+            ]
+          },
+          {
+            "number": 12,
+            "direction": "across",
+            "answer": "URN",
+            "clue": "A vessel for ashes or ancient storage",
+            "row": 9,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                9,
+                0
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                9,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 13,
+            "direction": "across",
+            "answer": "SHAKESPEARE",
+            "clue": "Playwright behind Hamlet and Macbeth",
+            "row": 9,
+            "col": 4,
+            "length": 11,
+            "cells": [
+              [
+                9,
+                4
+              ],
+              [
+                9,
+                5
+              ],
+              [
+                9,
+                6
+              ],
+              [
+                9,
+                7
+              ],
+              [
+                9,
+                8
+              ],
+              [
+                9,
+                9
+              ],
+              [
+                9,
+                10
+              ],
+              [
+                9,
+                11
+              ],
+              [
+                9,
+                12
+              ],
+              [
+                9,
+                13
+              ],
+              [
+                9,
+                14
+              ]
+            ]
+          },
+          {
+            "number": 14,
+            "direction": "across",
+            "answer": "INDEPENDENCE",
+            "clue": "Freedom from outside control",
+            "row": 12,
+            "col": 3,
+            "length": 12,
+            "cells": [
+              [
+                12,
+                3
+              ],
+              [
+                12,
+                4
+              ],
+              [
+                12,
+                5
+              ],
+              [
+                12,
+                6
+              ],
+              [
+                12,
+                7
+              ],
+              [
+                12,
+                8
+              ],
+              [
+                12,
+                9
+              ],
+              [
+                12,
+                10
+              ],
+              [
+                12,
+                11
+              ],
+              [
+                12,
+                12
+              ],
+              [
+                12,
+                13
+              ],
+              [
+                12,
+                14
+              ]
+            ]
+          },
+          {
+            "number": 15,
+            "direction": "down",
+            "answer": "ERA",
+            "clue": "A distinct period of time in history",
+            "row": 12,
+            "col": 8,
+            "length": 3,
+            "cells": [
+              [
+                12,
+                8
+              ],
+              [
+                13,
+                8
+              ],
+              [
+                14,
+                8
+              ]
+            ]
+          },
+          {
+            "number": 16,
+            "direction": "across",
+            "answer": "PROPAGANDA",
+            "clue": "Biased information used to sway public opinion",
+            "row": 14,
+            "col": 4,
+            "length": 10,
+            "cells": [
+              [
+                14,
+                4
+              ],
+              [
+                14,
+                5
+              ],
+              [
+                14,
+                6
+              ],
+              [
+                14,
+                7
+              ],
+              [
+                14,
+                8
+              ],
+              [
+                14,
+                9
+              ],
+              [
+                14,
+                10
+              ],
+              [
+                14,
+                11
+              ],
+              [
+                14,
+                12
+              ],
+              [
+                14,
+                13
+              ]
+            ]
+          }
+        ]
+      },
+      "cells": {},
+      "players": [
+        "Henning"
+      ],
+      "sessions": {
+        "Henning": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "timeSpentMs": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-07-31T11:15:25.571Z"
+        }
+      },
+      "state": "open",
+      "completedAt": null,
+      "totalTimeMs": 0,
+      "highlights": []
     }
   }
 }
