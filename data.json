@@ -10511,12 +10511,12 @@
           "revealed": false
         },
         "1-4": {
-          "letter": "E",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         },
         "2-4": {
-          "letter": "D",
+          "letter": "",
           "owner": "Henning",
           "revealed": false
         }
@@ -10532,8 +10532,8 @@
           "correctionsMade": 3,
           "revealsUsed": 0,
           "wordsCompleted": 2,
-          "timeSpentMs": 29608,
-          "autoCheckUsed": false,
+          "timeSpentMs": 59610,
+          "autoCheckUsed": true,
           "joinedAt": "2026-07-31T03:24:39.404Z"
         }
       },
