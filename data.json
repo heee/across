@@ -2311,7 +2311,7 @@
         },
         "8-2": {
           "letter": "T",
-          "owner": "Alex",
+          "owner": "Henning",
           "revealed": false
         },
         "8-3": {
@@ -2498,6 +2498,41 @@
           "letter": "L",
           "owner": "Henning",
           "revealed": false
+        },
+        "2-2": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-2": {
+          "letter": "C",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-2": {
+          "letter": "K",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "6-2": {
+          "letter": "U",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "7-2": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "9-2": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "10-2": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -2515,15 +2550,15 @@
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 33,
-          "correctLetters": 23,
-          "incorrectLetters": 10,
-          "correctionsMade": 1,
+          "lettersEntered": 44,
+          "correctLetters": 32,
+          "incorrectLetters": 12,
+          "correctionsMade": 3,
           "revealsUsed": 0,
-          "wordsCompleted": 3,
+          "wordsCompleted": 4,
           "autoCheckUsed": true,
           "joinedAt": "2026-07-31T01:46:17.345Z",
-          "timeSpentMs": 657273
+          "timeSpentMs": 687275
         }
       },
       "state": "open",
