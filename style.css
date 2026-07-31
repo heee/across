@@ -73,6 +73,11 @@ html, body {
 
 button, input, textarea {
   font-family: inherit;
+  /* Buttons default to the UA's system "buttontext" color, not inherited
+     ink — without this, text inside any of our button-based rows (puzzle
+     titles, ranking names, etc.) can render in a system blue instead of
+     matching the rest of the app. */
+  color: inherit;
 }
 
 .no-scrollbar { scrollbar-width: none; }
@@ -362,29 +367,9 @@ button, input, textarea {
 .text-field.description { font: 500 13px var(--font); }
 .text-field::placeholder { color: var(--muted-4); font-weight: 500; }
 
-.category-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-.category-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-  border-radius: var(--radius-card-sm);
-  padding: 12px 14px;
-  box-shadow: var(--shadow-card);
-  border: 2px solid transparent;
-  font: 600 13px var(--font);
-  color: var(--ink);
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-.category-row.selected { border-color: var(--accent); background: var(--accent-tint); color: var(--accent); }
-.category-row .check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--hairline); flex: none; position: relative; }
-.category-row.selected .check { border-color: var(--accent); background: var(--accent); }
-.category-row.selected .check::after {
-  content: "✓"; color: #fff; font-size: 11px; font-weight: 700;
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-}
+/* A wrapping cluster (not a horizontal-scroll strip like .chip-row) of
+   single-select pills — reuses .chip's look. */
+.category-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 
 .title-row { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
 .title-row .text-field { margin-bottom: 0; flex: 1; }
@@ -540,7 +525,7 @@ button, input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 600 20px var(--font);
+  font: 600 var(--cell-font, 20px) var(--font);
   cursor: pointer;
   user-select: none;
 }
@@ -583,6 +568,32 @@ button, input, textarea {
   );
   pointer-events: none;
 }
+
+/* Impatient mode: a brief golden pulse + sparkle on a word's cells right
+   after it's completed correctly, before settling into normal completed
+   coloring — the underlying letter/color change already happened
+   immediately (this is a purely decorative overlay on top). */
+@keyframes cell-celebrate-glow {
+  0% { box-shadow: 0 0 0 0 oklch(75% .15 85 / .9); }
+  35% { box-shadow: 0 0 0 3px oklch(75% .15 85); }
+  100% { box-shadow: 0 0 0 0 oklch(75% .15 85 / 0); }
+}
+@keyframes cell-sparkle-fade {
+  0% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+  40% { opacity: 1; transform: scale(1.15) rotate(15deg); }
+  100% { opacity: 0; transform: scale(0.8) rotate(30deg); }
+}
+.cell.celebrate { animation: cell-celebrate-glow 0.65s ease-out; z-index: 2; }
+.cell.celebrate::before {
+  content: "✦";
+  position: absolute;
+  top: -6px; right: -4px;
+  font-size: 10px;
+  color: oklch(75% .15 85);
+  animation: cell-sparkle-fade 0.65s ease-out;
+  pointer-events: none;
+}
+
 .cell-number {
   position: absolute; top: 2px; left: 3px;
   font: 600 8px var(--font); color: var(--muted-4);
@@ -606,7 +617,7 @@ button, input, textarea {
   color: var(--ink);
 }
 .clue-step { font: 600 18px var(--font); color: var(--muted-3); padding: 0 4px; background: none; border: none; cursor: pointer; }
-.clue-text { flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clue-text { flex: 1; text-align: center; }
 .clue-number { font-weight: 400; color: var(--muted-5); }
 
 .keyboard {

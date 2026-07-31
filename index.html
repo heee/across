@@ -71,7 +71,7 @@
     </div>
     <div class="scroll-area no-scrollbar" style="padding-top:8px">
       <div class="field-label">Category</div>
-      <div class="category-list" id="create-category-list"></div>
+      <div class="category-pills" id="create-category-list"></div>
 
       <div class="field-label">Title</div>
       <div class="title-row">
@@ -111,7 +111,7 @@
       <button class="text-field" id="create-visibility" style="text-align:left;cursor:pointer;font:600 13px Sora">Open · anyone with the link can join</button>
     </div>
     <div class="cta-row">
-      <button class="cta-primary" id="create-submit">Generate &amp; publish</button>
+      <button class="cta-primary" id="create-submit">Create</button>
     </div>
   </div>
 
@@ -154,6 +154,10 @@
       <div class="settings-row" style="justify-content:space-between">
         <div>Auto Check <span style="color:var(--muted-4);font-weight:400">(half credit while on)</span></div>
         <button class="toggle" id="autocheck-toggle"></button>
+      </div>
+      <div class="settings-row" style="justify-content:space-between">
+        <div>Impatient mode <span style="color:var(--muted-4);font-weight:400">(celebrate each word)</span></div>
+        <button class="toggle" id="impatient-toggle"></button>
       </div>
       <button class="action-text" style="width:100%;margin-top:8px" data-assist="close">Cancel</button>
     </div>

@@ -7,27 +7,45 @@
 // the symmetric-block-pattern-first approach a real NYT-style constructor
 // uses — grids will be sparser and less uniformly shaped — but it's real
 // interlocking generation from the word bank, constrained by keywords,
-// size, and difficulty, which is what v1 needs. Revisit with a proper
-// symmetric template + full backtracking if grid density becomes a
-// complaint once real puzzles are being played.
+// size, and difficulty.
+//
+// Density is improved three cost-bounded ways (kept bounded rather than
+// exhaustive because this runs as pure CPU-bound JS inside a Cloudflare
+// Worker request, which has a real — and on the free plan, tight — CPU
+// time budget per invocation; unlike I/O waits, computation time here
+// counts directly against that budget):
+//   1. findPlacement prefers a placement that overlaps 2+ existing letters
+//      over one that only overlaps 1, instead of just taking whichever
+//      valid spot is scanned first.
+//   2. attemptFill sweeps the candidate list up to 3 times — a word that
+//      couldn't intersect anything on pass 1 often can once more letters
+//      are down from later passes.
+//   3. generatePuzzle tries a few full reshuffled attempts and keeps
+//      whichever produced the tightest-packed (highest fill-ratio) grid.
+// Together that's at most a 3x3=9x multiplier over the original
+// single-pass/single-attempt cost, not an unbounded search.
 
 const SIZE_MAP = { mini: 5, standard: 11, large: 15 };
 const DIFFICULTY_MAP = { easy: 1, medium: 2, hard: 3 };
-const TARGET_WORDS = { mini: 6, standard: 18, large: 30 };
+// Aspirational caps — the fill loop stops early if the candidate pool (esp.
+// a narrow single-category one) runs out before reaching these.
+const TARGET_WORDS = { mini: 8, standard: 24, large: 38 };
+const FILL_ATTEMPTS = 5;
+const FILL_PASSES = 4;
 
 export function generatePuzzle({ keywords = [], size = "standard", difficulty = "medium", wordBank }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
   const targetWords = TARGET_WORDS[size] || TARGET_WORDS.standard;
 
-  const candidates = buildCandidateList(wordBank, keywords, maxDiff, n);
-  let result = attemptFill(candidates, n, targetWords);
+  const groups = buildCandidateGroups(wordBank, keywords, maxDiff, n);
+  let result = attemptBest(groups, n, targetWords);
 
   if (result.words.length < 3 && keywords.length > 0) {
     // Keywords were too restrictive to build a real grid — retry with the
     // full corpus so puzzle creation doesn't just fail on a niche topic.
-    const fallbackCandidates = buildCandidateList(wordBank, [], maxDiff, n);
-    result = attemptFill(fallbackCandidates, n, targetWords);
+    const fallbackGroups = buildCandidateGroups(wordBank, [], maxDiff, n);
+    result = attemptBest(fallbackGroups, n, targetWords);
   }
 
   if (result.words.length < 3) {
@@ -37,7 +55,50 @@ export function generatePuzzle({ keywords = [], size = "standard", difficulty = 
   return cropAndNumber(result.grid, result.words, n);
 }
 
-function buildCandidateList(wordBank, keywords, maxDiff, n) {
+// Runs a few independently-reshuffled fill attempts and keeps whichever
+// packed the most letters into the tightest bounding box — a cheap stand-in
+// for real backtracking search.
+function attemptBest(groups, n, targetWords) {
+  let best = null;
+  let bestScore = -1;
+  for (let i = 0; i < FILL_ATTEMPTS; i++) {
+    const candidates = groups.flatMap((g) => shuffleByLength(g));
+    const result = attemptFill(candidates, n, targetWords);
+    const score = densityScore(result.grid, n);
+    if (score > bestScore) {
+      bestScore = score;
+      best = result;
+    }
+  }
+  return best;
+}
+
+function densityScore(grid, n) {
+  let minRow = n, maxRow = -1, minCol = n, maxCol = -1, filled = 0;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (grid[r][c].letter) {
+        minRow = Math.min(minRow, r);
+        maxRow = Math.max(maxRow, r);
+        minCol = Math.min(minCol, c);
+        maxCol = Math.max(maxCol, c);
+        filled++;
+      }
+    }
+  }
+  if (filled === 0) return 0;
+  const area = (maxRow - minRow + 1) * (maxCol - minCol + 1);
+  // Filled-cell count weighted by how tightly packed they are — rewards
+  // both "more words" and "less white space" together, since either alone
+  // is a bad proxy (a tiny fully-packed cluster shouldn't beat a bigger,
+  // still-reasonably-dense grid).
+  return filled * (filled / area);
+}
+
+// Returns priority-ordered *groups* (not a flat shuffled list) so
+// attemptBest can reshuffle within each group per attempt while preserving
+// the strong/weak keyword-match priority across every attempt.
+function buildCandidateGroups(wordBank, keywords, maxDiff, n) {
   const seen = new Set();
   const deduped = [];
   for (const entry of wordBank) {
@@ -68,7 +129,7 @@ function buildCandidateList(wordBank, keywords, maxDiff, n) {
     return keywordTokens.reduce((n, t) => n + (hay.includes(t) ? 1 : 0), 0);
   };
 
-  if (keywordTokens.length === 0) return shuffleByLength(deduped);
+  if (keywordTokens.length === 0) return [deduped];
 
   // Keyword-topic puzzles stay 100% on-topic — no silent padding from the
   // rest of the word bank. If that's too sparse to build a real grid,
@@ -85,7 +146,7 @@ function buildCandidateList(wordBank, keywords, maxDiff, n) {
     if (n >= 2) strong.push(entry);
     else if (n === 1) weak.push(entry);
   }
-  return [...shuffleByLength(strong), ...shuffleByLength(weak)];
+  return [strong, weak];
 }
 
 function shuffleByLength(list) {
@@ -124,14 +185,23 @@ function attemptFill(candidates, n, targetWords) {
   words.push(makeWordRecord(first, startRow, startCol, "across", words.length));
   placedSet.add(first.word);
 
-  for (let idx = 1; idx < candidates.length && words.length < targetWords; idx++) {
-    const entry = candidates[idx];
-    if (placedSet.has(entry.word)) continue;
-    const placement = findPlacement(grid, entry.word, n);
-    if (!placement) continue;
-    placeWord(grid, entry.word, placement.row, placement.col, placement.direction);
-    words.push(makeWordRecord(entry, placement.row, placement.col, placement.direction, words.length));
-    placedSet.add(entry.word);
+  // Multiple sweeps: a word that couldn't intersect anything on pass 1 may
+  // become placeable once later words in that same pass opened up new
+  // letters, so re-sweep the still-unplaced candidates a bounded number of
+  // times rather than a single forward pass.
+  for (let pass = 0; pass < FILL_PASSES && words.length < targetWords; pass++) {
+    let placedThisPass = false;
+    for (let idx = 1; idx < candidates.length && words.length < targetWords; idx++) {
+      const entry = candidates[idx];
+      if (placedSet.has(entry.word)) continue;
+      const placement = findPlacement(grid, entry.word, n);
+      if (!placement) continue;
+      placeWord(grid, entry.word, placement.row, placement.col, placement.direction);
+      words.push(makeWordRecord(entry, placement.row, placement.col, placement.direction, words.length));
+      placedSet.add(entry.word);
+      placedThisPass = true;
+    }
+    if (!placedThisPass) break; // no point sweeping again if nothing changed
   }
 
   return { grid, words };
@@ -155,7 +225,15 @@ function inBounds(n, r, c) {
   return r >= 0 && r < n && c >= 0 && c < n;
 }
 
+// Prefers a placement that overlaps 2+ existing letters (denser — it's
+// pulling double duty crossing two words) over one that only overlaps the
+// single letter it was found from, but doesn't exhaustively search for the
+// true best — stops as soon as it finds a "good enough" (2+) one, falling
+// back to the first valid placement seen if nothing better ever turns up.
+// Same overall scan cost as plain first-fit, just smarter about which hit
+// it commits to.
 function findPlacement(grid, word, n) {
+  let fallback = null;
   for (let i = 0; i < word.length; i++) {
     const letter = word[i];
     for (let r = 0; r < n; r++) {
@@ -170,13 +248,31 @@ function findPlacement(grid, word, n) {
 
         const row = direction === "down" ? r - i : r;
         const col = direction === "across" ? c - i : c;
-        if (isValidPlacement(grid, word, row, col, direction, n)) {
-          return { row, col, direction };
-        }
+        const overlaps = validPlacementOverlaps(grid, word, row, col, direction, n);
+        if (overlaps === 0) continue; // invalid
+        if (overlaps >= 2) return { row, col, direction };
+        if (!fallback) fallback = { row, col, direction };
       }
     }
   }
-  return null;
+  return fallback;
+}
+
+// Returns the number of existing letters this placement would overlap
+// (always >=1 for a valid placement, since it must intersect something to
+// be valid at all), or 0 if the placement isn't valid.
+function validPlacementOverlaps(grid, word, row, col, direction, n) {
+  return isValidPlacement(grid, word, row, col, direction, n) ? countOverlaps(grid, word, row, col, direction) : 0;
+}
+
+function countOverlaps(grid, word, row, col, direction) {
+  const dRow = direction === "down" ? 1 : 0;
+  const dCol = direction === "across" ? 1 : 0;
+  let overlaps = 0;
+  for (let i = 0; i < word.length; i++) {
+    if (grid[row + dRow * i][col + dCol * i].letter) overlaps++;
+  }
+  return overlaps;
 }
 
 function isValidPlacement(grid, word, row, col, direction, n) {

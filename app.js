@@ -332,6 +332,7 @@ let selectedDirection = "across";
 let sessionStartTime = null;
 let sessionTimerHandle = null;
 let autoCheckOn = false;
+let impatientMode = false; // local-only visual flourish toggle, default off
 let createCategory = null;
 let rankingsWindow = "week";
 let rankingsMetric = "Contribution score";
@@ -346,14 +347,16 @@ const RANKING_METRICS = [
 ];
 const SEARCH_CATEGORIES = ["Geography", "Movies", "History", "Sports", "Science", "Food", "Kids"];
 
+// Sentence case throughout (only the first letter capitalized) — no
+// title-case styling.
 const TITLE_IDEAS = {
-  geography: ["European Capitals", "Rivers of the World", "Mountain Peaks", "Island Nations", "Deserts & Dunes", "World Landmarks", "Around the Globe"],
-  movies: ["Movie Night", "Animated Classics", "Superhero Showdown", "Sci-Fi Favorites", "Classic Comedies", "Blockbuster Hits", "Behind the Scenes"],
-  history: ["Ancient Civilizations", "Kings & Queens", "Empires & Explorers", "Renaissance Rewind", "Legends of the Past", "Turning Points"],
-  sports: ["Game Day", "Olympic Spirit", "Team Sports", "Track & Field", "Sporting Legends", "Play Ball", "Home Field Advantage"],
-  science: ["Space Explorers", "Under the Microscope", "Elements & Energy", "Wonders of Science", "Planet Earth", "Lab Notes"],
-  food: ["Foodie Favorites", "World Cuisine", "Sweet Treats", "Kitchen Classics", "Taste of the World", "Dinner Party"],
-  kids: ["Storybook Adventures", "Fairy Tale Fun", "Playground Games", "Once Upon a Time", "Kids' Corner", "Make-Believe"],
+  geography: ["European capitals", "Rivers of the world", "Mountain peaks", "Island nations", "Deserts & dunes", "World landmarks", "Around the globe"],
+  movies: ["Movie night", "Animated classics", "Superhero showdown", "Sci-fi favorites", "Classic comedies", "Blockbuster hits", "Behind the scenes"],
+  history: ["Ancient civilizations", "Kings & queens", "Empires & explorers", "Renaissance rewind", "Legends of the past", "Turning points"],
+  sports: ["Game day", "Olympic spirit", "Team sports", "Track & field", "Sporting legends", "Play ball", "Home field advantage"],
+  science: ["Space explorers", "Under the microscope", "Elements & energy", "Wonders of science", "Planet earth", "Lab notes"],
+  food: ["Foodie favorites", "World cuisine", "Sweet treats", "Kitchen classics", "Taste of the world", "Dinner party"],
+  kids: ["Storybook adventures", "Fairy tale fun", "Playground games", "Once upon a time", "Kids' corner", "Make-believe"],
 };
 
 // ===========================================================================
@@ -725,22 +728,19 @@ function openCreate() {
 }
 
 // Category is now the required, primary driver of what a puzzle's words are
-// about — single-select, not the old multi-select keyword-chip shortcut.
+// about — a wrapping cluster of single-select pills.
 function renderCreateCategoryList() {
   const list = $("#create-category-list");
   list.innerHTML = "";
   for (const cat of SEARCH_CATEGORIES) {
     const selected = createCategory === cat;
-    const row = el("button", { class: "category-row" + (selected ? " selected" : "") }, [
-      el("span", { text: cat }),
-      el("span", { class: "check" }),
-    ]);
-    row.addEventListener("click", () => {
+    const pill = el("button", { class: "chip" + (selected ? " active" : ""), text: cat });
+    pill.addEventListener("click", () => {
       createCategory = cat;
       renderCreateCategoryList();
       updateGenerateTitleButton();
     });
-    list.appendChild(row);
+    list.appendChild(pill);
   }
 }
 
@@ -807,7 +807,7 @@ $("#create-submit").addEventListener("click", async () => {
     showToast(e.message || "Couldn't generate that puzzle — try a different category");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Generate & publish";
+    btn.textContent = "Create";
   }
 });
 
@@ -1022,6 +1022,12 @@ function renderPuzzleGrid() {
   const { rows, cols, cells } = currentPuzzle.grid;
   gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   gridEl.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  // Letters were a fixed 20px regardless of grid size, so a Large puzzle's
+  // much smaller tiles ended up with oversized, cramped-looking letters.
+  // Scale down as the grid's largest dimension grows.
+  const maxDim = Math.max(rows, cols);
+  const cellFontPx = Math.max(10, Math.min(22, Math.round(210 / maxDim)));
+  gridEl.style.setProperty("--cell-font", `${cellFontPx}px`);
 
   for (const cell of cells) {
     const cellEl = el("div", { "data-row": cell.row, "data-col": cell.col });
@@ -1161,10 +1167,20 @@ function typeLetter(letter) {
   // the DO's broadcast() explicitly excludes the sending socket), so the
   // typing player has to see their own letter land without waiting on that.
   currentPuzzle.cells[key] = { letter, owner: currentUser.name, revealed: false };
+  const completedWordCells = currentWord(); // captured before advanceSelection moves us off it
   const wordCompleted = checkNewlyCompletedWord();
   currentPuzzleConn.sendCellUpdate(selectedCell.row, selectedCell.col, letter, { isCorrect, corrected: wasWrong && isCorrect, wordCompleted });
   updateCellDisplay(selectedCell.row, selectedCell.col);
+  if (wordCompleted && impatientMode) celebrateWordCompletion(completedWordCells);
   advanceSelection(false);
+}
+
+function celebrateWordCompletion(cells) {
+  const nodes = cells.map((c) => cellNode(c.row, c.col)).filter(Boolean);
+  for (const node of nodes) node.classList.add("celebrate");
+  setTimeout(() => {
+    for (const node of nodes) node.classList.remove("celebrate");
+  }, 650);
 }
 
 function backspace() {
@@ -1187,16 +1203,11 @@ function renderPuzzleKeyboard() {
     const rowEl = el("div", { class: "keyboard-row" + (i === 1 ? " indent" : "") });
     if (i === 2) rowEl.appendChild(el("button", { class: "key backspace", text: "⌫", onclick: backspace }));
     for (const l of letters) rowEl.appendChild(el("button", { class: "key", text: l, onclick: () => typeLetter(l) }));
-    if (i === 2) rowEl.appendChild(el("button", { class: "key done", text: "Done", onclick: () => {
-      if (currentPuzzleConn) {
-        flushTime(true);
-        clearInterval(timeFlushHandle);
-        currentPuzzleConn.close();
-        currentPuzzleConn = null;
-      }
-      renderHome();
-      navigate("screen-home");
-    } }));
+    // "Done" no longer exits the puzzle (that's what the header's ⌂ button
+    // is for) — it advances the cursor, same as finishing typing a letter
+    // would: next cell, or the next word's first cell if already at the
+    // end of this one.
+    if (i === 2) rowEl.appendChild(el("button", { class: "key done", text: "Done", onclick: () => advanceSelection(false) }));
     kb.appendChild(rowEl);
   });
 }
@@ -1232,6 +1243,7 @@ function renderPresenceBadge(user, row, col) {
 $("#puzzle-assist-btn").addEventListener("click", () => {
   $("#assist-menu").style.display = "flex";
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
+  $("#impatient-toggle").classList.toggle("on", impatientMode);
 });
 document.addEventListener("click", (e) => {
   const action = e.target.closest("[data-assist]")?.dataset.assist;
@@ -1247,6 +1259,10 @@ $("#autocheck-toggle").addEventListener("click", () => {
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
   if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
   refreshAllCellsForAutoCheck();
+});
+$("#impatient-toggle").addEventListener("click", () => {
+  impatientMode = !impatientMode;
+  $("#impatient-toggle").classList.toggle("on", impatientMode);
 });
 
 function revealCells(cells) {

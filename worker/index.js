@@ -226,6 +226,19 @@ export class PuzzleRoom {
     server.accept();
     await this.loadPuzzle();
 
+    // /join-puzzle (a plain REST call) only ever updates GitHub's data.json
+    // — it never reaches this Durable Object, which holds its own separate
+    // live copy of the puzzle in durable storage. Without this, a player
+    // who joined but wasn't the original creator would never appear in
+    // this.puzzle.players (what onInit actually sends to clients), even
+    // though they're actively connected and typing. Connecting via
+    // WebSocket is required to play at all, so it's a reliable signal to
+    // self-heal that list here regardless of whether /join-puzzle ran.
+    if (this.puzzle && !this.puzzle.players.includes(user)) {
+      this.puzzle.players.push(user);
+      await this.state.storage.put("puzzle", this.puzzle);
+    }
+
     this.sockets.set(server, { user });
     this.sendTo(server, { type: "init", puzzle: this.puzzle, presence: this.presenceList() });
     this.broadcastPresence();
