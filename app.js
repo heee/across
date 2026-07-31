@@ -135,6 +135,10 @@ const LocalBackend = {
     presence.set(user, Date.now());
 
     const heartbeat = setInterval(() => {
+      // Renew our own entry every tick — BroadcastChannel never delivers a
+      // tab's own messages back to itself, so without this the pruning
+      // below would age *us* out of our own presence list after 8s.
+      presence.set(user, Date.now());
       channel.postMessage({ type: "presence-ping", user });
       for (const [u, t] of presence) if (Date.now() - t > 8000) presence.delete(u);
       handlers.onPresence?.([...presence.keys()]);
@@ -868,6 +872,14 @@ function openPuzzle(puzzleId) {
       updateCellDisplay(row, col);
     },
     onPresence(players) {
+      // A player who joins while this client already has the puzzle open
+      // otherwise never gets added to the in-memory currentPuzzle.players —
+      // that list is only populated fresh at connect time.
+      if (currentPuzzle) {
+        for (const name of players) {
+          if (!currentPuzzle.players.includes(name)) currentPuzzle.players.push(name);
+        }
+      }
       renderPuzzleHeader(players);
     },
     onCursor({ user, row, col }) {
@@ -890,15 +902,25 @@ function firstFillableCell(grid) {
   return first ? { row: first.row, col: first.col } : { row: 0, col: 0 };
 }
 
-function renderPuzzleHeader(players) {
+function renderPuzzleHeader(presence) {
   if (!currentPuzzle) return;
   $("#puzzle-title").textContent = currentPuzzle.title;
-  $("#puzzle-playing-count").textContent = players.length;
+  $("#puzzle-playing-count").textContent = presence.length;
   const avatars = $("#puzzle-avatars");
   avatars.innerHTML = "";
-  for (const name of players.slice(0, 5)) {
+  const online = new Set(presence);
+  // Show everyone who's ever contributed to this puzzle, not just who's
+  // currently connected — solid color if they're online right now, muted
+  // otherwise. `presence` alone (the previous behavior) only ever showed
+  // whoever happened to have the puzzle open at that exact moment.
+  const contributors = currentPuzzle.players?.length ? currentPuzzle.players : presence;
+  for (const name of contributors.slice(0, 6)) {
     const hue = dataCache.users[name]?.hue ?? 250;
-    avatars.appendChild(el("div", { class: "player-avatar", style: `background:oklch(58% .1 ${hue})`, text: initials(name) }));
+    avatars.appendChild(el("div", {
+      class: "player-avatar" + (online.has(name) ? "" : " offline"),
+      style: `background:oklch(58% .1 ${hue})`,
+      text: initials(name),
+    }));
   }
 }
 

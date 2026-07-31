@@ -502,6 +502,7 @@ button, input, textarea {
   background: oklch(58% .1 var(--player-hue));
 }
 .player-avatar:first-child { margin-left: 0; }
+.player-avatar.offline { opacity: 0.35; }
 
 .grid-wrap {
   flex: 1;
