@@ -7669,6 +7669,16 @@
           "letter": "D",
           "owner": "Henning",
           "revealed": false
+        },
+        "3-8": {
+          "letter": "G",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-9": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -7676,13 +7686,13 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 7,
+          "lettersEntered": 9,
           "correctLetters": 7,
-          "incorrectLetters": 0,
+          "incorrectLetters": 2,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 2,
-          "timeSpentMs": 118698,
+          "timeSpentMs": 132622,
           "autoCheckUsed": true,
           "joinedAt": "2026-07-31T02:26:07.414Z"
         }
