@@ -3200,12 +3200,12 @@
           "revealed": false
         },
         "3-8": {
-          "letter": "G",
-          "owner": "Henning",
+          "letter": "Z",
+          "owner": "Christie",
           "revealed": false
         },
         "3-9": {
-          "letter": "",
+          "letter": "E",
           "owner": "Christie",
           "revealed": false
         },
@@ -3283,6 +3283,26 @@
           "letter": "E",
           "owner": "Christie",
           "revealed": false
+        },
+        "3-10": {
+          "letter": "B",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "3-11": {
+          "letter": "R",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "3-12": {
+          "letter": "A",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-6": {
+          "letter": "H",
+          "owner": "Christie",
+          "revealed": false
         }
       },
       "players": [
@@ -3302,12 +3322,12 @@
           "joinedAt": "2026-07-31T02:26:07.414Z"
         },
         "Christie": {
-          "lettersEntered": 21,
-          "correctLetters": 17,
+          "lettersEntered": 27,
+          "correctLetters": 23,
           "incorrectLetters": 4,
           "correctionsMade": 1,
           "revealsUsed": 0,
-          "wordsCompleted": 3,
+          "wordsCompleted": 4,
           "timeSpentMs": 0,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T11:21:40.644Z"
