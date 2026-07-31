@@ -2391,6 +2391,36 @@
           "letter": "B",
           "owner": "Henning",
           "revealed": false
+        },
+        "5-3": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-4": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-5": {
+          "letter": "D",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-6": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-7": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-4": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -2409,12 +2439,12 @@
           "joinedAt": "2026-07-31T01:43:25.556Z"
         },
         "Henning": {
-          "lettersEntered": 4,
-          "correctLetters": 3,
-          "incorrectLetters": 1,
+          "lettersEntered": 10,
+          "correctLetters": 8,
+          "incorrectLetters": 2,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 0,
+          "wordsCompleted": 1,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T01:46:17.345Z"
         }
