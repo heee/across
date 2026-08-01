@@ -3996,6 +3996,7 @@ function legacyCropAndNumber(grid, words, n) {
 //
 //   GET  /data                       -> current data.json contents (no auth to read)
 //   POST /register-user   { user }                              -> creates the user if new, assigns a stable color hue
+//   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
@@ -4022,7 +4023,7 @@ function legacyCropAndNumber(grid, words, n) {
 //   PUZZLE_ROOM -> class PuzzleRoom (this file)
 
 
-const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220];
+const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 
 export default {
   async fetch(request, env) {
@@ -4074,6 +4075,23 @@ export default {
       }
     }
 
+    if (url.pathname === "/update-user-color" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const name = typeof body?.user === "string" ? body.user.trim().slice(0, 40) : "";
+      const hue = Number(body?.hue);
+      if (!name || !PLAYER_HUES.includes(hue)) return json({ error: "invalid payload" }, 400, cors);
+
+      try {
+        await commitMutation(env, (data) => {
+          if (data.users[name]) data.users[name].hue = hue;
+        }, `Update user color: ${name} -> ${hue}`);
+        return json({ ok: true }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, 502, cors);
+      }
+    }
+
     if (url.pathname === "/delete-user" && request.method === "POST") {
       if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
       const body = await safeJson(request);
@@ -4081,12 +4099,39 @@ export default {
       if (!name) return json({ error: "invalid user" }, 400, cors);
 
       try {
+        const affectedPuzzleIds = [];
         await commitMutation(env, (data) => {
           delete data.users[name];
-          for (const p of Object.values(data.puzzles)) {
+          for (const [puzzleId, p] of Object.entries(data.puzzles)) {
+            const hadUser = (p.players || []).includes(name) || (p.sessions && name in p.sessions);
+            if (hadUser) affectedPuzzleIds.push(puzzleId);
             p.players = (p.players || []).filter((n) => n !== name);
+            if (p.sessions) delete p.sessions[name];
           }
         }, `Delete user: ${name}`);
+
+        // Each puzzle's Durable Object holds its own separate live copy —
+        // without this, a puzzle whose room later persists again (e.g. from
+        // an unrelated player's next keystroke) would silently resurrect
+        // the deleted user's session data right back into data.json.
+        await Promise.all(
+          affectedPuzzleIds.map(async (puzzleId) => {
+            const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
+            const stub = env.PUZZLE_ROOM.get(roomId);
+            try {
+              await stub.fetch("https://internal/scrub-user", {
+                method: "POST",
+                body: JSON.stringify({ user: name }),
+                headers: { "Content-Type": "application/json" },
+              });
+            } catch (e) {
+              // Best-effort — data.json is already the source of truth and
+              // is already correct; a room that fails to scrub just risks
+              // re-committing stale data if it happens to persist again.
+            }
+          })
+        );
+
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -4234,6 +4279,22 @@ export class PuzzleRoom {
       this.sockets.clear();
       this.puzzle = null;
       await this.state.storage.deleteAll();
+      return new Response("ok");
+    }
+
+    // Internal — called by /delete-user so a deleted account's data doesn't
+    // get silently resurrected into data.json the next time this room
+    // persists (it holds its own separate live copy in durable storage;
+    // deleting from data.json alone doesn't touch that).
+    if (url.pathname === "/scrub-user" && request.method === "POST") {
+      const { user: scrubUser } = await request.json();
+      await this.loadPuzzle();
+      if (this.puzzle && scrubUser) {
+        this.puzzle.players = (this.puzzle.players || []).filter((n) => n !== scrubUser);
+        if (this.puzzle.sessions) delete this.puzzle.sessions[scrubUser];
+        await this.state.storage.put("puzzle", this.puzzle);
+        this.broadcast({ type: "user-scrubbed", user: scrubUser, players: this.puzzle.players, sessions: this.puzzle.sessions }, null);
+      }
       return new Response("ok");
     }
 
@@ -4404,6 +4465,7 @@ export class PuzzleRoom {
       if (!puzzle) return;
       puzzle.cells = this.puzzle.cells;
       puzzle.sessions = this.puzzle.sessions;
+      puzzle.totalTimeMs = this.puzzle.totalTimeMs;
       if (completed && !puzzle.completedAt) {
         puzzle.completedAt = new Date().toISOString();
         puzzle.state = "completed";

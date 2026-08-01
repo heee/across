@@ -678,8 +678,8 @@ button, input, textarea {
 .completion-title { font: 700 19px var(--font); text-align: center; }
 .completion-sub { font: 500 12.5px var(--font); color: var(--muted-5); margin: 2px 0 18px; }
 
-.stat-columns { display: flex; gap: 22px; margin-bottom: 20px; }
-.stat-col { text-align: center; }
+.stat-columns { display: flex; gap: 14px; margin-bottom: 20px; }
+.stat-col { text-align: center; flex: 1; min-width: 0; }
 .stat-value { font: 700 16px var(--font); }
 .stat-label { font: 500 10.5px var(--font); color: var(--muted-5); margin-top: 2px; }
 
@@ -754,6 +754,30 @@ button, input, textarea {
 .user-row-identity { display: flex; align-items: center; gap: 10px; font: 600 13px var(--font); }
 .user-row-avatar { width: 30px; height: 30px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font: 700 12px var(--font); flex: none; }
 .delete-user-btn { background: none; border: none; color: oklch(55% .18 25); font: 600 12px var(--font); cursor: pointer; padding: 4px 6px; }
+
+.color-picker-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px; }
+.color-swatch {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.color-swatch.selected {
+  box-shadow: 0 0 0 2px var(--bg-screen), 0 0 0 4px var(--ink);
+}
+.color-swatch.selected::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font: 700 14px var(--font);
+}
 
 /* ---------- Name entry (first run) ---------- */
 

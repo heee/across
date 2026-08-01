@@ -10,7 +10,7 @@
 import { generatePuzzle } from "./worker/generator.js";
 import { WORD_BANK } from "./worker/corpus.js";
 
-const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220];
+const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 const USING_LOCAL_BACKEND = !window.WORKER_URL || window.WORKER_URL.includes("YOUR-SUBDOMAIN");
 if (USING_LOCAL_BACKEND) {
   console.info("[Across] No Worker configured (config.js still has placeholder values) — running in local-only dev mode. See README before deploying.");
@@ -92,11 +92,22 @@ const LocalBackend = {
       saveLocalData(data);
     }
   },
+  async updateUserColor(name, hue) {
+    const data = loadLocalData();
+    if (data.users[name]) {
+      data.users[name].hue = hue;
+      saveLocalData(data);
+    }
+  },
   async deleteUser(name) {
     const data = loadLocalData();
     delete data.users[name];
-    for (const p of Object.values(data.puzzles)) {
+    for (const [puzzleId, p] of Object.entries(data.puzzles)) {
       p.players = (p.players || []).filter((n) => n !== name);
+      if (p.sessions && name in p.sessions) {
+        delete p.sessions[name];
+        new BroadcastChannel(`across-room-${puzzleId}`).postMessage({ type: "user-scrubbed", user: name, players: p.players, sessions: p.sessions });
+      }
     }
     saveLocalData(data);
   },
@@ -182,6 +193,8 @@ const LocalBackend = {
         handlers.onCompleted?.();
       } else if (msg.type === "time-update") {
         handlers.onTimeUpdate?.({ sessions: p.sessions, totalTimeMs: p.totalTimeMs });
+      } else if (msg.type === "user-scrubbed") {
+        handlers.onUserScrubbed?.({ user: msg.user, players: msg.players, sessions: msg.sessions });
       }
     };
 
@@ -292,6 +305,9 @@ const RemoteBackend = {
     // Not implemented server-side yet — settings are UI-local for now
     // (README notes this as a follow-up if it needs to sync across devices).
   },
+  async updateUserColor(name, hue) {
+    await this.apiPost("/update-user-color", { user: name, hue });
+  },
   async deleteUser(name) {
     await this.apiPost("/delete-user", { user: name });
   },
@@ -317,6 +333,7 @@ const RemoteBackend = {
       else if (msg.type === "completed") handlers.onCompleted?.();
       else if (msg.type === "time-update") handlers.onTimeUpdate?.({ sessions: msg.sessions, totalTimeMs: msg.totalTimeMs });
       else if (msg.type === "puzzle-deleted") handlers.onPuzzleDeleted?.();
+      else if (msg.type === "user-scrubbed") handlers.onUserScrubbed?.({ user: msg.user, players: msg.players, sessions: msg.sessions });
     };
     const send = (msg) => {
       if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
@@ -342,6 +359,7 @@ const Backend = USING_LOCAL_BACKEND ? LocalBackend : RemoteBackend;
 let currentUser = null; // { name, hue, settings }
 let currentPuzzleConn = null;
 let currentPuzzle = null;
+let currentPresence = []; // last known "who's online right now" list for the open puzzle
 let selectedCell = null;
 let selectedDirection = "across";
 let sessionStartTime = null;
@@ -517,11 +535,23 @@ function renderBottomNav(nav, activeScreen) {
   }
 }
 
+// A puzzle earns the gold treatment when it was finished with zero reveals
+// and nobody had Auto Check on — genuinely solved unassisted, not just
+// "completed" in the broader sense (which also counts revealed/assisted
+// finishes).
+function isPerfectCompletion(puzzle) {
+  if (puzzle?.state !== "completed") return false;
+  const sessions = Object.values(puzzle.sessions || {});
+  if (sessions.length === 0) return false;
+  return sessions.every((s) => (s.revealsUsed || 0) === 0 && !s.autoCheckUsed);
+}
+
 function miniGrid(puzzle, sizeClass) {
   const grid = el("div", { class: `mini-grid ${sizeClass}` });
   const cells = puzzle?.grid?.cells || [];
   const rows = puzzle?.grid?.rows || 4;
   const cols = puzzle?.grid?.cols || 4;
+  const golden = isPerfectCompletion(puzzle);
   grid.style.gridTemplateColumns = `repeat(4, 1fr)`;
   grid.style.gridTemplateRows = `repeat(4, 1fr)`;
   // Sample a 4x4 preview from the real grid's block pattern for a thumbnail.
@@ -533,9 +563,13 @@ function miniGrid(puzzle, sizeClass) {
       const filled = cell && !cell.block;
       const cellEl = el("div", { class: "mini-grid-cell" + (filled ? " filled owned" : "") });
       if (filled) {
-        const owner = puzzle.cells?.[`${sr}-${sc}`]?.owner;
-        const hue = owner && dataCache?.users?.[owner]?.hue;
-        cellEl.style.background = hue != null ? `oklch(58% .1 ${hue})` : "var(--block-cell)";
+        if (golden) {
+          cellEl.style.background = "var(--gold)";
+        } else {
+          const owner = puzzle.cells?.[`${sr}-${sc}`]?.owner;
+          const hue = owner && dataCache?.users?.[owner]?.hue;
+          cellEl.style.background = hue != null ? `oklch(58% .1 ${hue})` : "var(--block-cell)";
+        }
       }
       grid.appendChild(cellEl);
     }
@@ -640,26 +674,37 @@ function renderHome() {
     .filter((p) => p.state === "open" && p.visibility === "open" && !p.players.includes(currentUser.name))
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  scroll.appendChild(section("Continue playing", continuing, "No puzzles in progress — tap + to start one.", Infinity, continueRow));
-  scroll.appendChild(section("New open crosswords", openToJoin, "No open crosswords yet — tap + to start one.", 6, openRow));
-  scroll.appendChild(section("Recently completed", completed, "Nothing finished yet.", 6, completedRow));
+  scroll.appendChild(section("Continue playing", continuing, "No puzzles in progress — tap + to start one.", continueRow));
+  scroll.appendChild(section("New open crosswords", openToJoin, "No open crosswords yet — tap + to start one.", openRow));
+  scroll.appendChild(section("Recently completed", completed, "Nothing finished yet.", completedRow));
 }
 
-// `cap` is how many rows this section shows at once — the "More" pill only
-// renders when the list actually has more than that (previously it always
-// showed, even on an empty section).
-function section(title, list, emptyText, cap, renderRow) {
+const HOME_SECTION_CAP = 3;
+// Which sections the user has tapped "More" on — persists across re-renders
+// within the session (e.g. a puzzle finishing shouldn't silently re-collapse
+// a list you just expanded), reset only implicitly by a fresh page load.
+const expandedHomeSections = new Set();
+
+// The "More" pill only renders when the list actually has more than the cap
+// (previously it always showed, even on an empty section); clicking it
+// expands that section in place rather than just showing a placeholder toast.
+function section(title, list, emptyText, renderRow) {
   const wrap = el("div");
+  const expanded = expandedHomeSections.has(title);
+  const shown = expanded ? list.length : HOME_SECTION_CAP;
   const headerChildren = [el("div", { class: "section-title", text: title })];
-  if (list.length > cap) {
-    headerChildren.push(el("button", { class: "pill-more", onclick: () => showToast(`${title} — full list coming soon`) }, "More"));
+  if (list.length > HOME_SECTION_CAP && !expanded) {
+    headerChildren.push(el("button", {
+      class: "pill-more",
+      onclick: () => { expandedHomeSections.add(title); renderHome(); },
+    }, "More"));
   }
   wrap.appendChild(el("div", { class: "section-header" }, headerChildren));
   if (list.length === 0) {
     wrap.appendChild(el("div", { class: "empty-note", text: emptyText }));
   } else {
     const rowsWrap = el("div", { class: "puzzle-list" });
-    for (const p of list.slice(0, cap)) rowsWrap.appendChild(renderRow(p));
+    for (const p of list.slice(0, shown)) rowsWrap.appendChild(renderRow(p));
     wrap.appendChild(rowsWrap);
   }
   return wrap;
@@ -697,7 +742,7 @@ function openRow(p) {
 
 function completedRow(p) {
   const row = el("button", { class: "completed-row", onclick: () => viewCompletedPuzzle(p.id) });
-  row.appendChild(el("div", { class: "completed-check", text: "✓" }));
+  row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "completed-title", text: p.title }));
   const mins = p.totalTimeMs ? formatMinSec(p.totalTimeMs) : "—";
   row.appendChild(el("div", { class: "completed-meta", text: `${mins} · ${p.players.length}p` }));
@@ -931,7 +976,9 @@ function openPuzzle(puzzleId) {
   $("#puzzle-grid").innerHTML = "";
   myBaselineMs = 0;
   sessionStartTime = null; // set once onInit knows this session's persisted timeSpentMs
-  autoCheckOn = false;
+  const savedPrefs = loadAssistPrefs();
+  autoCheckOn = savedPrefs.autoCheck;
+  impatientMode = savedPrefs.impatient;
   clearInterval(sessionTimerHandle);
   sessionTimerHandle = setInterval(updatePuzzleTimers, 1000);
   timeFlushHandle = setInterval(() => flushTime(false), TIME_FLUSH_INTERVAL_MS);
@@ -949,6 +996,11 @@ function openPuzzle(puzzleId) {
       renderPuzzleKeyboard();
       updateClueBar();
       updatePuzzleTimers();
+      // A saved "Auto Check on" preference still needs to flag this session
+      // server-side (half-credit scoring), same as flipping the toggle by
+      // hand would — the connection didn't exist yet when autoCheckOn was
+      // set from saved prefs earlier in openPuzzle().
+      if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
     },
     onCellUpdate({ row, col, letter, owner, revealed }) {
       if (!currentPuzzle) return;
@@ -988,6 +1040,15 @@ function openPuzzle(puzzleId) {
         navigate("screen-home");
       });
     },
+    onUserScrubbed({ players, sessions }) {
+      // Someone else's account was deleted while this client had the puzzle
+      // open — keep the avatar row and any stats live-accurate rather than
+      // waiting for a reconnect.
+      if (!currentPuzzle) return;
+      currentPuzzle.players = players;
+      currentPuzzle.sessions = sessions;
+      renderPuzzleHeader(currentPresence);
+    },
   });
 }
 
@@ -998,6 +1059,7 @@ function firstFillableCell(grid) {
 
 function renderPuzzleHeader(presence) {
   if (!currentPuzzle) return;
+  currentPresence = presence;
   $("#puzzle-title").textContent = currentPuzzle.title;
   $("#puzzle-playing-count").textContent = presence.length;
   const avatars = $("#puzzle-avatars");
@@ -1222,15 +1284,28 @@ $("#clue-next").addEventListener("click", () => stepClue(1));
 function advanceSelection(reverse) {
   const cells = currentWord();
   const idx = cells.findIndex((c) => c.row === selectedCell.row && c.col === selectedCell.col);
-  const nextIdx = idx + (reverse ? -1 : 1);
-  if (nextIdx >= 0 && nextIdx < cells.length) {
-    selectedCell = cells[nextIdx];
-    refreshGridState();
-  } else if (!reverse) {
-    // Typed the last letter of this word — jump straight to the next clue
-    // instead of just leaving the cursor stranded on the final cell.
-    stepClue(1);
+  if (reverse) {
+    const prevIdx = idx - 1;
+    if (prevIdx >= 0) {
+      selectedCell = cells[prevIdx];
+      refreshGridState();
+    }
+    return;
   }
+  // Forward: skip past any cell that's already filled (typing a run of
+  // letters shouldn't force re-entering one that crosses an already-solved
+  // word) and land on the next empty one instead.
+  for (let i = idx + 1; i < cells.length; i++) {
+    const c = cells[i];
+    if (!currentPuzzle.cells[`${c.row}-${c.col}`]?.letter) {
+      selectedCell = c;
+      refreshGridState();
+      return;
+    }
+  }
+  // No empty cell left ahead in this word — typed the last letter, jump to
+  // the next clue instead of just leaving the cursor stranded.
+  stepClue(1);
 }
 
 function typeLetter(letter) {
@@ -1319,6 +1394,23 @@ function renderPresenceBadge(user, row, col) {
 
 // ---- Assist menu ----
 
+// Keyed per-user (not just per-device) so switching profiles on a shared
+// device doesn't leak one person's Auto Check/Impatient mode preference to
+// another.
+function assistPrefsKey() {
+  return `across_assist_prefs_${currentUser?.name || "anon"}`;
+}
+function loadAssistPrefs() {
+  try {
+    const raw = localStorage.getItem(assistPrefsKey());
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { autoCheck: false, impatient: false };
+}
+function saveAssistPrefs() {
+  localStorage.setItem(assistPrefsKey(), JSON.stringify({ autoCheck: autoCheckOn, impatient: impatientMode }));
+}
+
 $("#puzzle-assist-btn").addEventListener("click", () => {
   $("#assist-menu").style.display = "flex";
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
@@ -1369,10 +1461,12 @@ $("#autocheck-toggle").addEventListener("click", () => {
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
   if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
   refreshAllCellsForAutoCheck();
+  saveAssistPrefs();
 });
 $("#impatient-toggle").addEventListener("click", () => {
   impatientMode = !impatientMode;
   $("#impatient-toggle").classList.toggle("on", impatientMode);
+  saveAssistPrefs();
 });
 
 function revealCells(cells) {
@@ -1403,7 +1497,12 @@ async function handlePuzzleCompleted() {
 function renderCompletion(p) {
   const badgeGrid = $("#completion-badge-grid");
   badgeGrid.innerHTML = "";
+  const perfect = isPerfectCompletion(p);
   for (let i = 0; i < 16; i++) {
+    if (perfect) {
+      badgeGrid.appendChild(el("div", { style: "background:var(--gold)" }));
+      continue;
+    }
     const owners = Object.values(p.sessions).length ? p.players : [currentUser.name];
     const owner = owners[i % owners.length];
     const hue = dataCache.users[owner]?.hue ?? 250;
@@ -1412,6 +1511,7 @@ function renderCompletion(p) {
   $("#completion-title").textContent = p.title;
   $("#completion-time").textContent = formatClock(p.totalTimeMs || 0);
   $("#completion-players").textContent = p.players.length;
+  $("#completion-words").textContent = p.grid?.words?.length || 0;
   const totalLetters = Object.values(p.sessions || {}).reduce((s, v) => s + (v.lettersEntered || 0), 0);
   $("#completion-letters").textContent = totalLetters;
 
@@ -1607,7 +1707,31 @@ document.addEventListener("click", (e) => {
 // Settings screen (user management) + profile detail (viewed via Rankings)
 // ===========================================================================
 
+function renderColorPicker() {
+  const grid = $("#settings-color-picker");
+  grid.innerHTML = "";
+  for (const hue of PLAYER_HUES) {
+    const swatch = el("button", {
+      class: "color-swatch" + (hue === currentUser.hue ? " selected" : ""),
+      style: `background:oklch(58% .1 ${hue})`,
+      title: `oklch hue ${hue}`,
+    });
+    swatch.addEventListener("click", async () => {
+      if (hue === currentUser.hue) return;
+      await Backend.updateUserColor(currentUser.name, hue);
+      currentUser.hue = hue;
+      await refreshData();
+      renderSettings();
+      // Nav-bar Profile icon shows the live avatar color — refresh it
+      // immediately rather than waiting for the next navigate() call.
+      $all("[data-nav]").forEach((nav) => renderBottomNav(nav, "screen-settings"));
+    });
+    grid.appendChild(swatch);
+  }
+}
+
 function renderSettings() {
+  renderColorPicker();
   const list = $("#settings-user-list");
   list.innerHTML = "";
   const names = Object.keys(dataCache.users);
