@@ -128,6 +128,7 @@
       <div class="header-actions">
         <div class="icon-btn-pair">
           <button class="icon-btn" data-action="go-home" title="Home">⌂</button>
+          <button class="icon-btn" id="puzzle-share-btn" title="Share">↗</button>
           <button class="icon-btn assist" id="puzzle-assist-btn" title="Assist">✦</button>
         </div>
         <div class="player-avatars" id="puzzle-avatars"></div>
@@ -162,6 +163,10 @@
         <div class="settings-row" style="justify-content:space-between">
           <div>Impatient mode <span style="color:var(--muted-4);font-weight:400">(celebrate each word)</span></div>
           <button class="toggle" id="impatient-toggle"></button>
+        </div>
+        <div class="settings-row" style="justify-content:space-between">
+          <div>Extremely impatient <span style="color:var(--muted-4);font-weight:400">(celebrate each letter)</span></div>
+          <button class="toggle" id="extremely-impatient-toggle"></button>
         </div>
       </div>
       <button class="danger-row" data-assist="delete-puzzle">Delete crossword</button>

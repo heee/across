@@ -583,7 +583,14 @@ button, input, textarea {
   40% { opacity: 1; transform: scale(1.15) rotate(15deg); }
   100% { opacity: 0; transform: scale(0.8) rotate(30deg); }
 }
+@keyframes cell-sparkle-fade-2 {
+  0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(-20deg); }
+  100% { opacity: 0; transform: scale(0.7) rotate(-35deg); }
+}
 .cell.celebrate { animation: cell-celebrate-glow 0.65s ease-out; z-index: 2; }
+/* Two sparkles at opposite corners, staggered/rotated differently, read as
+   a small "sparkling stars" burst rather than a single fixed glyph. */
 .cell.celebrate::before {
   content: "✦";
   position: absolute;
@@ -591,6 +598,15 @@ button, input, textarea {
   font-size: 10px;
   color: oklch(75% .15 85);
   animation: cell-sparkle-fade 0.65s ease-out;
+  pointer-events: none;
+}
+.cell.celebrate::after {
+  content: "✦";
+  position: absolute;
+  bottom: -5px; left: -4px;
+  font-size: 7px;
+  color: oklch(80% .12 85);
+  animation: cell-sparkle-fade-2 0.65s ease-out 0.08s backwards;
   pointer-events: none;
 }
 

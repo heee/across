@@ -366,6 +366,7 @@ let sessionStartTime = null;
 let sessionTimerHandle = null;
 let autoCheckOn = false;
 let impatientMode = false; // local-only visual flourish toggle, default off
+let extremelyImpatientMode = false; // same, but celebrates every correct letter, not just completed words
 let createCategory = null;
 let rankingsWindow = "week";
 let rankingsMetric = "Contribution score";
@@ -588,19 +589,49 @@ async function refreshData() {
   return dataCache;
 }
 
+// A puzzle share link looks like https://.../#/s/{puzzleId} (see the Share
+// button in the puzzle header and Completion screen). Parsed once login is
+// established and consumed (hash cleared) so a later reload of the same tab
+// doesn't re-trigger it.
+function getSharedPuzzleIdFromHash() {
+  const m = location.hash.match(/^#\/s\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : null;
+}
+
+// Every "just finished logging in" path (boot() with a saved name, picking
+// a profile card, or submitting a new name) needs the same next step: if
+// this tab was opened from a share link, join+open that puzzle directly;
+// otherwise go to the normal Home screen.
+async function enterAppAfterLogin() {
+  const sharedId = getSharedPuzzleIdFromHash();
+  if (sharedId) {
+    history.replaceState(null, "", location.pathname + location.search);
+    if (dataCache.puzzles[sharedId]) {
+      try {
+        await joinAndOpen(sharedId);
+        return;
+      } catch (e) {
+        showToast("Couldn't open that shared crossword");
+      }
+    } else {
+      showToast("That crossword link looks invalid or was deleted");
+    }
+  }
+  renderHome();
+  navigate("screen-home");
+}
+
 async function boot() {
   const savedName = localStorage.getItem("across_user_name");
   await refreshData();
   if (savedName && dataCache.users[savedName]) {
     currentUser = { name: savedName, ...dataCache.users[savedName] };
-    renderHome();
-    navigate("screen-home");
+    await enterAppAfterLogin();
   } else if (savedName) {
     // Known locally but not yet in the fetched data (e.g. first remote sync) — register.
     currentUser = await Backend.registerUser(savedName);
     await refreshData();
-    renderHome();
-    navigate("screen-home");
+    await enterAppAfterLogin();
   } else {
     renderProfilePicker();
     navigate("screen-name-entry");
@@ -621,8 +652,7 @@ function renderProfilePicker() {
     card.addEventListener("click", async () => {
       currentUser = { name, ...user };
       localStorage.setItem("across_user_name", name);
-      renderHome();
-      navigate("screen-home");
+      await enterAppAfterLogin();
     });
     grid.appendChild(card);
   }
@@ -646,8 +676,7 @@ $("#name-entry-submit").addEventListener("click", async () => {
   currentUser = await Backend.registerUser(name);
   localStorage.setItem("across_user_name", name);
   await refreshData();
-  renderHome();
-  navigate("screen-home");
+  await enterAppAfterLogin();
 });
 $("#name-entry-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#name-entry-submit").click(); });
 
@@ -979,6 +1008,7 @@ function openPuzzle(puzzleId) {
   const savedPrefs = loadAssistPrefs();
   autoCheckOn = savedPrefs.autoCheck;
   impatientMode = savedPrefs.impatient;
+  extremelyImpatientMode = savedPrefs.extremelyImpatient;
   clearInterval(sessionTimerHandle);
   sessionTimerHandle = setInterval(updatePuzzleTimers, 1000);
   timeFlushHandle = setInterval(() => flushTime(false), TIME_FLUSH_INTERVAL_MS);
@@ -1321,11 +1351,13 @@ function typeLetter(letter) {
   // the DO's broadcast() explicitly excludes the sending socket), so the
   // typing player has to see their own letter land without waiting on that.
   currentPuzzle.cells[key] = { letter, owner: currentUser.name, revealed: false };
-  const completedWordCells = currentWord(); // captured before advanceSelection moves us off it
+  const typedCell = { row: selectedCell.row, col: selectedCell.col }; // captured before advanceSelection moves us off it
+  const completedWordCells = currentWord();
   const wordCompleted = checkNewlyCompletedWord();
   currentPuzzleConn.sendCellUpdate(selectedCell.row, selectedCell.col, letter, { isCorrect, corrected: wasWrong && isCorrect, wordCompleted });
   updateCellDisplay(selectedCell.row, selectedCell.col);
   if (wordCompleted && impatientMode) celebrateWordCompletion(completedWordCells);
+  if (isCorrect && extremelyImpatientMode) celebrateWordCompletion([typedCell]);
   advanceSelection(false);
 }
 
@@ -1405,16 +1437,46 @@ function loadAssistPrefs() {
     const raw = localStorage.getItem(assistPrefsKey());
     if (raw) return JSON.parse(raw);
   } catch (e) {}
-  return { autoCheck: false, impatient: false };
+  return { autoCheck: false, impatient: false, extremelyImpatient: false };
 }
 function saveAssistPrefs() {
-  localStorage.setItem(assistPrefsKey(), JSON.stringify({ autoCheck: autoCheckOn, impatient: impatientMode }));
+  localStorage.setItem(assistPrefsKey(), JSON.stringify({ autoCheck: autoCheckOn, impatient: impatientMode, extremelyImpatient: extremelyImpatientMode }));
 }
+
+// Randomized invite lines for the in-session Share button — a lighter,
+// "come join right now" counterpart to the Completion screen's "we just
+// finished" recap message. {title} is replaced with the puzzle's title.
+const SHARE_INVITE_LINES = [
+  `Come join me in "{title}" — I refuse to do this alone.`,
+  `SOS: stuck on "{title}" and could use a partner in crime.`,
+  `Join me in "{title}"? Two brains, one crossword, infinite possibilities.`,
+  `"{title}" is happening right now and it needs more hands on deck.`,
+  `Dropping into "{title}" — come make me look smarter than I am.`,
+  `Crossword emergency: "{title}" needs backup. You in?`,
+  `I've got 3 letters and a dream in "{title}". Join me?`,
+  `Come solve "{title}" with me before I start guessing randomly.`,
+  `"{title}" awaits. Bring your A-game (or your guessing game).`,
+  `Tag yourself in — I'm working on "{title}" and it's a whole vibe.`,
+];
+
+$("#puzzle-share-btn").addEventListener("click", async () => {
+  if (!currentPuzzle) return;
+  const line = SHARE_INVITE_LINES[Math.floor(Math.random() * SHARE_INVITE_LINES.length)];
+  const text = line.replace("{title}", currentPuzzle.title);
+  const url = `${location.origin}${location.pathname}#/s/${currentPuzzle.id}`;
+  if (navigator.share) {
+    try { await navigator.share({ text, url }); } catch (e) {}
+  } else {
+    try { await navigator.clipboard.writeText(`${text} → ${url}`); showToast("Copied invite link to clipboard"); }
+    catch (e) { showToast("Sharing isn't supported in this browser"); }
+  }
+});
 
 $("#puzzle-assist-btn").addEventListener("click", () => {
   $("#assist-menu").style.display = "flex";
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
   $("#impatient-toggle").classList.toggle("on", impatientMode);
+  $("#extremely-impatient-toggle").classList.toggle("on", extremelyImpatientMode);
 });
 document.addEventListener("click", (e) => {
   const action = e.target.closest("[data-assist]")?.dataset.assist;
@@ -1466,6 +1528,11 @@ $("#autocheck-toggle").addEventListener("click", () => {
 $("#impatient-toggle").addEventListener("click", () => {
   impatientMode = !impatientMode;
   $("#impatient-toggle").classList.toggle("on", impatientMode);
+  saveAssistPrefs();
+});
+$("#extremely-impatient-toggle").addEventListener("click", () => {
+  extremelyImpatientMode = !extremelyImpatientMode;
+  $("#extremely-impatient-toggle").classList.toggle("on", extremelyImpatientMode);
   saveAssistPrefs();
 });
 

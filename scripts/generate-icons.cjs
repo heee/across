@@ -81,10 +81,20 @@ function fillRoundedRect(canvas, x0, y0, x1, y1, radius, color) {
   }
 }
 
-function drawMark(canvas, size) {
-  fillRoundedRect(canvas, 0, 0, size, size, size * 0.22, BG);
-
-  const gridSize = size * 0.62;
+// contentFraction controls how much of the square the 4x4 grid occupies.
+// No outer rounded-rect is drawn — iOS, Android, and Windows all apply
+// their own corner mask/shape on top of whatever's supplied, so a
+// pre-rounded source image gets double-rounded (soft/fuzzy-looking edges)
+// and wastes canvas on padding the OS was already going to crop past.
+// Shipping a full-bleed square and letting each platform mask it is the
+// standard PWA icon practice.
+//   - "any" icons (browser tab, most Android launchers, apple-touch-icon):
+//     content fills most of the frame — ~0.82.
+//   - "maskable" icons: platforms may crop aggressively toward a circle,
+//     so content must stay inside a safe zone — keep it closer to ~0.60
+//     (still comfortably inside the ~80%-diameter safe circle convention).
+function drawMark(canvas, size, contentFraction) {
+  const gridSize = size * contentFraction;
   const gap = size * 0.035;
   const cell = (gridSize - gap * 3) / 4;
   const originX = (size - gridSize) / 2;
@@ -94,7 +104,7 @@ function drawMark(canvas, size) {
     for (let c = 0; c < 4; c++) {
       const x0 = originX + c * (cell + gap);
       const y0 = originY + r * (cell + gap);
-      fillRoundedRect(canvas, x0, y0, x0 + cell, y0 + cell, size * 0.018, HUE_RGB[PATTERN[r][c]]);
+      fillRoundedRect(canvas, x0, y0, x0 + cell, y0 + cell, size * 0.02, HUE_RGB[PATTERN[r][c]]);
     }
   }
 }
@@ -148,9 +158,18 @@ function writePng(filePath, canvas) {
 function main() {
   const outDir = path.join(__dirname, "..", "icons");
   fs.mkdirSync(outDir, { recursive: true });
-  for (const [size, name] of [[192, "icon-192.png"], [512, "icon-512.png"], [180, "apple-touch-icon.png"]]) {
+  const ANY_FRACTION = 0.82;
+  const MASKABLE_FRACTION = 0.6;
+  const targets = [
+    [192, "icon-192.png", ANY_FRACTION],
+    [512, "icon-512.png", ANY_FRACTION],
+    [180, "apple-touch-icon.png", ANY_FRACTION],
+    [192, "icon-192-maskable.png", MASKABLE_FRACTION],
+    [512, "icon-512-maskable.png", MASKABLE_FRACTION],
+  ];
+  for (const [size, name, fraction] of targets) {
     const canvas = makeCanvas(size, BG);
-    drawMark(canvas, size);
+    drawMark(canvas, size, fraction);
     writePng(path.join(outDir, name), canvas);
     console.log("wrote", name);
   }
