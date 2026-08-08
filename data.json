@@ -7882,12 +7882,12 @@
           "revealed": false
         },
         "0-0": {
-          "letter": "",
+          "letter": "H",
           "owner": "Henning",
           "revealed": false
         },
         "1-0": {
-          "letter": "",
+          "letter": "E",
           "owner": "Henning",
           "revealed": false
         },
@@ -8062,8 +8062,8 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 50,
-          "correctLetters": 37,
+          "lettersEntered": 52,
+          "correctLetters": 39,
           "incorrectLetters": 13,
           "correctionsMade": 0,
           "revealsUsed": 0,
@@ -8075,7 +8075,7 @@
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 0,
+      "totalTimeMs": 180397,
       "highlights": []
     },
     "superhero-showdown-ii-ms8ei9fh": {
