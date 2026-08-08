@@ -7892,27 +7892,27 @@
           "revealed": false
         },
         "2-0": {
-          "letter": "",
+          "letter": "M",
           "owner": "Henning",
           "revealed": false
         },
         "3-0": {
-          "letter": "",
+          "letter": "I",
           "owner": "Henning",
           "revealed": false
         },
         "4-0": {
-          "letter": "",
+          "letter": "S",
           "owner": "Henning",
           "revealed": false
         },
         "5-0": {
-          "letter": "",
+          "letter": "P",
           "owner": "Henning",
           "revealed": false
         },
         "6-0": {
-          "letter": "",
+          "letter": "H",
           "owner": "Henning",
           "revealed": false
         },
@@ -7967,7 +7967,7 @@
           "revealed": false
         },
         "7-0": {
-          "letter": "",
+          "letter": "E",
           "owner": "Henning",
           "revealed": false
         },
@@ -8055,6 +8055,21 @@
           "letter": "O",
           "owner": "Henning",
           "revealed": false
+        },
+        "8-0": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "9-0": {
+          "letter": "E",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "0-5": {
+          "letter": "S",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -8062,20 +8077,20 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 52,
-          "correctLetters": 39,
+          "lettersEntered": 61,
+          "correctLetters": 48,
           "incorrectLetters": 13,
           "correctionsMade": 0,
           "revealsUsed": 0,
-          "wordsCompleted": 5,
-          "timeSpentMs": 180397,
+          "wordsCompleted": 6,
+          "timeSpentMs": 192757,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:35:34.495Z"
         }
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 180397,
+      "totalTimeMs": 192757,
       "highlights": []
     },
     "superhero-showdown-ii-ms8ei9fh": {
