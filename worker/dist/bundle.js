@@ -6922,6 +6922,8 @@ function legacyCropAndNumber(grid, words, n) {
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
+//   POST /fork-puzzle     { puzzleId, user }                     -> creates a private, blank, solo copy of an existing
+//                                                                    puzzle for one user (idempotent per user+puzzle)
 //   POST /delete-puzzle   { puzzleId }                           -> removes the puzzle from data.json, wipes its PuzzleRoom DO
 //                                                                    state, and disconnects anyone still in it
 //   POST /complete-puzzle { puzzleId, cells, sessions, totalTimeMs, completed }
@@ -7126,6 +7128,67 @@ export default {
           if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
         }, `Join puzzle: ${user} -> ${puzzleId}`);
         return json({ ok: true }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, 502, cors);
+      }
+    }
+
+    if (url.pathname === "/fork-puzzle" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const sourceId = typeof body?.puzzleId === "string" ? body.puzzleId.slice(0, 64) : "";
+      const user = typeof body?.user === "string" ? body.user.trim().slice(0, 40) : "";
+      if (!sourceId || !user) return json({ error: "invalid payload" }, 400, cors);
+
+      let forkedPuzzle;
+      let created = false;
+      try {
+        await commitMutation(env, (data) => {
+          const source = data.puzzles[sourceId];
+          if (!source) throw new Error("puzzle not found");
+          const id = `${sourceId}-priv-${slugify(user)}`;
+          if (data.puzzles[id]) {
+            forkedPuzzle = data.puzzles[id];
+            return;
+          }
+          created = true;
+          forkedPuzzle = {
+            id,
+            title: `${source.title} — Private Copy`,
+            description: source.description,
+            keywords: source.keywords,
+            size: source.size,
+            difficulty: source.difficulty,
+            visibility: "private",
+            createdBy: source.createdBy,
+            forkOf: sourceId,
+            forkedBy: user,
+            createdAt: new Date().toISOString(),
+            grid: source.grid,
+            cells: {},
+            players: [user],
+            sessions: { [user]: newSession() },
+            state: "open",
+            completedAt: null,
+            totalTimeMs: 0,
+            highlights: [],
+          };
+          data.puzzles[id] = forkedPuzzle;
+        }, `Fork puzzle: ${sourceId} -> ${user}`);
+
+        if (created) {
+          // Only seed a brand-new fork's room — re-seeding an existing fork
+          // would clobber its live in-progress DO state with this stale
+          // data.json snapshot (persist() only writes back every 15s).
+          const roomId = env.PUZZLE_ROOM.idFromName(forkedPuzzle.id);
+          const stub = env.PUZZLE_ROOM.get(roomId);
+          await stub.fetch("https://internal/seed", {
+            method: "POST",
+            body: JSON.stringify(forkedPuzzle),
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        return json({ ok: true, puzzle: forkedPuzzle }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
       }

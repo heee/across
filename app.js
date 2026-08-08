@@ -152,6 +152,37 @@ const LocalBackend = {
     if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
     saveLocalData(data);
   },
+  async forkPuzzle(puzzleId, user) {
+    const data = loadLocalData();
+    const source = data.puzzles[puzzleId];
+    if (!source) throw new Error("puzzle not found");
+    const id = `${puzzleId}-priv-${slugify(user)}`;
+    if (data.puzzles[id]) return data.puzzles[id];
+    const forked = {
+      id,
+      title: `${source.title} — Private Copy`,
+      description: source.description,
+      keywords: source.keywords,
+      size: source.size,
+      difficulty: source.difficulty,
+      visibility: "private",
+      createdBy: source.createdBy,
+      forkOf: puzzleId,
+      forkedBy: user,
+      createdAt: nowIso(),
+      grid: source.grid,
+      cells: {},
+      players: [user],
+      sessions: { [user]: newSession() },
+      state: "open",
+      completedAt: null,
+      totalTimeMs: 0,
+      highlights: [],
+    };
+    data.puzzles[id] = forked;
+    saveLocalData(data);
+    return forked;
+  },
   connectPuzzle(puzzleId, user, handlers) {
     const data = loadLocalData();
     const puzzle = data.puzzles[puzzleId];
@@ -320,6 +351,10 @@ const RemoteBackend = {
   },
   async joinPuzzle(puzzleId, user) {
     await this.apiPost("/join-puzzle", { puzzleId, user });
+  },
+  async forkPuzzle(puzzleId, user) {
+    const res = await this.apiPost("/fork-puzzle", { puzzleId, user });
+    return res.puzzle;
   },
   connectPuzzle(puzzleId, user, handlers) {
     const wsUrl = `${window.WORKER_URL.replace(/^http/, "ws")}/puzzle/${puzzleId}/connect?user=${encodeURIComponent(user)}`;
@@ -604,21 +639,16 @@ function getSharedPuzzleIdFromHash() {
 // otherwise go to the normal Home screen.
 async function enterAppAfterLogin() {
   const sharedId = getSharedPuzzleIdFromHash();
+  renderHome();
+  navigate("screen-home");
   if (sharedId) {
     history.replaceState(null, "", location.pathname + location.search);
     if (dataCache.puzzles[sharedId]) {
-      try {
-        await joinAndOpen(sharedId);
-        return;
-      } catch (e) {
-        showToast("Couldn't open that shared crossword");
-      }
+      openSharedPuzzle(sharedId);
     } else {
       showToast("That crossword link looks invalid or was deleted");
     }
   }
-  renderHome();
-  navigate("screen-home");
 }
 
 async function boot() {
@@ -759,7 +789,7 @@ function continueRow(p) {
 }
 
 function openRow(p) {
-  const row = el("button", { class: "puzzle-row", onclick: () => joinAndOpen(p.id) });
+  const row = el("button", { class: "puzzle-row", onclick: () => openSharedPuzzle(p.id) });
   row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
@@ -789,10 +819,54 @@ function viewCompletedPuzzle(puzzleId) {
 function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
 async function joinAndOpen(puzzleId) {
-  await Backend.joinPuzzle(puzzleId, currentUser.name);
-  await refreshData();
-  openPuzzle(puzzleId);
+  try {
+    await Backend.joinPuzzle(puzzleId, currentUser.name);
+    await refreshData();
+    openPuzzle(puzzleId);
+  } catch (e) {
+    showToast(e.message || "Couldn't open that shared crossword");
+  }
 }
+
+async function openPrivateCopy(puzzleId) {
+  const existing = Object.values(dataCache.puzzles).find((p) => p.forkOf === puzzleId && p.forkedBy === currentUser.name);
+  if (existing) { openPuzzle(existing.id); return; }
+  try {
+    const forked = await Backend.forkPuzzle(puzzleId, currentUser.name);
+    await refreshData();
+    openPuzzle(forked.id);
+  } catch (e) {
+    showToast(e.message || "Couldn't create your private copy");
+  }
+}
+
+// Opening a crossword created by someone else you haven't joined prompts a
+// choice between joining the shared puzzle and playing a private solo copy;
+// anything else (your own puzzle, or one you're already in) opens directly.
+let pendingForkPuzzleId = null;
+
+function openSharedPuzzle(puzzleId) {
+  const puzzle = dataCache.puzzles[puzzleId];
+  if (!puzzle) return;
+  if (puzzle.players.includes(currentUser.name)) {
+    openPuzzle(puzzleId);
+    return;
+  }
+  pendingForkPuzzleId = puzzleId;
+  $("#join-fork-title").textContent = `Join "${puzzle.title}"?`;
+  $("#join-fork-menu").style.display = "flex";
+}
+
+document.addEventListener("click", (e) => {
+  const choice = e.target.closest("[data-fork-choice]")?.dataset.forkChoice;
+  if (!choice) return;
+  const puzzleId = pendingForkPuzzleId;
+  $("#join-fork-menu").style.display = "none";
+  pendingForkPuzzleId = null;
+  if (!puzzleId) return;
+  if (choice === "join") joinAndOpen(puzzleId);
+  else if (choice === "private") openPrivateCopy(puzzleId);
+});
 
 // ===========================================================================
 // Search screen
@@ -826,7 +900,7 @@ function renderSearchResults() {
   }
   for (const p of list) {
     const isMine = p.players.includes(currentUser.name);
-    const row = el("button", { class: "puzzle-row", onclick: () => (isMine ? openPuzzle(p.id) : joinAndOpen(p.id)) });
+    const row = el("button", { class: "puzzle-row", onclick: () => (isMine ? openPuzzle(p.id) : openSharedPuzzle(p.id)) });
     row.appendChild(miniGrid(p, "size-40"));
     row.appendChild(el("div", { class: "puzzle-info" }, [
       el("div", { class: "puzzle-title", text: p.title }),
@@ -1768,6 +1842,7 @@ $("#rankings-metric-change").addEventListener("click", () => {
 document.addEventListener("click", (e) => {
   if (e.target === $("#metric-menu")) $("#metric-menu").style.display = "none";
   if (e.target === $("#assist-menu")) $("#assist-menu").style.display = "none";
+  if (e.target === $("#join-fork-menu")) { $("#join-fork-menu").style.display = "none"; pendingForkPuzzleId = null; }
 });
 
 // ===========================================================================
