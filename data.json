@@ -8070,6 +8070,56 @@
           "letter": "S",
           "owner": "Henning",
           "revealed": false
+        },
+        "1-5": {
+          "letter": "U",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "2-5": {
+          "letter": "N",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "3-5": {
+          "letter": "G",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "4-5": {
+          "letter": "A",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-5": {
+          "letter": "P",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "6-5": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "7-5": {
+          "letter": "R",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-1": {
+          "letter": "H",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-2": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
+        },
+        "5-4": {
+          "letter": "I",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -8077,20 +8127,20 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 61,
-          "correctLetters": 48,
-          "incorrectLetters": 13,
+          "lettersEntered": 72,
+          "correctLetters": 58,
+          "incorrectLetters": 14,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 6,
-          "timeSpentMs": 192757,
+          "timeSpentMs": 207757,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T03:35:34.495Z"
         }
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 192757,
+      "totalTimeMs": 207757,
       "highlights": []
     },
     "superhero-showdown-ii-ms8ei9fh": {
