@@ -10214,6 +10214,11 @@
           "letter": "D",
           "owner": "Christie",
           "revealed": false
+        },
+        "2-3": {
+          "letter": "O",
+          "owner": "Henning",
+          "revealed": false
         }
       },
       "players": [
@@ -10222,8 +10227,8 @@
       ],
       "sessions": {
         "Henning": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 1,
+          "correctLetters": 1,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
