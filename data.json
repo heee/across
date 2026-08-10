@@ -10071,7 +10071,8 @@
       },
       "cells": {},
       "players": [
-        "Henning"
+        "Henning",
+        "Christie"
       ],
       "sessions": {
         "Henning": {
@@ -10084,6 +10085,17 @@
           "timeSpentMs": 9313,
           "autoCheckUsed": false,
           "joinedAt": "2026-07-31T15:08:34.538Z"
+        },
+        "Christie": {
+          "lettersEntered": 0,
+          "correctLetters": 0,
+          "incorrectLetters": 0,
+          "correctionsMade": 0,
+          "revealsUsed": 0,
+          "wordsCompleted": 0,
+          "timeSpentMs": 0,
+          "autoCheckUsed": false,
+          "joinedAt": "2026-08-10T02:46:51.391Z"
         }
       },
       "state": "open",
