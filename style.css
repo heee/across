@@ -931,7 +931,11 @@ button, input, textarea {
   gap: 8px;
   cursor: pointer;
 }
-.profile-card.selected { border-color: var(--accent); }
+.profile-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  box-shadow: 0 0 0 1px oklch(58% .1 250 / .12);
+}
 .profile-card-avatar {
   width: 30px; height: 30px; border-radius: 50%;
   color: #fff; display: flex; align-items: center; justify-content: center;
@@ -940,6 +944,9 @@ button, input, textarea {
 .profile-card-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 12px var(--font); color: var(--ink); }
 .profile-card.more-players { justify-content: center; color: var(--muted-45); }
 .profile-card.new-player {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 5px);
   background: transparent;
   box-shadow: none;
   border: 1.5px dashed var(--hairline);
@@ -950,7 +957,7 @@ button, input, textarea {
   font-size: 20px;
   font-weight: 600;
 }
-.profile-card.new-player .profile-card-name { color: var(--muted-4); }
+.profile-card.new-player .profile-card-name { color: var(--muted-4); font-weight: 500; }
 
 /* ---------- Modal sheets (assist menu, metric picker) ---------- */
 

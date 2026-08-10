@@ -774,7 +774,7 @@ function renderProfilePicker() {
   const visibleEntries = profilePickerExpanded ? entries : entries.slice(0, 1);
 
   for (const [name, user] of visibleEntries) {
-    const card = el("div", { class: "profile-card" }, [
+    const card = el("div", { class: "profile-card" + (name === recentName ? " selected" : "") }, [
       el("div", { class: "profile-card-avatar", style: `background:oklch(58% .1 ${user.hue})`, text: initials(name) }),
       el("div", { class: "profile-card-name", text: name }),
     ]);
@@ -1526,7 +1526,7 @@ function updateClueBar() {
   clueText.innerHTML = "";
   if (entry) {
     clueText.appendChild(el("span", { class: "clue-number", text: `${entry.number} ${cap(entry.direction)}` }));
-    clueText.appendChild(document.createTextNode(` · ${entry.clue}`));
+    clueText.appendChild(document.createTextNode(`\u00A0·\u00A0${entry.clue}`));
   }
 }
 
