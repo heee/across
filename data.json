@@ -10111,12 +10111,42 @@
           "revealed": false
         },
         "8-0": {
-          "letter": "E",
+          "letter": "R",
           "owner": "Christie",
           "revealed": false
         },
         "9-0": {
           "letter": "E",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-2": {
+          "letter": "S",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-3": {
+          "letter": "P",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-4": {
+          "letter": "A",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-5": {
+          "letter": "I",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "1-6": {
+          "letter": "N",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "0-7": {
+          "letter": "V",
           "owner": "Christie",
           "revealed": false
         }
@@ -10138,20 +10168,20 @@
           "joinedAt": "2026-07-31T15:08:34.538Z"
         },
         "Christie": {
-          "lettersEntered": 13,
-          "correctLetters": 9,
+          "lettersEntered": 20,
+          "correctLetters": 16,
           "incorrectLetters": 4,
-          "correctionsMade": 3,
+          "correctionsMade": 4,
           "revealsUsed": 0,
-          "wordsCompleted": 0,
-          "timeSpentMs": 13871,
+          "wordsCompleted": 2,
+          "timeSpentMs": 28872,
           "autoCheckUsed": false,
           "joinedAt": "2026-08-10T02:46:57.740Z"
         }
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 23184,
+      "totalTimeMs": 38185,
       "highlights": []
     }
   }
