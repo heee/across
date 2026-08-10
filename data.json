@@ -10069,7 +10069,13 @@
           }
         ]
       },
-      "cells": {},
+      "cells": {
+        "0-0": {
+          "letter": "H",
+          "owner": "Christie",
+          "revealed": false
+        }
+      },
       "players": [
         "Henning",
         "Christie"
@@ -10087,20 +10093,20 @@
           "joinedAt": "2026-07-31T15:08:34.538Z"
         },
         "Christie": {
-          "lettersEntered": 0,
-          "correctLetters": 0,
+          "lettersEntered": 1,
+          "correctLetters": 1,
           "incorrectLetters": 0,
           "correctionsMade": 0,
           "revealsUsed": 0,
           "wordsCompleted": 0,
           "timeSpentMs": 0,
           "autoCheckUsed": false,
-          "joinedAt": "2026-08-10T02:46:51.391Z"
+          "joinedAt": "2026-08-10T02:46:57.740Z"
         }
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 0,
+      "totalTimeMs": 9313,
       "highlights": []
     }
   }
