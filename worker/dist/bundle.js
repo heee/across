@@ -11932,6 +11932,7 @@ export class PuzzleRoom {
       this.puzzle.cells[key] = { letter: letter.toUpperCase(), owner: user, revealed: false };
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
       const sess = this.puzzle.sessions[user];
+      sess.lastActiveAt = new Date().toISOString();
       if (letter) {
         sess.lettersEntered += 1;
         if (isCorrect) sess.correctLetters += 1;
@@ -11955,6 +11956,7 @@ export class PuzzleRoom {
       this.puzzle.cells[key] = { letter, owner: null, revealed: true };
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
       this.puzzle.sessions[user].revealsUsed += 1;
+      this.puzzle.sessions[user].lastActiveAt = new Date().toISOString();
       this.broadcast({ type: "cell-update", row, col, letter, owner: null, revealed: true }, null);
       const isComplete = this.checkComplete();
       await this.persist(isComplete);
@@ -11964,6 +11966,7 @@ export class PuzzleRoom {
     } else if (msg.type === "auto-check-on") {
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
       this.puzzle.sessions[user].autoCheckUsed = true;
+      this.puzzle.sessions[user].lastActiveAt = new Date().toISOString();
       await this.persist(false);
     } else if (msg.type === "time-heartbeat") {
       // Bounded sanity check — a heartbeat should only ever cover the client's
@@ -11973,6 +11976,7 @@ export class PuzzleRoom {
       if (!Number.isFinite(deltaMs) || deltaMs <= 0 || deltaMs > 120000) return;
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
       this.puzzle.sessions[user].timeSpentMs = (this.puzzle.sessions[user].timeSpentMs || 0) + deltaMs;
+      this.puzzle.sessions[user].lastActiveAt = new Date().toISOString();
       this.puzzle.totalTimeMs = Object.values(this.puzzle.sessions).reduce((s, sess) => s + (sess.timeSpentMs || 0), 0);
       this.broadcast({ type: "time-update", sessions: this.puzzle.sessions, totalTimeMs: this.puzzle.totalTimeMs }, socket);
       await this.persist(false);
@@ -12078,6 +12082,7 @@ function computeHighlights(puzzle) {
 }
 
 function newSession() {
+  const joinedAt = new Date().toISOString();
   return {
     lettersEntered: 0,
     correctLetters: 0,
@@ -12087,7 +12092,8 @@ function newSession() {
     wordsCompleted: 0,
     timeSpentMs: 0,
     autoCheckUsed: false,
-    joinedAt: new Date().toISOString(),
+    joinedAt,
+    lastActiveAt: joinedAt,
   };
 }
 

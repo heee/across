@@ -9,6 +9,7 @@
 //    local mode are produced by the same algorithm the Worker uses.
 import { generatePuzzle } from "./worker/generator.js";
 import { WORD_BANK } from "./worker/corpus.js";
+import { sortPuzzlesByUserActivity } from "./home-order.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 const USING_LOCAL_BACKEND = !window.WORKER_URL || window.WORKER_URL.includes("YOUR-SUBDOMAIN");
@@ -43,6 +44,7 @@ function slugify(s) {
 }
 
 function newSession() {
+  const joinedAt = nowIso();
   return {
     lettersEntered: 0,
     correctLetters: 0,
@@ -52,7 +54,8 @@ function newSession() {
     wordsCompleted: 0,
     timeSpentMs: 0,
     autoCheckUsed: false,
-    joinedAt: nowIso(),
+    joinedAt,
+    lastActiveAt: joinedAt,
   };
 }
 
@@ -271,6 +274,7 @@ const LocalBackend = {
       p.cells[`${row}-${col}`] = { letter, owner, revealed: !!revealed };
       if (!p.sessions[user]) p.sessions[user] = newSession();
       const sess = p.sessions[user];
+      sess.lastActiveAt = nowIso();
       if (revealed) {
         sess.revealsUsed += 1;
       } else if (letter) {
@@ -311,6 +315,7 @@ const LocalBackend = {
         if (p) {
           if (!p.sessions[user]) p.sessions[user] = newSession();
           p.sessions[user].autoCheckUsed = true;
+          p.sessions[user].lastActiveAt = nowIso();
           saveLocalData(fresh);
         }
       },
@@ -321,6 +326,7 @@ const LocalBackend = {
         if (!p) return;
         if (!p.sessions[user]) p.sessions[user] = newSession();
         p.sessions[user].timeSpentMs = (p.sessions[user].timeSpentMs || 0) + deltaMs;
+        p.sessions[user].lastActiveAt = nowIso();
         p.totalTimeMs = Object.values(p.sessions).reduce((s, sess) => s + (sess.timeSpentMs || 0), 0);
         saveLocalData(fresh);
         channel.postMessage({ type: "time-update", user });
@@ -835,7 +841,7 @@ function renderHome() {
   scroll.innerHTML = "";
 
   const myPuzzles = Object.values(dataCache.puzzles).filter((p) => p.players.includes(currentUser.name));
-  const continuing = myPuzzles.filter((p) => p.state === "open");
+  const continuing = sortPuzzlesByUserActivity(myPuzzles.filter((p) => p.state === "open"), currentUser.name);
   const completed = myPuzzles.filter((p) => p.state === "completed").sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
   const openToJoin = Object.values(dataCache.puzzles)
     .filter((p) => p.state === "open" && p.visibility === "open" && !p.players.includes(currentUser.name))
@@ -1197,6 +1203,24 @@ let myBaselineMs = 0;
 let timeFlushHandle = null;
 const TIME_FLUSH_INTERVAL_MS = 15000;
 
+function markCurrentPuzzleActive() {
+  if (!currentPuzzle || !currentUser) return;
+  const lastActiveAt = nowIso();
+  if (!currentPuzzle.sessions) currentPuzzle.sessions = {};
+  if (!currentPuzzle.sessions[currentUser.name]) currentPuzzle.sessions[currentUser.name] = newSession();
+  currentPuzzle.sessions[currentUser.name].lastActiveAt = lastActiveAt;
+
+  // The puzzle connection owns a live snapshot separate from the home cache.
+  // Keep the current player's timestamp in both so returning home reorders the
+  // list immediately, without waiting for the next backend snapshot fetch.
+  const cachedPuzzle = dataCache.puzzles[currentPuzzle.id];
+  if (cachedPuzzle) {
+    if (!cachedPuzzle.sessions) cachedPuzzle.sessions = {};
+    if (!cachedPuzzle.sessions[currentUser.name]) cachedPuzzle.sessions[currentUser.name] = newSession();
+    cachedPuzzle.sessions[currentUser.name].lastActiveAt = lastActiveAt;
+  }
+}
+
 function flushTime(final) {
   if (!currentPuzzleConn || !sessionStartTime) return;
   const now = Date.now();
@@ -1204,6 +1228,7 @@ function flushTime(final) {
   if (delta <= 0) { if (final) sessionStartTime = null; return; }
   myBaselineMs += delta;
   sessionStartTime = final ? null : now;
+  markCurrentPuzzleActive();
   currentPuzzleConn.sendTimeHeartbeat(delta);
 }
 
@@ -1592,6 +1617,7 @@ function typeLetter(letter) {
   const prev = currentPuzzle.cells[key];
   const wasWrong = !!(prev?.letter && !prev.revealed && prev.letter !== cellDef.letter);
   const isCorrect = letter === cellDef.letter;
+  markCurrentPuzzleActive();
   // Optimistic local update — neither backend echoes a sender's own update
   // back to them (BroadcastChannel doesn't loop back to its own tab, and
   // the DO's broadcast() explicitly excludes the sending socket), so the
@@ -1620,6 +1646,7 @@ function backspace() {
   if (isLockedCell(selectedCell)) { advanceSelection(true); return; }
   const key = `${selectedCell.row}-${selectedCell.col}`;
   if (currentPuzzle.cells[key]?.letter) {
+    markCurrentPuzzleActive();
     currentPuzzleConn.sendCellUpdate(selectedCell.row, selectedCell.col, "");
     delete currentPuzzle.cells[key];
     updateCellDisplay(selectedCell.row, selectedCell.col);
@@ -1768,7 +1795,10 @@ function leavePuzzleConnection() {
 $("#autocheck-toggle").addEventListener("click", () => {
   autoCheckOn = !autoCheckOn;
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
-  if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
+  if (autoCheckOn) {
+    markCurrentPuzzleActive();
+    currentPuzzleConn?.sendAutoCheckOn();
+  }
   refreshAllCellsForAutoCheck();
   saveAssistPrefs();
 });
@@ -1784,6 +1814,7 @@ $("#extremely-impatient-toggle").addEventListener("click", () => {
 });
 
 function revealCells(cells) {
+  if (cells.length) markCurrentPuzzleActive();
   for (const c of cells) {
     const def = currentPuzzle.grid.cells.find((cc) => cc.row === c.row && cc.col === c.col);
     if (!def || def.block) continue;
