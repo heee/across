@@ -619,7 +619,6 @@ button, input, textarea {
   background: #fff !important;
   border: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: var(--emboss-active), inset 0 0 0 2px var(--accent);
-  color: transparent !important;
 }
 .cell.revealed { color: var(--muted-4) !important; }
 .cell.wrong::after {

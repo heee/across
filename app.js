@@ -1504,9 +1504,7 @@ function refreshGridState() {
     node?.classList.add("active-word");
   }
   const sel = cellNode(selectedCell.row, selectedCell.col);
-  if (sel && !currentPuzzle.cells[`${selectedCell.row}-${selectedCell.col}`]?.letter) {
-    sel.classList.add("selected");
-  }
+  sel?.classList.add("selected");
 }
 
 function selectCell(row, col) {
