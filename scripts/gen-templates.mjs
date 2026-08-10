@@ -73,7 +73,10 @@ function score(rows, n, poolByLen) {
   let tightness = 0;
   for (const [len, count] of Object.entries(byLen)) {
     const pool = poolByLen.get(+len) || 1;
-    tightness += (count * count) / pool; // demand^2/supply — quadratic penalty for stacking many same-length slots against a small pool
+    tightness += (count * count) / pool;
+    // Crossing combinations tighten much faster than raw bucket counts imply.
+    // Prefer patterns dominated by flexible 3–6 letter fill.
+    tightness += count * Math.pow(Math.max(0, Number(len) - 6), 3) * 0.08;
   }
   const fill = v.whiteCount / (v.whiteCount + v.blockCount);
   return { fill, tightness, slots: slots.length, byLen };
@@ -94,9 +97,9 @@ function findBest(n, blockCount, attempts, wordBank) {
 const CONFIGS = [
   { size: "mini", n: 5, blockCounts: [4, 6], perCount: 500 },
   { size: "quick", n: 7, blockCounts: [8, 10, 12, 14], perCount: 900 },
-  { size: "compact", n: 9, blockCounts: [12, 14, 16, 18, 20], perCount: 1200 },
+  { size: "compact", n: 9, blockCounts: [12, 14, 16], perCount: 5000 },
   { size: "standard", n: 11, blockCounts: [20, 22, 24, 26, 28, 30, 32], perCount: 1500 },
-  { size: "large", n: 15, blockCounts: [38, 42, 46, 50, 54, 58], perCount: 1000 },
+  { size: "large", n: 15, blockCounts: [38, 42, 46], perCount: 3000 },
 ];
 
 const requestedSize = process.argv[2];

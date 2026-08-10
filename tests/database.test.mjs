@@ -273,3 +273,41 @@ test("creation rejects missing or malformed client grids before persistence", as
   assert.equal(malformed.status, 400);
   assert.equal(db.puzzles.size, 0);
 });
+
+test("completed replays create distinct linked private attempts without changing the title", async () => {
+  const db = new FakeD1();
+  const source = samplePuzzle();
+  source.state = "completed";
+  source.completedAt = "2026-08-10T00:00:00.000Z";
+  await upsertPuzzle(db, source);
+  const env = {
+    APP_KEY: "test-key",
+    DB: db,
+    PUZZLE_ROOM: {
+      idFromName(id) { return id; },
+      get() { return { async fetch() { return new Response("ok"); } }; },
+    },
+  };
+
+  async function replay() {
+    const response = await worker.fetch(new Request("https://worker/fork-puzzle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
+      body: JSON.stringify({ puzzleId: source.id, user: "Henning", newAttempt: true }),
+    }), env);
+    assert.equal(response.status, 200);
+    return (await response.json()).puzzle;
+  }
+
+  const second = await replay();
+  const third = await replay();
+  assert.notEqual(second.id, third.id);
+  assert.equal(second.title, source.title);
+  assert.equal(second.visibility, "private");
+  assert.equal(second.seriesId, source.id);
+  assert.equal(second.attemptOf, source.id);
+  assert.equal(second.attemptNumber, 2);
+  assert.equal(third.attemptNumber, 3);
+  assert.equal(second.statsEligible, false);
+  assert.deepEqual(second.cells, {});
+});

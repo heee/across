@@ -11,3 +11,6 @@
 - **For major/new-feature work, ask clarifying questions one-by-one before planning.** Don't guess at ambiguous requirements or batch every open question into one message — surface them one at a time, let the answer inform the next question, then present a plan for confirmation before handing off to an executing agent.
 - Revealed cells (Assist menu) are attributed to no player and excluded from all stats. Auto Check is a binary per-puzzle-session flag on a player — if it was ever on during that puzzle, that whole puzzle's contribution counts at half weight for that player.
 - Player color (OKLCH hue) is assigned once per account, globally, at first-ever use — never reassigned, never per-puzzle.
+- New creation exposes only `mini` (5x5), `compact` (9x9, labeled Standard), and `large` (15x15, labeled Full). Continue accepting legacy `quick` (7x7) and `standard` (11x11) records everywhere puzzles are read.
+- Completed replays are private linked attempts: preserve the title, set `seriesId`/`attemptOf`/`attemptNumber`, show only the latest series attempt on Home, and set `statsEligible: false` so replay activity never inflates rankings or profile statistics.
+- Crossword generation belongs in `puzzle-generator-worker.js`; importing the expanded corpus in `app.js` regresses normal app startup and existing-puzzle open time.

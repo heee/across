@@ -8,13 +8,10 @@
 // approach, which topped out around 50-60% fill because nothing forced the
 // grid to stay dense.
 //
-// Cost control: this runs as CPU-bound JS inside a Cloudflare Worker
-// request, which has a hard per-invocation CPU budget. The backtracking
-// solver is bounded by both a step count and a wall-clock deadline, tries
-// templates in shuffled order, and only accepts a fully-filled grid (never
-// emits a partially-filled template). If every template attempt fails
-// within budget, generation falls back to the legacy greedy algorithm
-// (kept below, unmodified in spirit) so puzzle creation never just fails.
+// Cost control: this runs in a browser Web Worker so dense search cannot
+// freeze typing or navigation. The solver is still bounded by both a step
+// count and a wall-clock deadline, tries templates in shuffled order, and
+// only accepts a fully-filled template.
 
 export const SIZE_MAP = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
 export const DIFFICULTY_PROFILES = {
@@ -58,8 +55,6 @@ const TEMPLATES = {
   mini: [
     // blocks=4 fill=84% tightness=0.06 lens={"3":2,"4":4,"5":4}
     ["....#", "....#", ".....", "#....", "#...."],
-    // blocks=6 fill=76% tightness=0.09 lens={"3":4,"4":4,"5":2}
-    ["##...", "#....", ".....", "....#", "...##"],
   ],
   quick: [
     ["###...#", "##.....", ".......", ".......", ".......", ".....##", "#...###"],
@@ -68,11 +63,9 @@ const TEMPLATES = {
     [".....##", "......#", "......#", ".......", "#......", "#......", "##....."],
   ],
   compact: [
-    ["###.....#", "##......#", "........#", ".........", ".........", ".........", "#........", "#......##", "#.....###"],
-    ["#####...#", "##......#", "#........", ".........", ".........", ".........", "........#", "#......##", "#...#####"],
-    ["###.....#", "##......#", "........#", "........#", ".........", "#........", "#........", "#......##", "#.....###"],
-    ["#......##", "#.......#", "#........", ".....#...", ".........", "...#.....", "........#", "#.......#", "##......#"],
-    ["###......", "##.......", "#........", ".........", ".........", ".........", "........#", ".......##", "......###"],
+    // 80% open; dominated by flexible 3–6 letter slots.
+    ["...##....", "...#.....", "...#.....", "......###", "#.......#", "###......", ".....#...", ".....#...", "....##..."],
+    [".....#...", ".....#...", ".....#...", "###......", "#.......#", "......###", "...#.....", "...#.....", "...#....."],
   ],
   standard: [
     // blocks=20 fill=83% tightness=0.35 lens={"3":4,"4":6,"5":4,"6":4,"9":2,"10":6,"11":4}
@@ -89,14 +82,10 @@ const TEMPLATES = {
     ["#####....##", "...#......#", "...........", "......#....", ".......#...", "...........", "...#.......", "....#......", "...........", "#......#...", "##....#####"],
   ],
   large: [
-    // blocks=42 fill=81% tightness=1.10 lens={"3":8,"4":16,"5":8,"6":4,"7":4,"8":2,"9":2,"10":4,"13":4,"15":4}
-    ["###.....###....", "###......##....", "...............", "...#..........#", "....###.......#", "....##.....#...", "....#..........", "...............", "..........#....", "...#.....##....", "#.......###....", "#..........#...", "...............", "....##......###", "....###.....###"],
-    // blocks=38 fill=83% tightness=1.30 lens={"3":10,"4":18,"5":6,"6":6,"7":4,"8":6,"10":2,"11":1,"13":2,"14":2,"15":3}
-    ["##...###....###", ".....###.......", "...............", "....#...#......", "...#.....##....", "#........#.....", "......#........", "...............", "........#......", ".....#........#", "....##.....#...", "......#...#....", "...............", ".......###.....", "###....###...##"],
-    // blocks=46 fill=80% tightness=1.36 lens={"3":14,"4":4,"5":11,"6":8,"7":8,"8":2,"9":1,"10":4,"11":2,"12":2,"15":2}
-    [".....#######...", ".......##......", ".......##......", "#............##", "...#..........#", "...##..........", "...####........", "....#.....#....", "........####...", "..........##...", "#..........#...", "##............#", "......##.......", "......##.......", "...#######....."],
-    // blocks=50 fill=78% tightness=1.69 lens={"3":17,"4":12,"5":9,"6":4,"7":4,"8":4,"9":4,"14":4,"15":2}
-    ["###.....####...", ".........#.....", "...............", "..............#", "#......##....##", "#.......##....#", "....#...####...", "....##...##....", "...####...#....", "#....##.......#", "##....##......#", "#..............", "...............", ".....#.........", "...####.....###"],
+    // 80–83% open; long simultaneous anchors are deliberately avoided.
+    ["#....##...#...#", "......#.......#", "......#........", "...#....##.....", "....##....##...", ".......#...#...", "......#....#...", "####.......####", "...#....#......", "...#...#.......", "...##....##....", ".....##....#...", "........#......", "#.......#......", "#...#...##....#"],
+    ["......##......#", "......#........", "......#........", "#...#...###....", "#......##......", "...#...#...#...", ".....#......###", ".....#...#.....", "###......#.....", "...#...#...#...", "......##......#", "....###...#...#", "........#......", "........#......", "#......##......"],
+    ["....##...#.....", ".....#.........", ".....#.........", "...#......#....", "...#...#...#...", ".......#...#...", "#...#...##.....", "###.........###", ".....##...#...#", "...#...#.......", "...#...#...#...", "....#......#...", ".........#.....", ".........#.....", ".....#...##...."],
   ],
 };
 
@@ -380,12 +369,154 @@ export function pruneDomains(slots, index) {
   return domains;
 }
 
+// Maintain arc consistency throughout search, rather than only once before
+// it starts. Dense crossword fill is dominated by constraints that travel
+// through several still-empty crossings; checking only the word directly
+// beside the last placement discovers those contradictions far too late.
+// Domains are restored from a compact trail on backtrack so this remains
+// practical for the 15x15 grid in a browser worker.
+export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds, deadline, targetDiff = 2) {
+  const domains = new Map([...initialDomains].map(([id, items]) => [id, items.slice()]));
+  const assignment = new Array(slots.length).fill(null);
+  const usedWords = new Set();
+  let steps = 0;
+  const STEP_LIMIT = 3000000;
+
+  function budgetOk() {
+    steps++;
+    return steps <= STEP_LIMIT && Date.now() <= deadline;
+  }
+
+  function restore(trail) {
+    for (let i = trail.length - 1; i >= 0; i--) domains.set(trail[i][0], trail[i][1]);
+  }
+
+  function replaceDomain(id, next, trail) {
+    const previous = domains.get(id);
+    if (previous === next) return;
+    trail.push([id, previous]);
+    domains.set(id, next);
+  }
+
+  function liveDomain(slot) {
+    const items = domains.get(slot.id) || [];
+    if (usedWords.size === 0 || assignment[slot.id]) return items;
+    return items.filter((entry) => !usedWords.has(entry.word));
+  }
+
+  // Repeatedly remove values without support at a crossing. Assigned slots
+  // have singleton domains, so their letters automatically propagate across
+  // the rest of the grid. A short global pass is faster here than maintaining
+  // a large JS object queue for every arc.
+  function propagate(trail) {
+    let changed = true;
+    let rounds = 0;
+    while (changed && rounds++ < 12) {
+      if (!budgetOk()) return false;
+      changed = false;
+      const letterSets = new Map();
+      for (const slot of slots) {
+        const sets = Array.from({ length: slot.length }, () => new Set());
+        for (const entry of liveDomain(slot)) {
+          for (let i = 0; i < slot.length; i++) sets[i].add(entry.word[i]);
+        }
+        letterSets.set(slot.id, sets);
+      }
+
+      for (const slot of slots) {
+        if (assignment[slot.id]) continue;
+        const current = liveDomain(slot);
+        if (current.length === 0) return false;
+        const kept = current.filter((entry) => {
+          for (let i = 0; i < slot.length; i++) {
+            const cross = slot.crossings[i];
+            if (!cross) continue;
+            if (!letterSets.get(cross.otherSlotId)[cross.theirIndex].has(entry.word[i])) return false;
+          }
+          return true;
+        });
+        if (kept.length === 0) return false;
+        if (kept.length !== (domains.get(slot.id) || []).length) {
+          replaceDomain(slot.id, kept, trail);
+          changed = true;
+        }
+      }
+    }
+    return true;
+  }
+
+  function selectSlot() {
+    let best = null;
+    let bestItems = null;
+    for (const slot of slots) {
+      if (assignment[slot.id]) continue;
+      const items = liveDomain(slot);
+      if (items.length === 0) return { slot, items };
+      if (!best || items.length < bestItems.length || (items.length === bestItems.length && slot.length > best.length)) {
+        best = slot;
+        bestItems = items;
+      }
+    }
+    return best ? { slot: best, items: bestItems } : null;
+  }
+
+  function orderedCandidates(slot, items) {
+    const themed = longIds.has(slot.id);
+    const supportByIndex = slot.crossings.map((cross) => {
+      if (!cross || assignment[cross.otherSlotId]) return null;
+      const counts = new Map();
+      for (const candidate of liveDomain(slots[cross.otherSlotId])) {
+        const letter = candidate.word[cross.theirIndex];
+        counts.set(letter, (counts.get(letter) || 0) + 1);
+      }
+      return counts;
+    });
+    const supportScore = (entry) => {
+      let score = 0;
+      for (let i = 0; i < supportByIndex.length; i++) {
+        const counts = supportByIndex[i];
+        if (counts) score += Math.log1p(counts.get(entry.word[i]) || 0);
+      }
+      return score;
+    };
+    return shuffleInPlace(items.slice()).sort((a, b) => {
+      const supportDelta = supportScore(b) - supportScore(a);
+      if (Math.abs(supportDelta) > 0.0001) return supportDelta;
+      if (themed && a.tier !== b.tier) return b.tier - a.tier;
+      return Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff);
+    });
+  }
+
+  function solve() {
+    if (!budgetOk()) return false;
+    const selected = selectSlot();
+    if (!selected) return true;
+    if (selected.items.length === 0) return false;
+
+    const candidates = orderedCandidates(selected.slot, selected.items);
+    for (const entry of candidates) {
+      if (!budgetOk()) return false;
+      const trail = [];
+      assignment[selected.slot.id] = entry;
+      usedWords.add(entry.word);
+      replaceDomain(selected.slot.id, [entry], trail);
+      if (propagate(trail) && solve()) return true;
+      assignment[selected.slot.id] = null;
+      usedWords.delete(entry.word);
+      restore(trail);
+    }
+    return false;
+  }
+
+  return solve() ? { success: true, assignment } : { success: false, assignment: null };
+}
+
 // ---------------------------------------------------------------------
 // 3. Backtracking fill with MRV + forward checking
 // ---------------------------------------------------------------------
 
-const CANDIDATE_CAP = 15;
-const STEP_BUDGET_PER_TEMPLATE = 150000;
+const CANDIDATE_CAP = 60;
+const STEP_BUDGET_PER_TEMPLATE = 600000;
 // A single DFS attempt can get stuck deep in a subtree that "looks"
 // promising (lots of locally-valid partial assignments) but has no complete
 // solution, and burn the *entire* shared step budget without ever
@@ -393,7 +524,7 @@ const STEP_BUDGET_PER_TEMPLATE = 150000;
 // steps per attempt forces a fresh reshuffle — a cheap, different dice
 // roll — instead of over-investing in one unlucky branch. This is the
 // standard "restart with cutoff" strategy for hard CSP search.
-const STEPS_PER_ATTEMPT = 1500;
+const STEPS_PER_ATTEMPT = 6000;
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -657,7 +788,13 @@ function buildOutputFromSlots(rows, slots, assignment, n) {
 // Top-level entry point
 // ---------------------------------------------------------------------
 
-const TIME_BUDGET_MS = 3000;
+const TIME_BUDGET_MS = { mini: 2500, compact: 12000, large: 2500 };
+const MIN_OPEN_RATIO = { mini: 0.80, compact: 0.80, large: 0.60 };
+
+function openCellRatio(grid) {
+  const cells = grid?.cells || [];
+  return cells.length ? cells.filter((cell) => !cell.block).length / cells.length : 0;
+}
 
 export function generatePuzzle({ keywords = [], title = "", size = "standard", difficulty = "medium", wordBank }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
@@ -668,7 +805,9 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
   const index = buildWordIndex(pool);
 
   const templates = shuffleInPlace([...(TEMPLATES[size] || TEMPLATES.standard)]);
-  const overallDeadline = Date.now() + TIME_BUDGET_MS;
+  const timeBudget = TIME_BUDGET_MS[size] || 5000;
+  const minimumDensity = MIN_OPEN_RATIO[size] || 0;
+  const overallDeadline = Date.now() + timeBudget;
   // Each template gets its own fair slice of the total budget — critical,
   // because template difficulty varies wildly for a given word pool (two
   // templates that both validate fine and look similarly dense can differ
@@ -677,7 +816,7 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
   // whichever template got tried *first* silently burn the entire budget
   // on a hard/unsolvable-for-this-corpus case, starving every other
   // template — including easy ones — of any chance to even be attempted.
-  const perTemplateBudget = Math.max(50, Math.floor(TIME_BUDGET_MS / templates.length));
+  const perTemplateBudget = Math.max(50, Math.floor(timeBudget / templates.length));
 
   for (const rows of templates) {
     if (Date.now() > overallDeadline) break;
@@ -690,17 +829,20 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
     // backtracking search that's guaranteed to fail.
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
     const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
-    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains, profile.targetDiff);
-    if (success) return buildOutputFromSlots(rows, slots, assignment, n);
+    const { success, assignment } = runMaintainingArcConsistencyFill(slots, domains, longIds, templateDeadline, profile.targetDiff);
+    if (success) {
+      const grid = buildOutputFromSlots(rows, slots, assignment, n);
+      if (openCellRatio(grid) >= minimumDensity) return grid;
+    }
   }
 
   // Fallback chain: no template filled completely within budget (e.g. a
   // very narrow/thin word bank for this size+difficulty). Fall back to the
   // legacy greedy algorithm rather than fail puzzle creation outright.
   const legacy = legacyGenerate(wordBank, keywords, size, difficulty);
-  if (legacy.words.length >= 3) return legacy;
+  if (legacy.words.length >= 3 && openCellRatio(legacy) >= minimumDensity) return legacy;
 
-  throw new Error("could not generate enough interlocking words for this size/difficulty");
+  throw new Error("could not meet the crossword density target for this combination — try again");
 }
 
 // =======================================================================
@@ -710,7 +852,7 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
 // original implementation, functionally unchanged.
 // =======================================================================
 
-const LEGACY_TARGET_WORDS = { mini: 8, quick: 13, compact: 18, standard: 24, large: 38 };
+const LEGACY_TARGET_WORDS = { mini: 10, quick: 16, compact: 30, standard: 42, large: 72 };
 const LEGACY_FILL_ATTEMPTS = 5;
 const LEGACY_FILL_PASSES = 4;
 

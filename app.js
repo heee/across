@@ -7,8 +7,6 @@
 //    what's active whenever config.js still has its placeholder WORKER_URL.
 //    It reuses the real generator/corpus modules, so puzzles generated in
 //    local mode are produced by the same algorithm the Worker uses.
-import { generatePuzzle } from "./worker/generator.js";
-import { WORD_BANK } from "./worker/corpus.js";
 import { sortPuzzlesByUserActivity } from "./home-order.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
@@ -57,6 +55,28 @@ function newSession() {
     joinedAt,
     lastActiveAt: joinedAt,
   };
+}
+
+function generatePuzzleOffThread(req) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker("./puzzle-generator-worker.js", { type: "module" });
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      reject(new Error("Dense crossword generation took too long — please try again"));
+    }, 45000);
+    worker.onmessage = ({ data }) => {
+      clearTimeout(timeout);
+      worker.terminate();
+      if (data?.ok) resolve(data.grid);
+      else reject(new Error(data?.error || "Couldn't generate this crossword"));
+    };
+    worker.onerror = () => {
+      clearTimeout(timeout);
+      worker.terminate();
+      reject(new Error("Couldn't load the crossword generator — reload Across and try again"));
+    };
+    worker.postMessage(req);
+  });
 }
 
 function computeHighlights(puzzle) {
@@ -147,7 +167,7 @@ const LocalBackend = {
     new BroadcastChannel(`across-room-${puzzleId}`).postMessage({ type: "puzzle-deleted" });
   },
   async createPuzzle(req) {
-    const grid = generatePuzzle({ keywords: req.keywords, title: req.title, size: req.size, difficulty: req.difficulty, wordBank: WORD_BANK });
+    const grid = await generatePuzzleOffThread(req);
     const id = `${slugify(req.title) || "puzzle"}-${Date.now().toString(36)}`;
     const puzzle = {
       id,
@@ -181,23 +201,33 @@ const LocalBackend = {
     if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
     saveLocalData(data);
   },
-  async forkPuzzle(puzzleId, user) {
+  async forkPuzzle(puzzleId, user, { newAttempt = false } = {}) {
     const data = loadLocalData();
     const source = data.puzzles[puzzleId];
     if (!source) throw new Error("puzzle not found");
-    const id = `${puzzleId}-priv-${slugify(user)}`;
-    if (data.puzzles[id]) return data.puzzles[id];
+    const seriesId = source.seriesId || source.forkOf || source.id;
+    const series = Object.values(data.puzzles).filter((p) => (p.seriesId || p.forkOf || p.id) === seriesId);
+    const attemptNumber = Math.max(0, ...series.map((p) => Number(p.attemptNumber) || 1)) + (newAttempt ? 1 : 0);
+    const id = newAttempt
+      ? `${slugify(source.title) || "puzzle"}-r${attemptNumber}-${Date.now().toString(36)}`
+      : `${puzzleId}-priv-${slugify(user)}`;
+    if (!newAttempt && data.puzzles[id]) return data.puzzles[id];
     const forked = {
       id,
-      title: `${source.title} — Private Copy`,
+      title: source.title,
       description: source.description,
       keywords: source.keywords,
       size: source.size,
       difficulty: source.difficulty,
       visibility: "private",
       createdBy: source.createdBy,
-      forkOf: puzzleId,
+      forkOf: seriesId,
       forkedBy: user,
+      seriesId,
+      attemptOf: newAttempt ? source.id : null,
+      attemptNumber: newAttempt ? attemptNumber : 1,
+      isReplay: newAttempt,
+      statsEligible: !newAttempt,
       createdAt: nowIso(),
       grid: source.grid,
       cells: {},
@@ -384,24 +414,17 @@ const RemoteBackend = {
     await this.apiPost("/delete-puzzle", { puzzleId });
   },
   async createPuzzle(req) {
-    // Crossword generation is intentionally client-side. The expanded corpus
-    // can take several seconds to search, which exceeds the production
-    // Worker's CPU allowance; the Worker validates and persists the result.
-    const grid = generatePuzzle({
-      keywords: req.keywords,
-      title: req.title,
-      size: req.size,
-      difficulty: req.difficulty,
-      wordBank: WORD_BANK,
-    });
+    // Keep the expanded corpus and CPU-heavy dense-fill search off the main
+    // UI thread. The Cloudflare Worker still validates and persists the grid.
+    const grid = await generatePuzzleOffThread(req);
     const res = await this.apiPost("/create-puzzle", { ...req, grid });
     return res.puzzle;
   },
   async joinPuzzle(puzzleId, user) {
     await this.apiPost("/join-puzzle", { puzzleId, user });
   },
-  async forkPuzzle(puzzleId, user) {
-    const res = await this.apiPost("/fork-puzzle", { puzzleId, user });
+  async forkPuzzle(puzzleId, user, options = {}) {
+    const res = await this.apiPost("/fork-puzzle", { puzzleId, user, newAttempt: !!options.newAttempt });
     return res.puzzle;
   },
   connectPuzzle(puzzleId, user, handlers) {
@@ -473,7 +496,17 @@ const SEARCH_CATEGORIES = [
   "Politics & Society", "Food & Drink", "Travel", "Sports", "Games", "Kids",
   "People", "General Knowledge",
 ];
-const SIZE_OPTIONS = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+// New creation deliberately exposes three meaningfully different sessions.
+// The legacy 7x7 and 11x11 keys remain understood everywhere puzzles are
+// read, so existing crosswords never need migration.
+const SIZE_OPTIONS = { mini: 5, compact: 9, large: 15 };
+const ALL_SIZE_DIMENSIONS = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+const SIZE_LABELS = { mini: "Mini", quick: "Legacy 7×7", compact: "Standard", standard: "Legacy 11×11", large: "Full" };
+const sizeLabel = (value) => SIZE_LABELS[value] || cap(value);
+function normalizedCreateSize(value) {
+  const dimension = ALL_SIZE_DIMENSIONS[value] || Number(value) || 9;
+  return dimension <= 5 ? "mini" : dimension >= 15 ? "large" : "compact";
+}
 const DIFFICULTY_OPTIONS = ["beginner", "easy", "medium", "hard", "expert"];
 const DIFFICULTY_HELP = {
   beginner: "Uses only the most familiar clue tier.",
@@ -846,13 +879,40 @@ document.addEventListener("click", (e) => {
 // Home screen
 // ===========================================================================
 
+function puzzleSeriesId(puzzle) {
+  return puzzle?.seriesId || puzzle?.forkOf || puzzle?.id;
+}
+
+function puzzleActivityTime(puzzle) {
+  const own = puzzle?.sessions?.[currentUser?.name];
+  return new Date(own?.lastActiveAt || puzzle?.completedAt || puzzle?.createdAt || 0).getTime();
+}
+
+function attemptsForPuzzle(puzzle) {
+  const seriesId = puzzleSeriesId(puzzle);
+  return Object.values(dataCache.puzzles)
+    .filter((candidate) => candidate.players?.includes(currentUser.name) && puzzleSeriesId(candidate) === seriesId)
+    .sort((a, b) => puzzleActivityTime(b) - puzzleActivityTime(a));
+}
+
+function latestPuzzlePerSeries(puzzles) {
+  const latest = new Map();
+  for (const puzzle of puzzles) {
+    const seriesId = puzzleSeriesId(puzzle);
+    const previous = latest.get(seriesId);
+    if (!previous || puzzleActivityTime(puzzle) > puzzleActivityTime(previous)) latest.set(seriesId, puzzle);
+  }
+  return [...latest.values()];
+}
+
 function renderHome() {
   const scroll = $("#home-scroll");
   scroll.innerHTML = "";
 
   const myPuzzles = Object.values(dataCache.puzzles).filter((p) => p.players.includes(currentUser.name));
-  const continuing = sortPuzzlesByUserActivity(myPuzzles.filter((p) => p.state === "open"), currentUser.name);
-  const completed = myPuzzles.filter((p) => p.state === "completed").sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+  const latest = latestPuzzlePerSeries(myPuzzles);
+  const continuing = sortPuzzlesByUserActivity(latest.filter((p) => p.state === "open"), currentUser.name);
+  const completed = latest.filter((p) => p.state === "completed").sort((a, b) => puzzleActivityTime(b) - puzzleActivityTime(a));
   const openToJoin = Object.values(dataCache.puzzles)
     .filter((p) => p.state === "open" && p.visibility === "open" && !p.players.includes(currentUser.name))
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -897,7 +957,8 @@ function continueRow(p) {
   const filled = Object.keys(p.cells || {}).length;
   const total = p.grid.cells.filter((c) => !c.block).length;
   const pct = total ? Math.round((filled / total) * 100) : 0;
-  const row = el("button", { class: "puzzle-row continue", onclick: () => openPuzzle(p.id) });
+  const row = el("div", { class: "puzzle-row continue", role: "button", tabindex: "0", onclick: () => openPuzzle(p.id) });
+  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") openPuzzle(p.id); });
   row.appendChild(miniGrid(p, "size-44"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
@@ -909,6 +970,7 @@ function continueRow(p) {
     stack.appendChild(el("div", { class: `avatar-dot ${hueClass(hue)}`, style: `background:oklch(58% .1 ${hue})` }));
   }
   row.appendChild(stack);
+  appendAttemptHistoryControl(row, p);
   return row;
 }
 
@@ -924,12 +986,32 @@ function openRow(p) {
 }
 
 function completedRow(p) {
-  const row = el("button", { class: "completed-row", onclick: () => viewCompletedPuzzle(p.id) });
+  const row = el("div", { class: "completed-row", role: "button", tabindex: "0", onclick: () => openCompletedPuzzleOptions(p.id) });
+  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") openCompletedPuzzleOptions(p.id); });
   row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "completed-title", text: p.title }));
   const mins = p.totalTimeMs ? formatMinSec(p.totalTimeMs) : "—";
   row.appendChild(el("div", { class: "completed-meta", text: `${mins} · ${p.players.length}p` }));
+  appendAttemptHistoryControl(row, p);
   return row;
+}
+
+function appendAttemptHistoryControl(row, puzzle) {
+  const attempts = attemptsForPuzzle(puzzle);
+  if (attempts.length < 2) return;
+  const control = el("span", {
+    class: "attempt-history-link",
+    text: `${attempts.length} attempts`,
+    title: "View attempt history",
+  });
+  control.setAttribute("role", "button");
+  control.setAttribute("tabindex", "0");
+  const open = (event) => { event.stopPropagation(); showAttemptHistory(puzzleSeriesId(puzzle)); };
+  control.addEventListener("click", open);
+  control.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") open(event);
+  });
+  row.appendChild(control);
 }
 
 function viewCompletedPuzzle(puzzleId) {
@@ -938,6 +1020,50 @@ function viewCompletedPuzzle(puzzleId) {
   currentPuzzle = p;
   renderCompletion(p);
   navigate("screen-completion");
+}
+
+let pendingCompletedPuzzleId = null;
+
+function openCompletedPuzzleOptions(puzzleId) {
+  const puzzle = dataCache.puzzles[puzzleId];
+  if (!puzzle) return;
+  pendingCompletedPuzzleId = puzzleId;
+  $("#completed-choice-title").textContent = puzzle.title;
+  $("#completed-choice-menu").style.display = "flex";
+}
+
+async function startReplay(puzzleId) {
+  try {
+    const replay = await Backend.forkPuzzle(puzzleId, currentUser.name, { newAttempt: true });
+    await refreshData();
+    openPuzzle(replay.id);
+  } catch (error) {
+    showToast(error.message || "Couldn't start a new attempt");
+  }
+}
+
+function showAttemptHistory(seriesId) {
+  const list = $("#attempt-history-list");
+  list.innerHTML = "";
+  const attempts = Object.values(dataCache.puzzles)
+    .filter((puzzle) => puzzle.players?.includes(currentUser.name) && puzzleSeriesId(puzzle) === seriesId)
+    .sort((a, b) => puzzleActivityTime(b) - puzzleActivityTime(a));
+  attempts.forEach((puzzle, index) => {
+    const label = puzzle.state === "completed" ? `Completed · ${formatMinSec(puzzle.totalTimeMs || 0)}` : "In progress";
+    const attempt = Number(puzzle.attemptNumber) || Math.max(1, attempts.length - index);
+    list.appendChild(el("button", {
+      class: "attempt-history-row",
+      onclick: () => {
+        $("#attempt-history-menu").style.display = "none";
+        if (puzzle.state === "completed") openCompletedPuzzleOptions(puzzle.id);
+        else openPuzzle(puzzle.id);
+      },
+    }, [
+      el("span", { class: "attempt-history-number", text: `Attempt ${attempt}` }),
+      el("span", { class: "attempt-history-state", text: label }),
+    ]));
+  });
+  $("#attempt-history-menu").style.display = "flex";
 }
 
 function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
@@ -953,7 +1079,7 @@ async function joinAndOpen(puzzleId) {
 }
 
 async function openPrivateCopy(puzzleId) {
-  const existing = Object.values(dataCache.puzzles).find((p) => p.forkOf === puzzleId && p.forkedBy === currentUser.name);
+  const existing = Object.values(dataCache.puzzles).find((p) => p.forkOf === puzzleId && p.forkedBy === currentUser.name && !p.isReplay);
   if (existing) { openPuzzle(existing.id); return; }
   try {
     const forked = await Backend.forkPuzzle(puzzleId, currentUser.name);
@@ -992,6 +1118,18 @@ document.addEventListener("click", (e) => {
   else if (choice === "private") openPrivateCopy(puzzleId);
 });
 
+document.addEventListener("click", (event) => {
+  const choice = event.target.closest("[data-completed-choice]")?.dataset.completedChoice;
+  if (!choice) return;
+  const puzzleId = pendingCompletedPuzzleId;
+  $("#completed-choice-menu").style.display = "none";
+  pendingCompletedPuzzleId = null;
+  if (!puzzleId || choice === "cancel") return;
+  if (choice === "restart") startReplay(puzzleId);
+  else if (choice === "view") viewCompletedPuzzle(puzzleId);
+  else if (choice === "history") showAttemptHistory(puzzleSeriesId(dataCache.puzzles[puzzleId]));
+});
+
 // ===========================================================================
 // Search screen
 // ===========================================================================
@@ -999,7 +1137,7 @@ document.addEventListener("click", (e) => {
 function renderSearch() {
   populateSelect($("#search-category"), [["all", "All categories"], ...SEARCH_CATEGORIES.map((cat) => [cat, cat])], activeSearchCategory);
   populateSelect($("#search-difficulty"), [["all", "All difficulties"], ...DIFFICULTY_OPTIONS.map((value) => [value, cap(value)])], activeSearchDifficulty);
-  populateSelect($("#search-size"), [["all", "All sizes"], ...Object.keys(SIZE_OPTIONS).map((value) => [value, `${cap(value)} (${SIZE_OPTIONS[value]}×${SIZE_OPTIONS[value]})`])], activeSearchSize);
+  populateSelect($("#search-size"), [["all", "All sizes"], ...Object.keys(ALL_SIZE_DIMENSIONS).map((value) => [value, `${sizeLabel(value)} (${ALL_SIZE_DIMENSIONS[value]}×${ALL_SIZE_DIMENSIONS[value]})`])], activeSearchSize);
   $("#search-input").value = lastSearchQuery;
   $("#search-category").onchange = (e) => { activeSearchCategory = e.target.value; renderSearchResults(); };
   $("#search-difficulty").onchange = (e) => { activeSearchDifficulty = e.target.value; renderSearchResults(); };
@@ -1022,7 +1160,7 @@ function renderSearchResults() {
   if (query) list = list.filter((p) => `${p.title} ${p.description} ${(p.keywords || []).join(" ")}`.toLowerCase().includes(query));
   if (activeSearchCategory !== "all") list = list.filter((p) => (p.keywords || []).some((k) => normalizedCategory(k) === normalizedCategory(activeSearchCategory)));
   if (activeSearchDifficulty !== "all") list = list.filter((p) => p.difficulty === activeSearchDifficulty);
-  if (activeSearchSize !== "all") list = list.filter((p) => p.size === activeSearchSize || p.grid?.rows === SIZE_OPTIONS[activeSearchSize]);
+  if (activeSearchSize !== "all") list = list.filter((p) => p.size === activeSearchSize || p.grid?.rows === ALL_SIZE_DIMENSIONS[activeSearchSize]);
   list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   if (list.length === 0) {
     results.appendChild(el("div", { class: "discover-empty" }, [
@@ -1033,7 +1171,7 @@ function renderSearchResults() {
         onclick: () => openCreate({
           category: activeSearchCategory === "all" ? null : activeSearchCategory,
           difficulty: activeSearchDifficulty === "all" ? "medium" : activeSearchDifficulty,
-          size: activeSearchSize === "all" ? "standard" : activeSearchSize,
+          size: activeSearchSize === "all" ? "compact" : normalizedCreateSize(activeSearchSize),
           title: lastSearchQuery.trim(),
         }),
       }),
@@ -1042,7 +1180,7 @@ function renderSearchResults() {
   }
   for (const p of list) {
     const isMine = p.players.includes(currentUser.name);
-    const row = el("button", { class: "puzzle-row", onclick: () => (isMine ? openPuzzle(p.id) : openSharedPuzzle(p.id)) });
+    const row = el("button", { class: "puzzle-row", onclick: () => (isMine ? (p.state === "completed" ? openCompletedPuzzleOptions(p.id) : openPuzzle(p.id)) : openSharedPuzzle(p.id)) });
     row.appendChild(miniGrid(p, "size-40"));
     row.appendChild(el("div", { class: "puzzle-info" }, [
       el("div", { class: "puzzle-title", text: p.title }),
@@ -1057,13 +1195,13 @@ function renderSearchResults() {
 // Create screen
 // ===========================================================================
 
-let createSize = "standard";
+let createSize = "compact";
 let createDifficulty = "medium";
 let createVisibility = "open";
 
 function openCreate(prefill = {}) {
   createCategory = prefill.category || null;
-  createSize = prefill.size || "standard";
+  createSize = normalizedCreateSize(prefill.size || "compact");
   createDifficulty = prefill.difficulty || "medium";
   createVisibility = "open";
   offeredTitles = new Set();
@@ -1123,17 +1261,21 @@ function renderSegmented(sel, value, onChange) {
 function renderCreatePreview() {
   const grid = $("#create-preview-grid");
   const n = SIZE_OPTIONS[createSize];
+  const previewPatterns = {
+    mini: ["....#", "....#", ".....", "#....", "#...."],
+    compact: ["...##....", "...#.....", "...#.....", "......###", "#.......#", "###......", ".....#...", ".....#...", "....##..."],
+    large: ["#....##...#...#", "......#.......#", "......#........", "...#....##.....", "....##....##...", ".......#...#...", "......#....#...", "####.......####", "...#....#......", "...#...#.......", "...##....##....", ".....##....#...", "........#......", "#.......#......", "#...#...##....#"],
+  };
+  const pattern = previewPatterns[createSize];
   grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
   grid.style.gridTemplateRows = `repeat(${n}, 1fr)`;
   grid.style.gap = n >= 15 ? "1px" : n >= 9 ? "2px" : "3px";
   grid.innerHTML = "";
   for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
-    const mirrorR = Math.min(r, n - 1 - r);
-    const mirrorC = Math.min(c, n - 1 - c);
-    const on = (mirrorR + mirrorC * 2) % 5 !== 1 || r === Math.floor(n / 2) || c === Math.floor(n / 2);
+    const on = pattern?.[r]?.[c] !== "#";
     grid.appendChild(el("div", { style: `aspect-ratio:1;border-radius:2px;background:${on ? "oklch(94% .02 250)" : "var(--block-cell)"}` }));
   }
-  $("#create-preview-caption").textContent = `${cap(createSize)} · ${cap(createDifficulty)} · Up to 8 players`;
+  $("#create-preview-caption").textContent = `${sizeLabel(createSize)} · ${cap(createDifficulty)} · Up to 8 players`;
 }
 
 function renderVisibilityHelp() {
@@ -1193,7 +1335,7 @@ function prefillCreateSimilar(puzzle) {
   createCategory = SEARCH_CATEGORIES.find((c) => normalizedCategory(c) === normalizedCategory(prevCategory)) || null;
   renderCreateCategoryList();
   updateGenerateTitleButton();
-  createSize = puzzle.size;
+  createSize = normalizedCreateSize(puzzle.size || puzzle.grid?.rows);
   createDifficulty = puzzle.difficulty;
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
   renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderDifficultyHelp(); renderCreatePreview(); });
@@ -1264,6 +1406,10 @@ window.addEventListener("blur", syncPuzzleTiming);
 window.addEventListener("pagehide", () => flushTime(true));
 
 function openPuzzle(puzzleId) {
+  if (dataCache.puzzles[puzzleId]?.state === "completed") {
+    openCompletedPuzzleOptions(puzzleId);
+    return;
+  }
   leavePuzzleConnection();
   navigate("screen-puzzle");
   $("#puzzle-title").textContent = "Loading…";
@@ -1926,6 +2072,26 @@ function renderCompletion(p) {
   }
 }
 
+function showCompletedFullGrid(puzzle) {
+  if (!puzzle?.grid) return;
+  $("#completed-grid-title").textContent = puzzle.title;
+  const grid = $("#completed-full-grid");
+  grid.innerHTML = "";
+  grid.style.gridTemplateColumns = `repeat(${puzzle.grid.cols}, 1fr)`;
+  for (const cell of puzzle.grid.cells) {
+    const square = el("div", { class: "completed-full-cell" + (cell.block ? " block" : "") });
+    if (!cell.block) {
+      if (cell.number) square.appendChild(el("span", { class: "completed-full-number", text: cell.number }));
+      square.appendChild(el("span", {
+        class: "completed-full-letter",
+        text: puzzle.cells?.[`${cell.row}-${cell.col}`]?.letter || cell.letter || "",
+      }));
+    }
+    grid.appendChild(square);
+  }
+  $("#completed-grid-menu").style.display = "flex";
+}
+
 $("#completion-share").addEventListener("click", async () => {
   const p = currentPuzzle;
   const text = `We just crushed ${p.title} together 🧩🔥 ${p.players.length} friends, ${formatClock(p.totalTimeMs || 0)}, zero regrets. Come solve the next one with us`;
@@ -1938,6 +2104,7 @@ $("#completion-share").addEventListener("click", async () => {
   }
 });
 $("#completion-create-similar").addEventListener("click", () => prefillCreateSimilar(currentPuzzle));
+$("#completion-view-grid").addEventListener("click", () => showCompletedFullGrid(currentPuzzle));
 $("#completion-done").addEventListener("click", () => {
   if (currentPuzzleConn) { currentPuzzleConn.close(); currentPuzzleConn = null; }
   renderHome();
@@ -2017,6 +2184,9 @@ function computeRankingTotals(since) {
   for (const name of Object.keys(dataCache.users)) ensure(name);
 
   for (const p of Object.values(dataCache.puzzles)) {
+    // Replays preserve history but never contribute a second set of player
+    // or creator statistics for the same crossword.
+    if (p.statsEligible === false || p.isReplay) continue;
     const ts = p.completedAt ? new Date(p.completedAt).getTime() : new Date(p.createdAt).getTime();
     if (ts < since) continue;
     if (p.createdBy) ensure(p.createdBy).createdCount += 1;
@@ -2082,6 +2252,9 @@ document.addEventListener("click", (e) => {
   if (e.target === $("#metric-menu")) $("#metric-menu").style.display = "none";
   if (e.target === $("#assist-menu")) $("#assist-menu").style.display = "none";
   if (e.target === $("#join-fork-menu")) { $("#join-fork-menu").style.display = "none"; pendingForkPuzzleId = null; }
+  if (e.target === $("#completed-choice-menu")) { $("#completed-choice-menu").style.display = "none"; pendingCompletedPuzzleId = null; }
+  if (e.target === $("#attempt-history-menu") || e.target.closest("[data-close-attempt-history]")) $("#attempt-history-menu").style.display = "none";
+  if (e.target === $("#completed-grid-menu") || e.target.closest("[data-close-completed-grid]")) $("#completed-grid-menu").style.display = "none";
 });
 
 // ===========================================================================
@@ -2191,8 +2364,8 @@ function renderProfileDetail(name) {
   $("#profile-detail-name").textContent = name === currentUser.name ? `${name} (you)` : name;
 
   const allPuzzles = Object.values(dataCache.puzzles);
-  const completed = allPuzzles.filter((p) => p.state === "completed" && p.players.includes(name));
-  const created = allPuzzles.filter((p) => p.createdBy === name);
+  const completed = allPuzzles.filter((p) => p.state === "completed" && p.players.includes(name) && p.statsEligible !== false && !p.isReplay);
+  const created = allPuzzles.filter((p) => p.createdBy === name && p.statsEligible !== false && !p.isReplay);
   const avgTime = completed.length ? formatMinSec(completed.reduce((s, p) => s + (p.totalTimeMs || 0), 0) / completed.length) : "—";
   const totals = computeRankingTotals(0)[name];
   const avgAccuracy = totals ? METRIC_DEFS["Average accuracy"].get(totals) : null;

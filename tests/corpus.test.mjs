@@ -11,15 +11,15 @@ const CATEGORIES = [
   "people", "general knowledge",
 ];
 
-test("generated corpus doubles usable coverage with balanced lengths", () => {
-  assert.equal(EXPANDED_WORD_BANK.length, 4525);
+test("generated corpus substantially expands usable coverage with balanced lengths", () => {
+  assert.equal(EXPANDED_WORD_BANK.length, 14240);
   assert.equal(new Set(EXPANDED_WORD_BANK.map((entry) => entry.w)).size, EXPANDED_WORD_BANK.length);
 
   const unique = [...new Map(WORD_BANK.map((entry) => [entry.w, entry])).values()];
   const usable = unique.filter((entry) => /^[A-Z]+$/.test(entry.w) && entry.w.length >= 3 && entry.w.length <= 15);
-  assert.ok(usable.length >= 9000, `expected at least 9000 usable unique entries, got ${usable.length}`);
+  assert.ok(usable.length >= 18800, `expected at least 18800 usable unique entries, got ${usable.length}`);
 
-  const minimumByLength = { 3: 650, 4: 1100, 5: 1150, 6: 1000, 7: 825, 8: 750, 9: 725, 10: 650, 11: 575, 12: 490, 13: 390, 14: 290, 15: 225 };
+  const minimumByLength = { 3: 1000, 4: 2500, 5: 2800, 6: 2500, 7: 1800, 8: 1500, 9: 1300, 10: 1100, 11: 950, 12: 790, 13: 650, 14: 490, 15: 350 };
   for (const [length, minimum] of Object.entries(minimumByLength)) {
     const entries = usable.filter((entry) => entry.w.length === Number(length));
     assert.ok(entries.length >= minimum, `length ${length}: expected >=${minimum}, got ${entries.length}`);

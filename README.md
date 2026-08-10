@@ -116,16 +116,16 @@ Screen, and launch the installed PWA.
 `worker/corpus.js` combines the original hand-authored clue bank with the
 generated, openly licensed expansion in `worker/corpus.generated.js`.
 `worker/generator.js` performs template-first, symmetric interlocking fill
-based on category, title, five grid sizes, and five clue-difficulty profiles.
-Generation runs in the browser because searching the expanded corpus can take
-several seconds and must not consume the Cloudflare Worker's request CPU
+based on category, title, three creation sizes (5x5 Mini, 9x9 Standard, and
+15x15 Full), and five clue-difficulty profiles. The legacy 7x7 and 11x11 keys
+remain readable for existing puzzles. Generation runs in a dedicated browser
+Web Worker because searching the expanded corpus can take several seconds and
+must neither block the UI nor consume the Cloudflare Worker's request CPU
 budget. The Worker validates the generated grid before persisting it to D1 and
-seeding its Durable Object room. If a dense template cannot be solved inside
-the generator's bounded search window, it falls back to a greedy fill. Private
-puzzles remain invite-link-only.
+seeding its Durable Object room. Private puzzles remain invite-link-only.
 
-The combined corpus contains roughly 9,100 unique usable answers from 3–15
-letters. The generated half adds native coverage for all 24 Discover categories
+The combined corpus contains roughly 18,800 unique usable answers from 3–15
+letters. The generated expansion adds native coverage for all 24 Discover categories
 and deliberately strengthens 3- and 6-letter fill plus positional letter
 diversity. It is adapted from Open English WordNet 2025 under CC BY 4.0; see
 `THIRD_PARTY_NOTICES.md`.
@@ -135,11 +135,22 @@ To rebuild the generated half, download
 pass the extracted directory to `node scripts/build-corpus.js <directory>`.
 The generated module is committed, while the large source download is not.
 
-### Parked generation work
+### Generation quality status
 
-- Revisit crossword density separately. Some puzzles still fall back to sparse
-  layouts with more whitespace than a newspaper-style grid. Keep the current
-  light block-cell design language when evaluating denser construction; do not
-  introduce solid dark blocks as part of that work by default.
+- Mini and Standard creation enforce at least 80% playable-cell coverage using
+  symmetric templates dominated by flexible 3–6 letter crossings. Full 15x15
+  creation is materially improved by the rebalanced corpus but still uses a
+  best-result greedy fallback when exact dense fill misses its bounded search;
+  reliably reaching the same 80% floor remains a separate constructor problem.
+- Keep the current light block-cell design language when improving Full density;
+  do not introduce solid dark blocks by default.
+
+## Replay attempts
+
+Starting a completed crossword from scratch creates a new private attempt with
+the same title and a shared `seriesId`. Home shows only the latest attempt for
+that series; the history sheet exposes older attempts. Replay records set
+`statsEligible: false`, so only the original completion contributes to player
+statistics and rankings.
 
 See `CLAUDE.md` for repository working conventions.

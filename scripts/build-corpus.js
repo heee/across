@@ -11,8 +11,8 @@ const OUTPUT = path.join(ROOT, "worker", "corpus.generated.js");
 const HAND_CORPUS = path.join(ROOT, "worker", "corpus.js");
 
 const LENGTH_QUOTAS = new Map([
-  [3, 400], [4, 500], [5, 500], [6, 650], [7, 450], [8, 400], [9, 350],
-  [10, 325], [11, 275], [12, 225], [13, 175], [14, 150], [15, 125],
+  [3, 790], [4, 2050], [5, 2200], [6, 2200], [7, 1500], [8, 1200], [9, 1000],
+  [10, 900], [11, 750], [12, 600], [13, 450], [14, 350], [15, 250],
 ]);
 const CATEGORIES = [
   "geography", "history", "science", "nature", "animals", "space",
@@ -21,7 +21,7 @@ const CATEGORIES = [
   "politics & society", "food & drink", "travel", "sports", "games", "kids",
   "people", "general knowledge",
 ];
-const CATEGORY_MINIMUM = 90;
+const CATEGORY_MINIMUM = 220;
 
 const BLOCKED_FRAGMENTS = [
   "slur", "obscene", "offensive term", "vulgar", "racial epithet", "ethnic slur",

@@ -230,6 +230,7 @@ export default {
       const body = await safeJson(request);
       const sourceId = typeof body?.puzzleId === "string" ? body.puzzleId.slice(0, 64) : "";
       const user = typeof body?.user === "string" ? body.user.trim().slice(0, 40) : "";
+      const newAttempt = body?.newAttempt === true;
       if (!sourceId || !user) return json({ error: "invalid payload" }, 400, cors);
 
       let forkedPuzzle;
@@ -237,21 +238,37 @@ export default {
       try {
         const source = await getPuzzle(env.DB, sourceId);
         if (!source) throw new Error("puzzle not found");
-        const id = `${sourceId}-priv-${slugify(user)}`;
-        forkedPuzzle = await getPuzzle(env.DB, id);
+        const seriesId = source.seriesId || source.forkOf || source.id;
+        const seriesRows = await env.DB.prepare("SELECT payload_json FROM puzzles WHERE id = ? OR fork_of = ?")
+          .bind(seriesId, seriesId).all();
+        const series = (seriesRows.results || []).map((row) => puzzleFromRow(row)).filter(Boolean);
+        const attemptNumber = Math.max(1, ...series.map((puzzle) => Number(puzzle.attemptNumber) || 1)) + (newAttempt ? 1 : 0);
+        const legacyId = `${sourceId}-priv-${slugify(user)}`;
+        const compactPrivateId = `${slugify(source.title).slice(0, 24) || "puzzle"}-p-${slugify(user).slice(0, 16)}-${sourceId.slice(-8)}`;
+        let id = newAttempt
+          ? `${slugify(source.title).slice(0, 32) || "puzzle"}-r${attemptNumber}-${Date.now().toString(36)}`
+          : legacyId;
+        forkedPuzzle = newAttempt ? null : await getPuzzle(env.DB, legacyId);
+        if (!newAttempt && !forkedPuzzle && legacyId.length > 64) id = compactPrivateId;
+        if (!newAttempt && !forkedPuzzle && id !== legacyId) forkedPuzzle = await getPuzzle(env.DB, id);
         if (!forkedPuzzle) {
           created = true;
           forkedPuzzle = {
             id,
-            title: `${source.title} — Private Copy`,
+            title: source.title,
             description: source.description,
             keywords: source.keywords,
             size: source.size,
             difficulty: source.difficulty,
             visibility: "private",
             createdBy: source.createdBy,
-            forkOf: sourceId,
+            forkOf: seriesId,
             forkedBy: user,
+            seriesId,
+            attemptOf: newAttempt ? source.id : null,
+            attemptNumber: newAttempt ? attemptNumber : 1,
+            isReplay: newAttempt,
+            statsEligible: !newAttempt,
             createdAt: new Date().toISOString(),
             grid: source.grid,
             cells: {},

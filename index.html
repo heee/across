@@ -89,12 +89,10 @@
       <input id="create-description" class="text-field description" type="text" placeholder="A one-line hint at the theme" maxlength="140">
 
       <div class="field-label">Puzzle size</div>
-      <div class="segmented five-options" id="create-size">
+      <div class="segmented three-options" id="create-size">
         <button class="segmented-option" data-value="mini">Mini</button>
-        <button class="segmented-option" data-value="quick">Quick</button>
-        <button class="segmented-option" data-value="compact">Compact</button>
-        <button class="segmented-option selected" data-value="standard">Standard</button>
-        <button class="segmented-option" data-value="large">Large</button>
+        <button class="segmented-option selected" data-value="compact">Standard</button>
+        <button class="segmented-option" data-value="large">Full</button>
       </div>
 
       <div class="field-label">Difficulty</div>
@@ -107,19 +105,18 @@
       </div>
       <p class="field-help difficulty-help" id="create-difficulty-help"></p>
 
-
-      <div class="field-label" style="color:var(--muted-45)">Preview</div>
-      <div class="preview-card">
-        <div class="preview-grid" id="create-preview-grid"></div>
-        <div class="preview-caption" id="create-preview-caption">Standard · Medium · Up to 8 players</div>
-      </div>
-
       <div class="field-label">Visibility</div>
       <div class="segmented" id="create-visibility">
         <button class="segmented-option selected" data-value="open">Open</button>
         <button class="segmented-option" data-value="private">Private</button>
       </div>
       <p class="field-help" id="create-visibility-help">Anyone who finds it in Discover or has the link can join.</p>
+
+      <div class="field-label" style="color:var(--muted-45)">Preview</div>
+      <div class="preview-card">
+        <div class="preview-grid" id="create-preview-grid"></div>
+        <div class="preview-caption" id="create-preview-caption">Standard · Medium · Up to 8 players</div>
+      </div>
     </div>
     <div class="cta-row">
       <button class="cta-primary" id="create-submit">Create &amp; play</button>
@@ -198,6 +195,37 @@
     </div>
   </div>
 
+  <!-- Completed crossword choice -->
+  <div id="completed-choice-menu" class="modal-overlay" style="display:none">
+    <div class="modal-sheet">
+      <div class="modal-grabber"></div>
+      <div class="field-label" id="completed-choice-title">Completed crossword</div>
+      <div style="color:var(--muted-4);font-size:14px;margin:-4px 0 14px">Keep the completed result, or begin a new private attempt with the same title.</div>
+      <button class="action-primary" style="width:100%;margin-bottom:8px" data-completed-choice="restart">Start from scratch</button>
+      <button class="action-secondary" style="width:100%;margin-bottom:8px" data-completed-choice="view">View completed</button>
+      <button class="action-text" style="width:100%;margin-bottom:4px" data-completed-choice="history">Attempt history</button>
+      <button class="action-text" style="width:100%" data-completed-choice="cancel">Cancel</button>
+    </div>
+  </div>
+
+  <div id="attempt-history-menu" class="modal-overlay" style="display:none">
+    <div class="modal-sheet">
+      <div class="modal-grabber"></div>
+      <div class="field-label">Attempt history</div>
+      <div id="attempt-history-list"></div>
+      <button class="action-text" style="width:100%;margin-top:8px" data-close-attempt-history>Close</button>
+    </div>
+  </div>
+
+  <div id="completed-grid-menu" class="modal-overlay completed-grid-overlay" style="display:none">
+    <div class="modal-sheet completed-grid-sheet">
+      <div class="modal-grabber"></div>
+      <div class="field-label" id="completed-grid-title">Completed crossword</div>
+      <div class="completed-full-grid" id="completed-full-grid"></div>
+      <button class="action-text" style="width:100%;margin-top:12px" data-close-completed-grid>Close</button>
+    </div>
+  </div>
+
   <!-- Completion -->
   <div id="screen-completion" class="screen">
     <div class="scroll-area no-scrollbar completion-scroll" style="align-items:center;display:flex;flex-direction:column">
@@ -210,6 +238,7 @@
         <div class="stat-col"><div class="stat-value" id="completion-words">0</div><div class="stat-label">Words</div></div>
         <div class="stat-col"><div class="stat-value" id="completion-letters">0</div><div class="stat-label">Letters</div></div>
       </div>
+      <button class="action-secondary completion-view-grid" id="completion-view-grid">View completed crossword</button>
       <div class="card">
         <div class="card-label">Contribution</div>
         <div id="completion-contribution"></div>
