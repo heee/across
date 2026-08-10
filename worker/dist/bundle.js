@@ -51,15 +51,11 @@ export default {
       return json({ error: "maintenance" }, 503, { ...cors, "Retry-After": "60" });
     }
     if (puzzleConnectMatch) {
-      const puzzle = await getPuzzle(env.DB, puzzleConnectMatch[1]);
-      if (!puzzle) return json({ error: "puzzle not found" }, 404, cors);
       const id = env.PUZZLE_ROOM.idFromName(puzzleConnectMatch[1]);
       const stub = env.PUZZLE_ROOM.get(id);
-      await stub.fetch("https://internal/seed-if-empty", {
-        method: "POST",
-        body: JSON.stringify(puzzle),
-        headers: { "Content-Type": "application/json" },
-      });
+      // Route straight to the room. It normally restores from its own durable
+      // storage and only falls back to D1 if the room has never been seeded.
+      // This removes a D1 read plus a separate seed request from every open.
       return stub.fetch(request);
     }
 
@@ -335,6 +331,17 @@ export class PuzzleRoom {
     return this.puzzle;
   }
 
+  async ensurePuzzle(puzzleId) {
+    await this.loadPuzzle();
+    if (this.puzzle || !puzzleId) return this.puzzle;
+    const puzzle = await getPuzzle(this.env.DB, puzzleId);
+    if (!puzzle) return null;
+    this.deleted = false;
+    await this.state.storage.put("puzzle", puzzle);
+    this.puzzle = puzzle;
+    return puzzle;
+  }
+
   async fetch(request) {
     const url = new URL(request.url);
 
@@ -402,11 +409,14 @@ export class PuzzleRoom {
       return new Response("expected websocket", { status: 426 });
     }
 
+    const puzzleId = url.pathname.match(/^\/puzzle\/([a-zA-Z0-9_-]+)\/connect$/)?.[1];
+    await this.ensurePuzzle(puzzleId);
+    if (!this.puzzle) return new Response("puzzle not found", { status: 404 });
+
     const user = url.searchParams.get("user") || "anonymous";
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
     server.accept();
-    await this.loadPuzzle();
 
     // /join-puzzle (a plain REST call) only updates D1
     // — it never reaches this Durable Object, which holds its own separate

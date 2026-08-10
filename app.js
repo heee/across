@@ -1278,6 +1278,28 @@ function openPuzzle(puzzleId) {
   sessionTimerHandle = setInterval(updatePuzzleTimers, 1000);
   timeFlushHandle = setInterval(() => flushTime(false), TIME_FLUSH_INTERVAL_MS);
 
+  // The home payload already contains a complete recent puzzle snapshot.
+  // Paint it immediately while the live room connects, then replace it with
+  // the authoritative room state in onInit below. Keyboard input stays hidden
+  // until that live state arrives, avoiding edits against a stale snapshot.
+  const cachedPuzzle = dataCache.puzzles[puzzleId];
+  if (cachedPuzzle) {
+    currentPuzzle = JSON.parse(JSON.stringify(cachedPuzzle));
+    completedWordKeys = new Set();
+    myBaselineMs = currentPuzzle.sessions?.[currentUser.name]?.timeSpentMs || 0;
+    selectedCell = firstFillableCell(currentPuzzle.grid);
+    selectedDirection = "across";
+    renderPuzzleHeader([]);
+    $("#puzzle-playing-count").textContent = "...";
+    renderPuzzleGrid();
+    $("#puzzle-keyboard").innerHTML = "";
+    updateClueBar();
+    updatePuzzleTimers();
+  } else {
+    currentPuzzle = null;
+    $("#puzzle-keyboard").innerHTML = "";
+  }
+
   currentPuzzleConn = Backend.connectPuzzle(puzzleId, currentUser.name, {
     onInit(puzzle, presence) {
       currentPuzzle = puzzle;

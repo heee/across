@@ -163,6 +163,47 @@ test("re-seeding a deleted Durable Object revives the room", async () => {
   assert.equal(storedPuzzle.id, "test-1");
 });
 
+test("WebSocket routing reaches the Durable Object in one request without a D1 read", async () => {
+  let roomFetches = 0;
+  const response = await worker.fetch(new Request("https://worker/puzzle/test-1/connect?user=Henning"), {
+    DB: { prepare() { throw new Error("D1 should not be read by the outer route"); } },
+    PUZZLE_ROOM: {
+      idFromName(id) { return id; },
+      get() {
+        return {
+          async fetch() {
+            roomFetches += 1;
+            return new Response("proxied");
+          },
+        };
+      },
+    },
+  });
+
+  assert.equal(await response.text(), "proxied");
+  assert.equal(roomFetches, 1);
+});
+
+test("a cold Durable Object seeds from D1 once, then restores its own storage", async () => {
+  const db = new FakeD1();
+  await upsertPuzzle(db, samplePuzzle());
+  let storedPuzzle = null;
+  const state = {
+    storage: {
+      async get() { return storedPuzzle; },
+      async put(_key, puzzle) { storedPuzzle = puzzle; },
+    },
+  };
+
+  const firstRoom = new PuzzleRoom(state, { DB: db });
+  assert.equal((await firstRoom.ensurePuzzle("test-1")).id, "test-1");
+  assert.equal(storedPuzzle.id, "test-1");
+
+  db.puzzles.clear();
+  const restoredRoom = new PuzzleRoom(state, { DB: db });
+  assert.equal((await restoredRoom.ensurePuzzle("test-1")).id, "test-1");
+});
+
 test("creation persists a validated client-generated grid without server-side generation", async () => {
   const db = new FakeD1();
   let seededPuzzle = null;
