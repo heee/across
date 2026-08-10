@@ -10169,6 +10169,51 @@
           "letter": "W",
           "owner": "Christie",
           "revealed": false
+        },
+        "2-9": {
+          "letter": "I",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "3-9": {
+          "letter": "T",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "4-9": {
+          "letter": "Z",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "5-9": {
+          "letter": "E",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "6-9": {
+          "letter": "R",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "7-9": {
+          "letter": "L",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "8-9": {
+          "letter": "A",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "9-9": {
+          "letter": "N",
+          "owner": "Christie",
+          "revealed": false
+        },
+        "10-9": {
+          "letter": "D",
+          "owner": "Christie",
+          "revealed": false
         }
       },
       "players": [
@@ -10188,20 +10233,20 @@
           "joinedAt": "2026-07-31T15:08:34.538Z"
         },
         "Christie": {
-          "lettersEntered": 30,
-          "correctLetters": 22,
+          "lettersEntered": 39,
+          "correctLetters": 31,
           "incorrectLetters": 8,
           "correctionsMade": 8,
           "revealsUsed": 0,
-          "wordsCompleted": 3,
-          "timeSpentMs": 43874,
+          "wordsCompleted": 4,
+          "timeSpentMs": 73886,
           "autoCheckUsed": false,
           "joinedAt": "2026-08-10T02:46:57.740Z"
         }
       },
       "state": "open",
       "completedAt": null,
-      "totalTimeMs": 53187,
+      "totalTimeMs": 83199,
       "highlights": []
     }
   }
