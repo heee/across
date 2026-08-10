@@ -1,0 +1,46 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { WORD_BANK } from "../worker/corpus.js";
+import { EXPANDED_WORD_BANK } from "../worker/corpus.generated.js";
+
+const CATEGORIES = [
+  "geography", "history", "science", "nature", "animals", "space",
+  "literature", "language", "philosophy", "mythology", "art & design", "music",
+  "movies & tv", "pop culture", "technology", "business & economics",
+  "politics & society", "food & drink", "travel", "sports", "games", "kids",
+  "people", "general knowledge",
+];
+
+test("generated corpus doubles usable coverage with balanced lengths", () => {
+  assert.equal(EXPANDED_WORD_BANK.length, 4525);
+  assert.equal(new Set(EXPANDED_WORD_BANK.map((entry) => entry.w)).size, EXPANDED_WORD_BANK.length);
+
+  const unique = [...new Map(WORD_BANK.map((entry) => [entry.w, entry])).values()];
+  const usable = unique.filter((entry) => /^[A-Z]+$/.test(entry.w) && entry.w.length >= 3 && entry.w.length <= 15);
+  assert.ok(usable.length >= 9000, `expected at least 9000 usable unique entries, got ${usable.length}`);
+
+  const minimumByLength = { 3: 650, 4: 1100, 5: 1150, 6: 1000, 7: 825, 8: 750, 9: 725, 10: 650, 11: 575, 12: 490, 13: 390, 14: 290, 15: 225 };
+  for (const [length, minimum] of Object.entries(minimumByLength)) {
+    const entries = usable.filter((entry) => entry.w.length === Number(length));
+    assert.ok(entries.length >= minimum, `length ${length}: expected >=${minimum}, got ${entries.length}`);
+    for (let position = 0; position < Number(length); position++) {
+      const letters = new Set(entries.map((entry) => entry.w[position]));
+      assert.ok(letters.size >= 15, `length ${length}, position ${position}: only ${letters.size} letters represented`);
+    }
+  }
+});
+
+test("generated corpus supplies every category and difficulty tier", () => {
+  for (const category of CATEGORIES) {
+    const count = EXPANDED_WORD_BANK.filter((entry) => entry.cat === category).length;
+    assert.ok(count >= 90, `${category}: expected >=90 entries, got ${count}`);
+  }
+  for (const difficulty of [1, 2, 3]) {
+    const count = EXPANDED_WORD_BANK.filter((entry) => entry.diff === difficulty).length;
+    assert.ok(count >= 1000, `difficulty ${difficulty}: expected >=1000 entries, got ${count}`);
+  }
+  for (const entry of EXPANDED_WORD_BANK) {
+    assert.match(entry.w, /^[A-Z]{3,15}$/);
+    assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
+  }
+});

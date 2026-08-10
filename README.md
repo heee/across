@@ -113,19 +113,26 @@ Screen, and launch the installed PWA.
 
 ## Puzzle generation and current limits
 
-`worker/corpus.js` is a hand-authored clue bank. `worker/generator.js` performs
-template-first, symmetric interlocking fill based on category, title, five grid
-sizes, and five clue-difficulty profiles. If a dense template cannot be solved
-inside the Worker CPU budget, generation falls back to a bounded greedy fill.
-Private puzzles remain invite-link-only.
+`worker/corpus.js` combines the original hand-authored clue bank with the
+generated, openly licensed expansion in `worker/corpus.generated.js`.
+`worker/generator.js` performs template-first, symmetric interlocking fill
+based on category, title, five grid sizes, and five clue-difficulty profiles.
+If a dense template cannot be solved inside the Worker CPU budget, generation
+falls back to a bounded greedy fill. Private puzzles remain invite-link-only.
+
+The combined corpus contains roughly 9,100 unique usable answers from 3–15
+letters. The generated half adds native coverage for all 24 Discover categories
+and deliberately strengthens 3- and 6-letter fill plus positional letter
+diversity. It is adapted from Open English WordNet 2025 under CC BY 4.0; see
+`THIRD_PARTY_NOTICES.md`.
+
+To rebuild the generated half, download
+`https://en-word.net/downloads/english-wordnet-2025-json.zip`, expand it, and
+pass the extracted directory to `node scripts/build-corpus.js <directory>`.
+The generated module is committed, while the large source download is not.
 
 ### Parked generation work
 
-- Expand the clue corpus substantially with native coverage across all five
-  difficulty tiers and all 24 categories. The current profiles make the tiers
-  meaningful by filtering and prioritizing the existing three-tier corpus, but
-  a larger five-tier corpus is required for the progression to feel fully
-  natural and consistently themed.
 - Revisit crossword density separately. Some puzzles still fall back to sparse
   layouts with more whitespace than a newspaper-style grid. Keep the current
   light block-cell design language when evaluating denser construction; do not

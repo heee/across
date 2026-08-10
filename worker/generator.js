@@ -50,11 +50,10 @@ export const DIFFICULTY_PROFILES = {
 // unsolvable-in-practice for this corpus. Re-run the script (and eyeball
 // the printed tightness/fill numbers) if the corpus's length distribution
 // changes significantly.
-// Regenerated against the ~4900-unique-word corpus (up from ~2700 when
-// these were first generated) — tightness dropped substantially across the
-// board (standard: was 0.58-0.88, now 0.35-0.70; large: was 2.10-3.49, now
-// 1.10-2.13), a direct result of the corpus expansion targeting exactly the
-// long lengths these templates lean on.
+// The corpus now has ~9,100 unique usable 3-15-letter answers, up from ~4,600.
+// These templates are intentionally unchanged: the expansion improves their
+// candidate domains and prepares the separate, parked density pass without
+// silently changing the app's current light block-cell layout language.
 const TEMPLATES = {
   mini: [
     // blocks=4 fill=84% tightness=0.06 lens={"3":2,"4":4,"5":4}

@@ -1,177 +1,156 @@
-// Generate PWA icons as raw PNGs using only Node's built-in zlib — same
-// zero-dependency approach as Boys Pushup Bonanza's icon script (no
-// canvas/image library on this machine). Run: node scripts/generate-icons.cjs
+// Generate the complete PWA/iOS icon set from the approved high-resolution
+// artwork in icons/icon-source.png. This intentionally performs only a
+// deterministic resize: the source already includes a full-bleed background
+// and keeps its crossword mark inside the maskable safe area.
 //
-// The mark reuses the exact 4x4 colored-tile pattern from the Completion
-// screen's mockup (design_handoff_across_mobile), converted from its OKLCH
-// design tokens via a real OKLCH->sRGB conversion so the icon's colors
-// match the app's actual player hues rather than an eyeballed approximation.
-const zlib = require("zlib");
+// Run: node scripts/generate-icons.cjs
 const fs = require("fs");
 const path = require("path");
+const zlib = require("zlib");
 
-const BG = hexToRgb("#faf8f4");
-const HUES = [250, 30, 140, 90]; // blue, coral, green, amber — see style.css --player-hue-*
-// Same 4x4 pattern as .completion-badge-grid in the mockup.
-const PATTERN = [
-  [0, 1, 2, 0],
-  [1, 2, 1, 0],
-  [0, 2, 1, 2],
-  [1, 0, 2, 1],
-];
-
-function hexToRgb(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-// ---- OKLCH -> sRGB (Björn Ottosson's OKLab, standard matrices) ----
-function oklchToRgb(L, C, Hdeg) {
-  const h = (Hdeg * Math.PI) / 180;
-  const a = C * Math.cos(h);
-  const b = C * Math.sin(h);
-
-  const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
-  const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
-  const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
-  const l = l_ ** 3, m = m_ ** 3, s = s_ ** 3;
-
-  let r = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
-  let g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
-  let bl = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
-
-  const enc = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(Math.max(c, 0), 1 / 2.4) - 0.055);
-  return [r, g, bl].map((c) => Math.round(Math.max(0, Math.min(1, enc(c))) * 255));
-}
-
-const HUE_RGB = HUES.map((h) => oklchToRgb(0.58, 0.1, h));
-
-function makeCanvas(size, bg) {
-  const px = new Array(size * size);
-  for (let i = 0; i < px.length; i++) px[i] = [bg[0], bg[1], bg[2]];
-  return { size, px };
-}
-function blendPx(canvas, x, y, color, alpha) {
-  if (alpha <= 0 || x < 0 || y < 0 || x >= canvas.size || y >= canvas.size) return;
-  const i = y * canvas.size + x;
-  const dst = canvas.px[i];
-  canvas.px[i] = [
-    dst[0] + (color[0] - dst[0]) * alpha,
-    dst[1] + (color[1] - dst[1]) * alpha,
-    dst[2] + (color[2] - dst[2]) * alpha,
-  ];
-}
-function roundedRectSdf(px, py, x0, y0, x1, y1, radius) {
-  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  const hx = (x1 - x0) / 2 - radius, hy = (y1 - y0) / 2 - radius;
-  const dx = Math.abs(px - cx) - hx;
-  const dy = Math.abs(py - cy) - hy;
-  const ax = Math.max(dx, 0), ay = Math.max(dy, 0);
-  return Math.sqrt(ax * ax + ay * ay) + Math.min(Math.max(dx, dy), 0) - radius;
-}
-function fillRoundedRect(canvas, x0, y0, x1, y1, radius, color) {
-  const minX = Math.max(0, Math.floor(x0 - 1)), maxX = Math.min(canvas.size - 1, Math.ceil(x1 + 1));
-  const minY = Math.max(0, Math.floor(y0 - 1)), maxY = Math.min(canvas.size - 1, Math.ceil(y1 + 1));
-  for (let y = minY; y <= maxY; y++) {
-    for (let x = minX; x <= maxX; x++) {
-      const d = roundedRectSdf(x + 0.5, y + 0.5, x0, y0, x1, y1, radius);
-      const coverage = Math.max(0, Math.min(1, 0.5 - d));
-      if (coverage > 0) blendPx(canvas, x, y, color, coverage);
-    }
-  }
-}
-
-// contentFraction controls how much of the square the 4x4 grid occupies.
-// No outer rounded-rect is drawn — iOS, Android, and Windows all apply
-// their own corner mask/shape on top of whatever's supplied, so a
-// pre-rounded source image gets double-rounded (soft/fuzzy-looking edges)
-// and wastes canvas on padding the OS was already going to crop past.
-// Shipping a full-bleed square and letting each platform mask it is the
-// standard PWA icon practice.
-//   - "any" icons (browser tab, most Android launchers, apple-touch-icon):
-//     content fills most of the frame — ~0.82.
-//   - "maskable" icons: platforms may crop aggressively toward a circle,
-//     so content must stay inside a safe zone — keep it closer to ~0.60
-//     (still comfortably inside the ~80%-diameter safe circle convention).
-function drawMark(canvas, size, contentFraction) {
-  const gridSize = size * contentFraction;
-  const gap = size * 0.035;
-  const cell = (gridSize - gap * 3) / 4;
-  const originX = (size - gridSize) / 2;
-  const originY = (size - gridSize) / 2;
-
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      const x0 = originX + c * (cell + gap);
-      const y0 = originY + r * (cell + gap);
-      fillRoundedRect(canvas, x0, y0, x0 + cell, y0 + cell, size * 0.02, HUE_RGB[PATTERN[r][c]]);
-    }
-  }
-}
+const ROOT = path.join(__dirname, "..");
+const SOURCE = path.join(ROOT, "icons", "icon-source.png");
 
 function crc32(buf) {
-  return zlib.crc32 ? zlib.crc32(buf) >>> 0 : (() => {
-    let c, crc = 0xffffffff;
-    for (let i = 0; i < buf.length; i++) {
-      c = (crc ^ buf[i]) & 0xff;
-      for (let j = 0; j < 8; j++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
-      crc = (crc >>> 8) ^ c;
-    }
-    return (crc ^ 0xffffffff) >>> 0;
-  })();
+  if (zlib.crc32) return zlib.crc32(buf) >>> 0;
+  let crc = 0xffffffff;
+  for (const byte of buf) {
+    let c = (crc ^ byte) & 0xff;
+    for (let i = 0; i < 8; i++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    crc = (crc >>> 8) ^ c;
+  }
+  return (crc ^ 0xffffffff) >>> 0;
 }
+
 function chunk(tag, data) {
   const tagBuf = Buffer.from(tag, "ascii");
-  const lenBuf = Buffer.alloc(4);
-  lenBuf.writeUInt32BE(data.length, 0);
-  const crcBuf = Buffer.alloc(4);
-  crcBuf.writeUInt32BE(crc32(Buffer.concat([tagBuf, data])), 0);
-  return Buffer.concat([lenBuf, tagBuf, data, crcBuf]);
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const checksum = Buffer.alloc(4);
+  checksum.writeUInt32BE(crc32(Buffer.concat([tagBuf, data])));
+  return Buffer.concat([length, tagBuf, data, checksum]);
 }
-function writePng(filePath, canvas) {
-  const size = canvas.size;
-  const rowBytes = 1 + size * 4;
-  const raw = Buffer.alloc(rowBytes * size);
-  for (let y = 0; y < size; y++) {
-    const rowStart = y * rowBytes;
-    raw[rowStart] = 0;
-    for (let x = 0; x < size; x++) {
-      const [r, g, b] = canvas.px[y * size + x];
-      const off = rowStart + 1 + x * 4;
-      raw[off] = Math.round(Math.max(0, Math.min(255, r)));
-      raw[off + 1] = Math.round(Math.max(0, Math.min(255, g)));
-      raw[off + 2] = Math.round(Math.max(0, Math.min(255, b)));
-      raw[off + 3] = 255;
+
+function decodeRgbaPng(file) {
+  const png = fs.readFileSync(file);
+  const signature = "89504e470d0a1a0a";
+  if (png.subarray(0, 8).toString("hex") !== signature) throw new Error("Icon source is not a PNG");
+
+  let width = 0, height = 0, bitDepth = 0, colorType = 0, interlace = 0;
+  const idat = [];
+  for (let offset = 8; offset < png.length;) {
+    const length = png.readUInt32BE(offset);
+    const type = png.toString("ascii", offset + 4, offset + 8);
+    const data = png.subarray(offset + 8, offset + 8 + length);
+    if (type === "IHDR") {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      bitDepth = data[8];
+      colorType = data[9];
+      interlace = data[12];
+    } else if (type === "IDAT") {
+      idat.push(data);
+    } else if (type === "IEND") {
+      break;
+    }
+    offset += length + 12;
+  }
+  if (bitDepth !== 8 || colorType !== 6 || interlace !== 0) {
+    throw new Error(`Expected a non-interlaced 8-bit RGBA PNG; got depth=${bitDepth}, color=${colorType}, interlace=${interlace}`);
+  }
+
+  const packed = zlib.inflateSync(Buffer.concat(idat));
+  const stride = width * 4;
+  const pixels = Buffer.alloc(width * height * 4);
+  let input = 0;
+  for (let y = 0; y < height; y++) {
+    const filter = packed[input++];
+    const row = y * stride;
+    for (let x = 0; x < stride; x++) {
+      const raw = packed[input++];
+      const left = x >= 4 ? pixels[row + x - 4] : 0;
+      const up = y > 0 ? pixels[row - stride + x] : 0;
+      const upLeft = y > 0 && x >= 4 ? pixels[row - stride + x - 4] : 0;
+      let value;
+      if (filter === 0) value = raw;
+      else if (filter === 1) value = raw + left;
+      else if (filter === 2) value = raw + up;
+      else if (filter === 3) value = raw + Math.floor((left + up) / 2);
+      else if (filter === 4) {
+        const p = left + up - upLeft;
+        const pa = Math.abs(p - left), pb = Math.abs(p - up), pc = Math.abs(p - upLeft);
+        value = raw + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft);
+      } else throw new Error(`Unsupported PNG row filter ${filter}`);
+      pixels[row + x] = value & 0xff;
     }
   }
-  const sig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  return { width, height, pixels };
+}
+
+// Exact area averaging gives crisp, stable reductions when every target is
+// an integer divisor of the 2048px source (2x, 4x, 8x, etc.). The 180px iOS
+// target uses the same weighted area method without relying on native tools.
+function resizeArea(source, targetSize) {
+  const { width, height, pixels } = source;
+  if (width !== height || targetSize > width) throw new Error("Icon source must be square and no smaller than the target");
+  const output = Buffer.alloc(targetSize * targetSize * 4);
+  const scale = width / targetSize;
+  for (let ty = 0; ty < targetSize; ty++) {
+    const sy0 = ty * scale, sy1 = (ty + 1) * scale;
+    const yStart = Math.floor(sy0), yEnd = Math.ceil(sy1);
+    for (let tx = 0; tx < targetSize; tx++) {
+      const sx0 = tx * scale, sx1 = (tx + 1) * scale;
+      const xStart = Math.floor(sx0), xEnd = Math.ceil(sx1);
+      const sums = [0, 0, 0, 0];
+      let total = 0;
+      for (let sy = yStart; sy < yEnd; sy++) {
+        const wy = Math.min(sy + 1, sy1) - Math.max(sy, sy0);
+        for (let sx = xStart; sx < xEnd; sx++) {
+          const wx = Math.min(sx + 1, sx1) - Math.max(sx, sx0);
+          const weight = wx * wy;
+          const src = (sy * width + sx) * 4;
+          for (let channel = 0; channel < 4; channel++) sums[channel] += pixels[src + channel] * weight;
+          total += weight;
+        }
+      }
+      const dst = (ty * targetSize + tx) * 4;
+      for (let channel = 0; channel < 4; channel++) output[dst + channel] = Math.round(sums[channel] / total);
+    }
+  }
+  return output;
+}
+
+function writeRgbaPng(file, size, pixels) {
+  const stride = size * 4;
+  const raw = Buffer.alloc((stride + 1) * size);
+  for (let y = 0; y < size; y++) pixels.copy(raw, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);
   ihdr.writeUInt32BE(size, 4);
   ihdr[8] = 8;
   ihdr[9] = 6;
-  const idat = zlib.deflateSync(raw, { level: 9 });
-  const png = Buffer.concat([sig, chunk("IHDR", ihdr), chunk("IDAT", idat), chunk("IEND", Buffer.alloc(0))]);
-  fs.writeFileSync(filePath, png);
+  const png = Buffer.concat([
+    Buffer.from("89504e470d0a1a0a", "hex"),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
+  fs.writeFileSync(file, png);
 }
 
 function main() {
-  const outDir = path.join(__dirname, "..", "icons");
-  fs.mkdirSync(outDir, { recursive: true });
-  const ANY_FRACTION = 0.82;
-  const MASKABLE_FRACTION = 0.6;
+  const source = decodeRgbaPng(SOURCE);
   const targets = [
-    [192, "icon-192.png", ANY_FRACTION],
-    [512, "icon-512.png", ANY_FRACTION],
-    [180, "apple-touch-icon.png", ANY_FRACTION],
-    [192, "icon-192-maskable.png", MASKABLE_FRACTION],
-    [512, "icon-512-maskable.png", MASKABLE_FRACTION],
+    [1024, "icon-1024.png"],
+    [512, "icon-512.png"],
+    [192, "icon-192.png"],
+    [180, "apple-touch-icon.png"],
+    [512, "icon-512-maskable.png"],
+    [192, "icon-192-maskable.png"],
   ];
-  for (const [size, name, fraction] of targets) {
-    const canvas = makeCanvas(size, BG);
-    drawMark(canvas, size, fraction);
-    writePng(path.join(outDir, name), canvas);
-    console.log("wrote", name);
+  for (const [size, name] of targets) {
+    writeRgbaPng(path.join(ROOT, "icons", name), size, resizeArea(source, size));
+    console.log(`wrote ${name} (${size}x${size})`);
   }
 }
 

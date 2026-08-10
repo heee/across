@@ -1,17 +1,17 @@
-// Across — starter word/clue bank.
+import { EXPANDED_WORD_BANK } from "./corpus.generated.js";
+
+// Across — original hand-authored word/clue bank.
 //
 // Hand-authored for this project rather than scraped from a published
-// crossword corpus, to sidestep the copyright/licensing questions around
-// redistributing someone else's clue text. It's intentionally modest in
-// size (a few hundred entries) — enough to generate real small-to-medium
-// puzzles across the categories the Search screen advertises, but you'll
-// want to grow this over time (or swap in a larger licensed corpus) as
-// players notice repeats. Difficulty: 1 = easy, 2 = medium, 3 = hard.
+// crossword corpus, avoiding the copyright/licensing issues around
+// redistributing published crossword clues. It remains intact as the
+// editorial core and is supplemented by the attributed generated module.
+// Difficulty: 1 = easy, 2 = medium, 3 = hard.
 //
-// `cat` values match the Search screen's category chips (lowercase):
-// geography, movies, history, sports, science, food, kids, general.
+// Legacy `cat` values are normalized by app.js; the generated module uses
+// the full current set of 24 Discover category labels.
 
-export const WORD_BANK = [
+const HAND_AUTHORED_WORD_BANK = [
   // ---- geography ----
   { w: "PARIS", c: "City of Light", cat: "geography", diff: 1 },
   { w: "PRAGUE", c: "Czech capital on the Vltava", cat: "geography", diff: 2 },
@@ -5895,3 +5895,5 @@ export const WORD_BANK = [
   { w: "WONDERFULADVENTURE", c: "A delightful, exciting experience", cat: "kids", diff: 1 },
   { w: "EXCITINGDISCOVERY", c: "A thrilling new finding", cat: "kids", diff: 1 },
 ];
+
+export const WORD_BANK = [...HAND_AUTHORED_WORD_BANK, ...EXPANDED_WORD_BANK];
