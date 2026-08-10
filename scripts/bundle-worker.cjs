@@ -1,12 +1,6 @@
-// Concatenates the generated corpus + worker modules into
-// a single deployable file, stripping their import/export statements.
-//
-// Why this exists: worker/index.js is written as ES modules importing from
-// ./corpus.js and ./generator.js, which is the cleanest way to maintain it
-// and works fine if your Cloudflare dashboard's Worker code editor supports
-// multiple files (the modern "Edit code" view generally does). If you only
-// have the older single-file Quick Edit textarea, run this script and paste
-// worker/dist/bundle.js instead — same result, one file.
+// Produces the single deployable Worker file. Crossword generation and its
+// corpus run in the browser; the Worker validates and persists grids.
+// If you use the dashboard Quick Edit textarea, paste worker/dist/bundle.js.
 //
 //   node scripts/bundle-worker.cjs
 
@@ -28,20 +22,16 @@ function stripModuleSyntax(src, { keepDefaultExport = false, keepClassExport = f
     .replace(keepClassExport ? /\0/ : /^export class /gm, keepClassExport ? "$&" : "class ");
 }
 
-const generatedCorpus = stripModuleSyntax(fs.readFileSync(path.join(workerDir, "corpus.generated.js"), "utf8"));
-const corpus = stripModuleSyntax(fs.readFileSync(path.join(workerDir, "corpus.js"), "utf8"));
-const generator = stripModuleSyntax(fs.readFileSync(path.join(workerDir, "generator.js"), "utf8"));
-// index.js keeps its `export default` and `export class PuzzleRoom` — those
-// two exports are required by the Workers runtime itself.
+// These two exports are required by the Workers runtime.
 const index = stripModuleSyntax(fs.readFileSync(path.join(workerDir, "index.js"), "utf8"), {
   keepDefaultExport: true,
   keepClassExport: true,
 });
 
-const banner = `// AUTO-GENERATED — do not edit directly.\n// Source: worker/corpus.generated.js + worker/corpus.js + worker/generator.js + worker/index.js\n// Regenerate with: node scripts/bundle-worker.cjs\n\n`;
+const banner = `// AUTO-GENERATED — do not edit directly.\n// Source: worker/index.js\n// Regenerate with: node scripts/bundle-worker.cjs\n\n`;
 
 fs.mkdirSync(distDir, { recursive: true });
-const bundle = banner + generatedCorpus + "\n\n" + corpus + "\n\n" + generator + "\n\n" + index;
+const bundle = banner + index;
 fs.writeFileSync(path.join(distDir, "bundle.js"), `${bundle.trimEnd()}\n`, "utf8");
 
 console.log("Wrote worker/dist/bundle.js");

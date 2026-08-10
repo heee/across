@@ -12,6 +12,8 @@ import {
   upsertPuzzle,
 } from "../worker/index.js";
 import worker from "../worker/index.js";
+import { generatePuzzle } from "../worker/generator.js";
+import { WORD_BANK } from "../worker/corpus.js";
 
 class Statement {
   constructor(db, sql) { this.db = db; this.sql = sql.replace(/\s+/g, " ").trim(); this.params = []; }
@@ -159,4 +161,74 @@ test("re-seeding a deleted Durable Object revives the room", async () => {
   assert.equal(response.status, 200);
   assert.equal(room.deleted, false);
   assert.equal(storedPuzzle.id, "test-1");
+});
+
+test("creation persists a validated client-generated grid without server-side generation", async () => {
+  const db = new FakeD1();
+  let seededPuzzle = null;
+  const env = {
+    APP_KEY: "test-key",
+    DB: db,
+    PUZZLE_ROOM: {
+      idFromName(id) { return id; },
+      get() {
+        return {
+          async fetch(_url, options) {
+            seededPuzzle = JSON.parse(options.body);
+            return new Response("ok");
+          },
+        };
+      },
+    },
+  };
+  const grid = generatePuzzle({ keywords: ["general knowledge"], title: "Client grid", size: "mini", difficulty: "beginner", wordBank: WORD_BANK });
+  const response = await worker.fetch(new Request("https://worker/create-puzzle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
+    body: JSON.stringify({
+      title: "Client grid",
+      description: "",
+      keywords: ["general knowledge"],
+      size: "mini",
+      difficulty: "beginner",
+      visibility: "private",
+      createdBy: "Henning",
+      grid,
+    }),
+  }), env);
+
+  assert.equal(response.status, 200);
+  const { puzzle } = await response.json();
+  assert.equal(puzzle.grid.rows, 5);
+  assert.equal(seededPuzzle.id, puzzle.id);
+  assert.equal((await getPuzzle(db, puzzle.id)).grid.words.length, grid.words.length);
+});
+
+test("creation rejects missing or malformed client grids before persistence", async () => {
+  const db = new FakeD1();
+  const base = {
+    title: "Missing grid",
+    description: "",
+    keywords: ["general knowledge"],
+    size: "mini",
+    difficulty: "beginner",
+    visibility: "private",
+    createdBy: "Henning",
+  };
+  const env = { APP_KEY: "test-key", DB: db };
+
+  const missing = await worker.fetch(new Request("https://worker/create-puzzle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
+    body: JSON.stringify(base),
+  }), env);
+  assert.equal(missing.status, 409);
+
+  const malformed = await worker.fetch(new Request("https://worker/create-puzzle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
+    body: JSON.stringify({ ...base, grid: { rows: 5, cols: 5, cells: [], words: [] } }),
+  }), env);
+  assert.equal(malformed.status, 400);
+  assert.equal(db.puzzles.size, 0);
 });

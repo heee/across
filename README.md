@@ -117,8 +117,12 @@ Screen, and launch the installed PWA.
 generated, openly licensed expansion in `worker/corpus.generated.js`.
 `worker/generator.js` performs template-first, symmetric interlocking fill
 based on category, title, five grid sizes, and five clue-difficulty profiles.
-If a dense template cannot be solved inside the Worker CPU budget, generation
-falls back to a bounded greedy fill. Private puzzles remain invite-link-only.
+Generation runs in the browser because searching the expanded corpus can take
+several seconds and must not consume the Cloudflare Worker's request CPU
+budget. The Worker validates the generated grid before persisting it to D1 and
+seeding its Durable Object room. If a dense template cannot be solved inside
+the generator's bounded search window, it falls back to a greedy fill. Private
+puzzles remain invite-link-only.
 
 The combined corpus contains roughly 9,100 unique usable answers from 3–15
 letters. The generated half adds native coverage for all 24 Discover categories

@@ -384,7 +384,17 @@ const RemoteBackend = {
     await this.apiPost("/delete-puzzle", { puzzleId });
   },
   async createPuzzle(req) {
-    const res = await this.apiPost("/create-puzzle", req);
+    // Crossword generation is intentionally client-side. The expanded corpus
+    // can take several seconds to search, which exceeds the production
+    // Worker's CPU allowance; the Worker validates and persists the result.
+    const grid = generatePuzzle({
+      keywords: req.keywords,
+      title: req.title,
+      size: req.size,
+      difficulty: req.difficulty,
+      wordBank: WORD_BANK,
+    });
+    const res = await this.apiPost("/create-puzzle", { ...req, grid });
     return res.puzzle;
   },
   async joinPuzzle(puzzleId, user) {
@@ -1145,6 +1155,9 @@ async function createPuzzleFromForm(playAfterCreate) {
   const clicked = playAfterCreate ? buttons[0] : buttons[1];
   clicked.textContent = "Generating…";
   try {
+    // Let the loading state paint before the CPU-bound client-side generator
+    // starts searching the expanded corpus.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     const puzzle = await Backend.createPuzzle({
       title,
       description: $("#create-description").value.trim(),

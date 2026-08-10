@@ -9,8 +9,8 @@
 //   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
 //   POST /rename-user     { oldName, newName }                  -> globally renames a user while preserving identity and history
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
-//   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
-//                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
+//   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy, grid }
+//                                                                 -> validates the client-generated grid, creates the puzzle, server-assigns id
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
 //   POST /fork-puzzle     { puzzleId, user }                     -> creates a private, blank, solo copy of an existing
 //                                                                    puzzle for one user (idempotent per user+puzzle)
@@ -30,9 +30,6 @@
 // Required bindings (Settings -> Bindings):
 //   DB          -> D1 database containing migrations/0001_initial.sql
 //   PUZZLE_ROOM -> class PuzzleRoom (this file)
-
-import { WORD_BANK } from "./corpus.js";
-import { generatePuzzle } from "./generator.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 
@@ -186,10 +183,13 @@ export default {
       const body = await safeJson(request);
       const validated = validateCreateRequest(body);
       if (!validated) return json({ error: "invalid puzzle payload" }, 400, cors);
+      if (!body?.grid) return json({ error: "Reload Across once before creating a crossword" }, 409, cors);
+      const clientGrid = validateClientGrid(body.grid, validated.size);
+      if (!clientGrid) return json({ error: "invalid crossword grid" }, 400, cors);
 
       let puzzle;
       try {
-        puzzle = buildPuzzle(validated, WORD_BANK);
+        puzzle = buildPuzzle(validated, clientGrid);
       } catch (e) {
         return json({ error: `generation failed: ${e.message}` }, 422, cors);
       }
@@ -593,8 +593,60 @@ function validateCreateRequest(body) {
   return { title, description, keywords, size, difficulty, visibility, createdBy };
 }
 
-function buildPuzzle(req, wordBank) {
-  const grid = generatePuzzle({ keywords: req.keywords, title: req.title, size: req.size, difficulty: req.difficulty, wordBank });
+function validateClientGrid(rawGrid, size) {
+  const expectedSize = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 }[size];
+  if (!expectedSize || !rawGrid || typeof rawGrid !== "object") return null;
+  if (rawGrid.rows !== expectedSize || rawGrid.cols !== expectedSize) return null;
+  if (!Array.isArray(rawGrid.cells) || rawGrid.cells.length !== expectedSize * expectedSize) return null;
+  if (!Array.isArray(rawGrid.words) || rawGrid.words.length < 3 || rawGrid.words.length > expectedSize * expectedSize) return null;
+
+  const cells = [];
+  const cellMap = new Map();
+  for (const rawCell of rawGrid.cells) {
+    const row = rawCell?.row;
+    const col = rawCell?.col;
+    if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 || row >= expectedSize || col >= expectedSize) return null;
+    const key = `${row}-${col}`;
+    if (cellMap.has(key) || typeof rawCell.block !== "boolean") return null;
+    const letter = rawCell.block ? null : String(rawCell.letter || "").toUpperCase();
+    if (!rawCell.block && !/^[A-Z]$/.test(letter)) return null;
+    const number = rawCell.number == null ? null : rawCell.number;
+    if (number != null && (!Number.isInteger(number) || number < 1)) return null;
+    const cell = { row, col, letter, block: rawCell.block, number };
+    cells.push(cell);
+    cellMap.set(key, cell);
+  }
+
+  const words = [];
+  for (const rawWord of rawGrid.words) {
+    const answer = String(rawWord?.answer || "").toUpperCase();
+    const direction = rawWord?.direction;
+    const row = rawWord?.row;
+    const col = rawWord?.col;
+    const length = rawWord?.length;
+    const clue = String(rawWord?.clue || "").trim().slice(0, 300);
+    if (!/^[A-Z]{3,15}$/.test(answer) || answer.length !== length || length > expectedSize || !clue) return null;
+    if (!Number.isInteger(rawWord.number) || rawWord.number < 1) return null;
+    if (!Number.isInteger(row) || !Number.isInteger(col) || !["across", "down"].includes(direction)) return null;
+    if (!Array.isArray(rawWord.cells) || rawWord.cells.length !== length) return null;
+
+    const wordCells = [];
+    for (let index = 0; index < length; index++) {
+      const expectedRow = row + (direction === "down" ? index : 0);
+      const expectedCol = col + (direction === "across" ? index : 0);
+      const rawPosition = rawWord.cells[index];
+      if (!Array.isArray(rawPosition) || rawPosition[0] !== expectedRow || rawPosition[1] !== expectedCol) return null;
+      const gridCell = cellMap.get(`${expectedRow}-${expectedCol}`);
+      if (!gridCell || gridCell.block || gridCell.letter !== answer[index]) return null;
+      wordCells.push([expectedRow, expectedCol]);
+    }
+    words.push({ number: rawWord.number, direction, answer, clue, row, col, length, cells: wordCells });
+  }
+
+  return { rows: expectedSize, cols: expectedSize, cells, words };
+}
+
+function buildPuzzle(req, grid) {
   const slug = slugify(req.title) || "puzzle";
   const id = `${slug}-${Date.now().toString(36)}`;
   return {
@@ -868,4 +920,4 @@ async function deleteUser(db, name) {
   return affectedPuzzleIds;
 }
 
-export { loadData, registerUser, updateUserColor, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser };
+export { loadData, registerUser, updateUserColor, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser, validateClientGrid };
