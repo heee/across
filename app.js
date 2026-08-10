@@ -1636,13 +1636,13 @@ function renderPuzzleKeyboard() {
   const rows = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["Z","X","C","V","B","N","M"]];
   rows.forEach((letters, i) => {
     const rowEl = el("div", { class: "keyboard-row" + (i === 1 ? " indent" : "") });
-    if (i === 2) rowEl.appendChild(el("button", { class: "key backspace", text: "⌫", onclick: backspace }));
-    for (const l of letters) rowEl.appendChild(el("button", { class: "key", text: l, onclick: () => typeLetter(l) }));
     // "Done" no longer exits the puzzle (that's what the header's ⌂ button
     // is for) — it advances the cursor, same as finishing typing a letter
     // would: next cell, or the next word's first cell if already at the
     // end of this one.
     if (i === 2) rowEl.appendChild(el("button", { class: "key done", text: "Done", onclick: () => advanceSelection(false) }));
+    for (const l of letters) rowEl.appendChild(el("button", { class: "key", text: l, onclick: () => typeLetter(l) }));
+    if (i === 2) rowEl.appendChild(el("button", { class: "key backspace", text: "⌫", onclick: backspace }));
     kb.appendChild(rowEl);
   });
 }
