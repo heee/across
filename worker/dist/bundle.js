@@ -5919,8 +5919,14 @@ const WORD_BANK = [
 // within budget, generation falls back to the legacy greedy algorithm
 // (kept below, unmodified in spirit) so puzzle creation never just fails.
 
-const SIZE_MAP = { mini: 5, standard: 11, large: 15 };
-const DIFFICULTY_MAP = { easy: 1, medium: 2, hard: 3 };
+const SIZE_MAP = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+const DIFFICULTY_PROFILES = {
+  beginner: { maxDiff: 1, targetDiff: 1 },
+  easy: { maxDiff: 2, targetDiff: 1 },
+  medium: { maxDiff: 2, targetDiff: 2 },
+  hard: { maxDiff: 3, targetDiff: 2.6 },
+  expert: { maxDiff: 3, targetDiff: 3 },
+};
 
 // ---------------------------------------------------------------------
 // 1. Symmetric block templates (180-degree rotational symmetry).
@@ -5958,6 +5964,19 @@ const TEMPLATES = {
     ["....#", "....#", ".....", "#....", "#...."],
     // blocks=6 fill=76% tightness=0.09 lens={"3":4,"4":4,"5":2}
     ["##...", "#....", ".....", "....#", "...##"],
+  ],
+  quick: [
+    ["###...#", "##.....", ".......", ".......", ".......", ".....##", "#...###"],
+    ["....###", "....###", "......#", ".......", "#......", "###....", "###...."],
+    ["....###", ".....##", ".......", ".......", ".......", "##.....", "###...."],
+    [".....##", "......#", "......#", ".......", "#......", "#......", "##....."],
+  ],
+  compact: [
+    ["###.....#", "##......#", "........#", ".........", ".........", ".........", "#........", "#......##", "#.....###"],
+    ["#####...#", "##......#", "#........", ".........", ".........", ".........", "........#", "#......##", "#...#####"],
+    ["###.....#", "##......#", "........#", "........#", ".........", "#........", "#........", "#......##", "#.....###"],
+    ["#......##", "#.......#", "#........", ".....#...", ".........", "...#.....", "........#", "#.......#", "##......#"],
+    ["###......", "##.......", "#........", ".........", ".........", ".........", "........#", ".......##", "......###"],
   ],
   standard: [
     // blocks=20 fill=83% tightness=0.35 lens={"3":4,"4":6,"5":4,"6":4,"9":2,"10":6,"11":4}
@@ -6169,7 +6188,7 @@ function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
     if (entry.diff > maxDiff) continue;
     if (seen.has(w)) continue;
     seen.add(w);
-    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), tier: 0 });
+    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), diff: entry.diff || 1, tier: 0 });
   }
 
   const categoryTokens = withSingulars(tokenize((keywords || []).join(" ")));
@@ -6297,7 +6316,7 @@ function shuffleInPlace(arr) {
 // shuffle. Restarting with a new shuffle is what actually spends the rest
 // of the budget productively, the same way random-restart search does for
 // any CSP with a large but not-fully-explorable branching factor.
-function runBacktrackFill(slots, index, longIds, deadline, domains) {
+function runBacktrackFill(slots, index, longIds, deadline, domains, targetDiff = 2) {
   let steps = 0; // shared across restarts, bounds total work for this template
   let aborted = false; // budget fully exhausted — stop restarting entirely
   let attemptSteps = 0; // steps used by the current attempt only
@@ -6411,15 +6430,13 @@ function runBacktrackFill(slots, index, longIds, deadline, domains) {
     }
 
     function orderCandidates(slot, candidates) {
+      const byDifficulty = (items) => shuffleInPlace(items.slice()).sort((a, b) => Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff));
       if (longIds.has(slot.id)) {
         const t2 = [], t1 = [], t0 = [];
         for (const e of candidates) (e.tier === 2 ? t2 : e.tier === 1 ? t1 : t0).push(e);
-        shuffleInPlace(t2);
-        shuffleInPlace(t1);
-        shuffleInPlace(t0);
-        return [...t2, ...t1, ...t0];
+        return [...byDifficulty(t2), ...byDifficulty(t1), ...byDifficulty(t0)];
       }
-      return shuffleInPlace(candidates.slice());
+      return byDifficulty(candidates);
     }
 
     function selectSlot() {
@@ -6548,7 +6565,8 @@ const TIME_BUDGET_MS = 3000;
 
 function generatePuzzle({ keywords = [], title = "", size = "standard", difficulty = "medium", wordBank }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
-  const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
+  const profile = DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium;
+  const maxDiff = profile.maxDiff;
 
   const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
   const index = buildWordIndex(pool);
@@ -6576,7 +6594,7 @@ function generatePuzzle({ keywords = [], title = "", size = "standard", difficul
     // backtracking search that's guaranteed to fail.
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
     const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
-    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains);
+    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains, profile.targetDiff);
     if (success) return buildOutputFromSlots(rows, slots, assignment, n);
   }
 
@@ -6596,13 +6614,13 @@ function generatePuzzle({ keywords = [], title = "", size = "standard", difficul
 // original implementation, functionally unchanged.
 // =======================================================================
 
-const LEGACY_TARGET_WORDS = { mini: 8, standard: 24, large: 38 };
+const LEGACY_TARGET_WORDS = { mini: 8, quick: 13, compact: 18, standard: 24, large: 38 };
 const LEGACY_FILL_ATTEMPTS = 5;
 const LEGACY_FILL_PASSES = 4;
 
 function legacyGenerate(wordBank, keywords, size, difficulty) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
-  const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
+  const maxDiff = (DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium).maxDiff;
   const targetWords = LEGACY_TARGET_WORDS[size] || LEGACY_TARGET_WORDS.standard;
 
   const groups = legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n);
@@ -6851,20 +6869,11 @@ function legacyPlaceWord(grid, word, row, col, direction) {
 }
 
 function legacyCropAndNumber(grid, words, n) {
-  let minRow = n, maxRow = -1, minCol = n, maxCol = -1;
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      if (grid[r][c].letter) {
-        minRow = Math.min(minRow, r);
-        maxRow = Math.max(maxRow, r);
-        minCol = Math.min(minCol, c);
-        maxCol = Math.max(maxCol, c);
-      }
-    }
-  }
-
-  const rows = maxRow - minRow + 1;
-  const cols = maxCol - minCol + 1;
+  // Preserve the selected dimensions even when the dense-template solver
+  // falls back to the greedy fill. Cropping made Quick and Compact appear
+  // indistinguishable from neighboring sizes and contradicted the preview.
+  const minRow = 0, minCol = 0;
+  const rows = n, cols = n;
 
   const cells = [];
   const numberAt = new Map();
@@ -6914,6 +6923,7 @@ function legacyCropAndNumber(grid, words, n) {
 //   GET  /data                       -> current D1 contents in the legacy API shape (no auth to read)
 //   POST /register-user   { user }                              -> creates the user if new, assigns a stable color hue
 //   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
+//   POST /rename-user     { oldName, newName }                  -> globally renames a user while preserving identity and history
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
@@ -7000,6 +7010,32 @@ export default {
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
+      }
+    }
+
+    if (url.pathname === "/rename-user" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const oldName = typeof body?.oldName === "string" ? body.oldName.trim().slice(0, 40) : "";
+      const newName = typeof body?.newName === "string" ? body.newName.trim().slice(0, 40) : "";
+      if (!oldName || !newName) return json({ error: "invalid payload" }, 400, cors);
+
+      try {
+        const { user, affectedPuzzleIds } = await renameUser(env.DB, oldName, newName);
+        await Promise.all(affectedPuzzleIds.map(async (puzzleId) => {
+          const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
+          const stub = env.PUZZLE_ROOM.get(roomId);
+          try {
+            await stub.fetch("https://internal/rename-user", {
+              method: "POST",
+              body: JSON.stringify({ oldName, newName }),
+              headers: { "Content-Type": "application/json" },
+            });
+          } catch (e) {}
+        }));
+        return json({ ok: true, user: { name: newName, ...user } }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, e.code === "NAME_TAKEN" ? 409 : e.code === "NOT_FOUND" ? 404 : 502, cors);
       }
     }
 
@@ -7259,6 +7295,19 @@ export class PuzzleRoom {
       return new Response("ok");
     }
 
+    if (url.pathname === "/rename-user" && request.method === "POST") {
+      const { oldName, newName } = await request.json();
+      await this.loadPuzzle();
+      if (this.puzzle && oldName && newName) {
+        renamePuzzleIdentity(this.puzzle, oldName, newName);
+        for (const metadata of this.sockets.values()) if (metadata.user === oldName) metadata.user = newName;
+        await this.state.storage.put("puzzle", this.puzzle);
+        this.broadcast({ type: "user-renamed", oldName, newName, puzzle: this.puzzle }, null);
+        this.broadcastPresence();
+      }
+      return new Response("ok");
+    }
+
     if (request.headers.get("Upgrade") !== "websocket") {
       return new Response("expected websocket", { status: 426 });
     }
@@ -7286,7 +7335,7 @@ export class PuzzleRoom {
     this.sendTo(server, { type: "init", puzzle: this.puzzle, presence: this.presenceList() });
     this.broadcastPresence();
 
-    server.addEventListener("message", (evt) => this.handleMessage(server, user, evt));
+    server.addEventListener("message", (evt) => this.handleMessage(server, this.sockets.get(server)?.user || user, evt));
     server.addEventListener("close", () => {
       this.sockets.delete(server);
       this.broadcastPresence();
@@ -7342,7 +7391,10 @@ export class PuzzleRoom {
       if (!Number.isInteger(row) || !Number.isInteger(col)) return;
       if (typeof letter !== "string" || letter.length > 1) return;
       const key = `${row}-${col}`;
-      if (!this.puzzle.grid.cells.some((c) => c.row === row && c.col === col && !c.block)) return;
+      const cellDef = this.puzzle.grid.cells.find((c) => c.row === row && c.col === col && !c.block);
+      if (!cellDef) return;
+      const existing = this.puzzle.cells[key];
+      if (existing?.revealed || (existing?.letter && existing.letter === cellDef.letter)) return;
 
       this.puzzle.cells[key] = { letter: letter.toUpperCase(), owner: user, revealed: false };
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
@@ -7443,8 +7495,8 @@ function validateCreateRequest(body) {
   const title = String(body.title || "").trim().slice(0, 60);
   const description = String(body.description || "").trim().slice(0, 140);
   const keywords = Array.isArray(body.keywords) ? body.keywords.map((k) => String(k).trim().toLowerCase()).filter(Boolean).slice(0, 10) : [];
-  const size = ["mini", "standard", "large"].includes(body.size) ? body.size : "standard";
-  const difficulty = ["easy", "medium", "hard"].includes(body.difficulty) ? body.difficulty : "medium";
+  const size = ["mini", "quick", "compact", "standard", "large"].includes(body.size) ? body.size : "standard";
+  const difficulty = ["beginner", "easy", "medium", "hard", "expert"].includes(body.difficulty) ? body.difficulty : "medium";
   const visibility = body.visibility === "private" ? "private" : "open";
   const createdBy = String(body.createdBy || "").trim().slice(0, 40);
   if (!title || !createdBy) return null;
@@ -7561,6 +7613,26 @@ function puzzleFromRow(row) {
   return parseJson(row.payload_json, null);
 }
 
+function renamePuzzleIdentity(puzzle, oldName, newName) {
+  let changed = false;
+  if (puzzle.createdBy === oldName) { puzzle.createdBy = newName; changed = true; }
+  if (puzzle.forkedBy === oldName) { puzzle.forkedBy = newName; changed = true; }
+  if ((puzzle.players || []).includes(oldName)) {
+    puzzle.players = [...new Set(puzzle.players.map((name) => name === oldName ? newName : name))];
+    changed = true;
+  }
+  if (puzzle.sessions?.[oldName]) {
+    puzzle.sessions[newName] = puzzle.sessions[oldName];
+    delete puzzle.sessions[oldName];
+    changed = true;
+  }
+  for (const cell of Object.values(puzzle.cells || {})) {
+    if (cell.owner === oldName) { cell.owner = newName; changed = true; }
+  }
+  if (changed) puzzle.highlights = (puzzle.highlights || []).map((line) => line.replaceAll(oldName, newName));
+  return changed;
+}
+
 async function loadData(db) {
   const [userResult, puzzleResult] = await db.batch([
     db.prepare("SELECT name, hue, created_at, settings_json FROM users ORDER BY rowid"),
@@ -7598,6 +7670,27 @@ async function registerUser(db, name) {
 async function updateUserColor(db, name, hue) {
   await db.prepare("UPDATE users SET hue = ?, updated_at = ? WHERE name = ?")
     .bind(hue, new Date().toISOString(), name).run();
+}
+
+async function renameUser(db, oldName, newName) {
+  const [existing, collision, puzzleRows] = await Promise.all([
+    db.prepare("SELECT name, hue, created_at, settings_json FROM users WHERE name = ?").bind(oldName).first(),
+    db.prepare("SELECT name FROM users WHERE lower(name) = lower(?) AND name <> ?").bind(newName, oldName).first(),
+    db.prepare("SELECT payload_json FROM puzzles").all(),
+  ]);
+  if (!existing) { const error = new Error("Player not found"); error.code = "NOT_FOUND"; throw error; }
+  if (collision) { const error = new Error("That name is already taken"); error.code = "NAME_TAKEN"; throw error; }
+
+  const affectedPuzzleIds = [];
+  const statements = [db.prepare("UPDATE users SET name = ?, updated_at = ? WHERE name = ?").bind(newName, new Date().toISOString(), oldName)];
+  for (const row of puzzleRows.results || []) {
+    const puzzle = puzzleFromRow(row);
+    if (!puzzle || !renamePuzzleIdentity(puzzle, oldName, newName)) continue;
+    affectedPuzzleIds.push(puzzle.id);
+    statements.push(puzzleUpsertStatement(db, puzzle));
+  }
+  await db.batch(statements);
+  return { user: userFromRow(existing), affectedPuzzleIds };
 }
 
 async function getPuzzle(db, puzzleId) {

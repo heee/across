@@ -18,6 +18,9 @@
 </head>
 <body>
 <div id="app">
+  <header id="app-brand-header" class="app-brand-header">
+    <button id="app-brand" type="button" aria-label="Go to home">Across</button>
+  </header>
   <!-- Name entry / profile picker (first run, or when returning on a shared device) -->
   <div id="screen-name-entry" class="screen">
     <div class="name-entry">
@@ -41,21 +44,24 @@
 
   <!-- Home -->
   <div id="screen-home" class="screen">
-    <div class="screen-header"><div class="screen-title">Across</div></div>
     <div class="scroll-area no-scrollbar" id="home-scroll"></div>
     <nav class="bottom-nav" data-nav></nav>
   </div>
 
-  <!-- Search -->
+  <!-- Discover -->
   <div id="screen-search" class="screen">
     <div class="screen-header">
-      <div class="screen-title">Search</div>
+      <div class="screen-title">Discover</div>
       <div class="search-bar">
         <span class="search-icon"></span>
         <input id="search-input" type="text" placeholder="Search crosswords or topics">
       </div>
     </div>
-    <div class="chip-row no-scrollbar" id="search-chips" style="padding-top:0"></div>
+    <div class="discover-filters">
+      <label class="discover-filter category-filter">Category<select id="search-category"></select></label>
+      <label class="discover-filter">Difficulty<select id="search-difficulty"></select></label>
+      <label class="discover-filter">Size<select id="search-size"></select></label>
+    </div>
     <div class="scroll-area no-scrollbar" style="padding-top:4px">
       <div class="list-label">Newest first</div>
       <div class="puzzle-list" id="search-results"></div>
@@ -71,7 +77,7 @@
     </div>
     <div class="scroll-area no-scrollbar" style="padding-top:8px">
       <div class="field-label">Category</div>
-      <div class="category-pills" id="create-category-list"></div>
+      <select class="text-field select-field" id="create-category"></select>
 
       <div class="field-label">Title</div>
       <div class="title-row">
@@ -83,23 +89,24 @@
       <input id="create-description" class="text-field description" type="text" placeholder="A one-line hint at the theme" maxlength="140">
 
       <div class="field-label">Puzzle size</div>
-      <div class="segmented" id="create-size">
+      <div class="segmented five-options" id="create-size">
         <button class="segmented-option" data-value="mini">Mini</button>
+        <button class="segmented-option" data-value="quick">Quick</button>
+        <button class="segmented-option" data-value="compact">Compact</button>
         <button class="segmented-option selected" data-value="standard">Standard</button>
         <button class="segmented-option" data-value="large">Large</button>
       </div>
 
       <div class="field-label">Difficulty</div>
-      <div class="segmented" id="create-difficulty">
+      <div class="segmented five-options" id="create-difficulty">
+        <button class="segmented-option" data-value="beginner">Beginner</button>
         <button class="segmented-option" data-value="easy">Easy</button>
         <button class="segmented-option selected" data-value="medium">Medium</button>
         <button class="segmented-option" data-value="hard">Hard</button>
+        <button class="segmented-option" data-value="expert">Expert</button>
       </div>
+      <p class="field-help difficulty-help" id="create-difficulty-help"></p>
 
-      <div class="toggle-row disabled">
-        <div class="toggle-row-label">Advanced controls</div>
-        <button class="toggle" id="create-advanced-toggle" disabled title="Coming in a later update"></button>
-      </div>
 
       <div class="field-label" style="color:var(--muted-45)">Preview</div>
       <div class="preview-card">
@@ -108,10 +115,15 @@
       </div>
 
       <div class="field-label">Visibility</div>
-      <button class="text-field" id="create-visibility" style="text-align:left;cursor:pointer;font:600 13px Sora">Open · anyone with the link can join</button>
+      <div class="segmented" id="create-visibility">
+        <button class="segmented-option selected" data-value="open">Open</button>
+        <button class="segmented-option" data-value="private">Private</button>
+      </div>
+      <p class="field-help" id="create-visibility-help">Anyone who finds it in Discover or has the link can join.</p>
     </div>
     <div class="cta-row">
-      <button class="cta-primary" id="create-submit">Create</button>
+      <button class="cta-primary" id="create-submit">Create &amp; play</button>
+      <button class="cta-secondary" id="create-only">Create only</button>
     </div>
   </div>
 
@@ -240,6 +252,11 @@
   <div id="screen-settings" class="screen">
     <div class="screen-header"><div class="screen-title">Settings</div></div>
     <div class="scroll-area no-scrollbar">
+      <div class="field-label">Your name</div>
+      <div class="settings-name-row">
+        <input id="settings-name" class="text-field" type="text" maxlength="40" autocomplete="off">
+        <button id="settings-name-save" class="action-secondary">Save</button>
+      </div>
       <div class="field-label">Your color</div>
       <div class="color-picker-grid" id="settings-color-picker"></div>
       <div class="field-label">Players on this device</div>

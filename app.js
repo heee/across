@@ -99,6 +99,32 @@ const LocalBackend = {
       saveLocalData(data);
     }
   },
+  async renameUser(oldName, newName) {
+    const data = loadLocalData();
+    if (!data.users[oldName]) throw new Error("Player not found");
+    if (data.users[newName]) throw new Error("That name is already taken");
+    data.users[newName] = data.users[oldName];
+    delete data.users[oldName];
+    for (const [puzzleId, puzzle] of Object.entries(data.puzzles)) {
+      let changed = false;
+      if (puzzle.createdBy === oldName) { puzzle.createdBy = newName; changed = true; }
+      if (puzzle.forkedBy === oldName) { puzzle.forkedBy = newName; changed = true; }
+      if ((puzzle.players || []).includes(oldName)) {
+        puzzle.players = [...new Set(puzzle.players.map((name) => name === oldName ? newName : name))];
+        changed = true;
+      }
+      if (puzzle.sessions?.[oldName]) {
+        puzzle.sessions[newName] = puzzle.sessions[oldName];
+        delete puzzle.sessions[oldName];
+        changed = true;
+      }
+      for (const cell of Object.values(puzzle.cells || {})) if (cell.owner === oldName) { cell.owner = newName; changed = true; }
+      puzzle.highlights = (puzzle.highlights || []).map((line) => line.replaceAll(oldName, newName));
+      if (changed) new BroadcastChannel(`across-room-${puzzleId}`).postMessage({ type: "user-renamed", oldName, newName, puzzle });
+    }
+    saveLocalData(data);
+    return { name: newName, ...data.users[newName] };
+  },
   async deleteUser(name) {
     const data = loadLocalData();
     delete data.users[name];
@@ -226,6 +252,8 @@ const LocalBackend = {
         handlers.onTimeUpdate?.({ sessions: p.sessions, totalTimeMs: p.totalTimeMs });
       } else if (msg.type === "user-scrubbed") {
         handlers.onUserScrubbed?.({ user: msg.user, players: msg.players, sessions: msg.sessions });
+      } else if (msg.type === "user-renamed") {
+        handlers.onUserRenamed?.(msg);
       }
     };
 
@@ -339,6 +367,10 @@ const RemoteBackend = {
   async updateUserColor(name, hue) {
     await this.apiPost("/update-user-color", { user: name, hue });
   },
+  async renameUser(oldName, newName) {
+    const res = await this.apiPost("/rename-user", { oldName, newName });
+    return res.user;
+  },
   async deleteUser(name) {
     await this.apiPost("/delete-user", { user: name });
   },
@@ -369,6 +401,7 @@ const RemoteBackend = {
       else if (msg.type === "time-update") handlers.onTimeUpdate?.({ sessions: msg.sessions, totalTimeMs: msg.totalTimeMs });
       else if (msg.type === "puzzle-deleted") handlers.onPuzzleDeleted?.();
       else if (msg.type === "user-scrubbed") handlers.onUserScrubbed?.({ user: msg.user, players: msg.players, sessions: msg.sessions });
+      else if (msg.type === "user-renamed") handlers.onUserRenamed?.(msg);
     };
     const send = (msg) => {
       if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
@@ -406,7 +439,10 @@ let createCategory = null;
 let rankingsWindow = "week";
 let rankingsMetric = "Contribution score";
 let lastSearchQuery = "";
-let activeSearchChip = "geography";
+let activeSearchCategory = "all";
+let activeSearchDifficulty = "all";
+let activeSearchSize = "all";
+let profilePickerExpanded = false;
 let completedWordKeys = new Set(); // reset per puzzle open — avoids double-counting wordsCompleted
 
 const RANKING_METRICS = [
@@ -414,7 +450,28 @@ const RANKING_METRICS = [
   "Crosswords created", "Correct letter %", "Incorrect letters corrected",
   "Average accuracy", "Average completion time", "Lowest reveal usage", "Lowest auto check usage",
 ];
-const SEARCH_CATEGORIES = ["Geography", "Movies", "History", "Sports", "Science", "Food", "Kids"];
+const SEARCH_CATEGORIES = [
+  "Geography", "History", "Science", "Nature", "Animals", "Space",
+  "Literature", "Language", "Philosophy", "Mythology", "Art & Design", "Music",
+  "Movies & TV", "Pop Culture", "Technology", "Business & Economics",
+  "Politics & Society", "Food & Drink", "Travel", "Sports", "Games", "Kids",
+  "People", "General Knowledge",
+];
+const SIZE_OPTIONS = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+const DIFFICULTY_OPTIONS = ["beginner", "easy", "medium", "hard", "expert"];
+const DIFFICULTY_HELP = {
+  beginner: "Uses only the most familiar clue tier.",
+  easy: "Favors familiar clues, with a broader pool when needed.",
+  medium: "Balances familiar and moderately obscure clues.",
+  hard: "Uses the full corpus and favors upper-tier clues.",
+  expert: "Strongly prioritizes the most obscure clue tier.",
+};
+const CATEGORY_ALIASES = { movies: "Movies & TV", food: "Food & Drink", general: "General Knowledge" };
+
+function normalizedCategory(value) {
+  const key = String(value || "").toLowerCase();
+  return (CATEGORY_ALIASES[key] || value || "").toLowerCase();
+}
 
 // Sentence case throughout (only the first letter capitalized) — no
 // title-case styling. Deliberately long lists: with only a handful per
@@ -478,6 +535,43 @@ const TITLE_IDEAS = {
   ],
 };
 
+const TITLE_SUBJECTS = {
+  nature: ["Wild things", "Field notes", "The understory", "Weather permitting", "Root causes", "Natural consequences"],
+  animals: ["Creature comforts", "The taxonomy department", "Fur, fins & feathers", "Animal logic", "A brief history of beaks", "Kingdom business"],
+  space: ["Mostly void", "Orbital mechanics", "Cosmic housekeeping", "The gravity of it all", "Deep thoughts, deeper space", "A modest universe"],
+  literature: ["Well read", "Between the lines", "Narrative tension", "The unreliable narrator", "Required reading, allegedly", "A novel approach"],
+  language: ["Words about words", "Semantic drift", "Lost in translation", "The last word", "Syntax matters", "Conjugation station"],
+  philosophy: ["I clue, therefore I am", "Categorical imperatives", "An examined grid", "Existential squares", "The meaning of maybe", "Plato's playbook"],
+  mythology: ["Myth management", "Gods behaving badly", "Heroic complications", "Classical monsters", "Legend has it", "An oracle walks into a grid"],
+  "art & design": ["Form follows fun", "Negative space", "The cultured grid", "A matter of taste", "Bauhaus rules", "Still life, moving clues"],
+  music: ["Minor complications", "Noteworthy", "Classical conditioning", "The sound argument", "Rhythm section", "A measured response"],
+  "movies & tv": ["Now showing", "The plot thickens", "Prestige television", "Roll credits", "Continuity errors", "The sequel problem"],
+  "pop culture": ["Zeitgeist watch", "Cultural literacy", "Main character energy", "Trending, historically", "The discourse", "Fame, briefly"],
+  technology: ["Known issues", "Feature, not bug", "Human-readable", "Terms and conditions", "A series of tubes", "Technical debt society"],
+  "business & economics": ["Capital ideas", "Market corrections", "The invisible hand waves", "Serious business", "Supply meets demand", "Marginal gains"],
+  "politics & society": ["The public square", "Civic complications", "Power structures", "A more perfect grid", "Policy wonks welcome", "The social contract"],
+  "food & drink": ["Food for thought", "Second helpings", "A balanced argument", "Tasteful questions", "Just desserts", "The well-read menu"],
+  travel: ["Departures and arrivals", "A slight detour", "Frequent flyer theory", "The scenic route", "Cultural baggage", "Away with words"],
+  games: ["Rules lawyer", "Player one thinks", "Strategic ambiguity", "A sporting chance", "Game theory, lightly", "Critical hits"],
+  people: ["Notable characters", "Human interest", "A few good names", "Biographical details", "People of consequence", "The social register"],
+  "general knowledge": ["Things one ought to know", "Broadly speaking", "A civilized miscellany", "Useful at dinner", "The informed guess", "General intelligence"],
+};
+const TITLE_FRAMES = [
+  "{category}, reconsidered", "A short course in {category}", "Notes toward {category}",
+  "The {category} question", "An incomplete theory of {category}", "Further studies in {category}",
+  "{category} for the reasonably curious", "A working knowledge of {category}",
+  "The civilized guide to {category}", "{category}, more or less", "Some assembly required",
+  "No footnotes necessary", "An argument in several squares", "The clue is in the title",
+];
+
+function titleIdeasFor(category) {
+  const key = (category || "").toLowerCase();
+  const legacyKey = key === "movies & tv" ? "movies" : key === "food & drink" ? "food" : key;
+  const specific = [...(TITLE_IDEAS[legacyKey] || []), ...(TITLE_SUBJECTS[key] || [])];
+  const framed = TITLE_FRAMES.map((title) => title.replaceAll("{category}", key));
+  return [...new Set([...specific, ...framed])];
+}
+
 // ===========================================================================
 // Small helpers
 // ===========================================================================
@@ -494,6 +588,11 @@ function el(tag, attrs = {}, children = []) {
   }
   for (const child of [].concat(children)) node.appendChild(typeof child === "string" ? document.createTextNode(child) : child);
   return node;
+}
+function navIcon(paths) {
+  const icon = el("div", { class: "nav-icon" });
+  icon.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+  return icon;
 }
 function hueClass(hue) {
   const idx = Math.max(0, PLAYER_HUES.indexOf(hue));
@@ -526,30 +625,19 @@ function showToast(msg) {
 function navigate(screenId) {
   $all(".screen").forEach((s) => s.classList.remove("active"));
   $(`#${screenId}`).classList.add("active");
+  $("#app-brand-header").classList.toggle("hidden", screenId === "screen-puzzle");
   $all("[data-nav]").forEach((nav) => renderBottomNav(nav, screenId));
+  syncPuzzleTiming();
   window.scrollTo(0, 0);
 }
 
 function renderBottomNav(nav, activeScreen) {
   const items = [
-    { id: "screen-home", label: "Home", icon: () => el("div", { class: "nav-icon" }, el("div", { class: "nav-home-icon" })) },
-    { id: "screen-search", label: "Search", icon: () => el("div", { class: "nav-icon" }, el("div", { class: "nav-search-icon" })) },
+    { id: "screen-home", label: "Home", icon: () => navIcon('<path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.2V21h13V9.2M9.5 21v-7h5v7"/>') },
+    { id: "screen-search", label: "Discover", icon: () => navIcon('<circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2.1 4.9-4.9 2.1 2.1-4.9 4.9-2.1Z"/>') },
     { id: "__create__", label: "", icon: null },
-    { id: "screen-rankings", label: "Rankings", icon: () => {
-      const bars = el("div", { class: "nav-rankings-icon" });
-      bars.append(el("span"), el("span"), el("span"));
-      return el("div", { class: "nav-icon" }, bars);
-    } },
-    { id: "screen-settings", label: "Settings", icon: () => {
-      // Real player color + initial (matches the avatars used everywhere
-      // else) instead of a generic silhouette — falls back to the plain
-      // icon only in the brief window before a profile is picked.
-      if (currentUser) {
-        const hue = currentUser.hue ?? 250;
-        return el("div", { class: "nav-icon" }, el("div", { class: "nav-profile-avatar", style: `background:oklch(58% .1 ${hue})`, text: initials(currentUser.name) }));
-      }
-      return el("div", { class: "nav-icon" }, el("div", { class: "nav-profile-icon" }));
-    } },
+    { id: "screen-rankings", label: "Rankings", icon: () => navIcon('<path d="M5 20v-6h4v6M10 20V8h4v12M15 20V4h4v16M3 20h18"/>') },
+    { id: "screen-settings", label: "Settings", icon: () => navIcon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 8.96 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.09A1.7 1.7 0 0 0 4.6 8.96a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.96 4.6 1.7 1.7 0 0 0 10 3.04V3h4v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.6.72 1.02 1.34 1.02H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/>') },
   ];
   nav.innerHTML = "";
   for (const item of items) {
@@ -570,6 +658,12 @@ function renderBottomNav(nav, activeScreen) {
     nav.appendChild(btn);
   }
 }
+
+$("#app-brand").addEventListener("click", () => {
+  leavePuzzleConnection();
+  renderHome();
+  navigate("screen-home");
+});
 
 // A puzzle earns the gold treatment when it was finished with zero reveals
 // and nobody had Auto Check on — genuinely solved unassisted, not just
@@ -674,7 +768,12 @@ function renderProfilePicker() {
   $("#new-player-form").style.display = "none";
   $("#name-entry-input").value = "";
 
-  for (const [name, user] of Object.entries(dataCache.users)) {
+  const entries = Object.entries(dataCache.users);
+  const recentName = localStorage.getItem("across_user_name");
+  entries.sort(([a], [b]) => (a === recentName ? -1 : b === recentName ? 1 : a.localeCompare(b)));
+  const visibleEntries = profilePickerExpanded ? entries : entries.slice(0, 1);
+
+  for (const [name, user] of visibleEntries) {
     const card = el("div", { class: "profile-card" }, [
       el("div", { class: "profile-card-avatar", style: `background:oklch(58% .1 ${user.hue})`, text: initials(name) }),
       el("div", { class: "profile-card-name", text: name }),
@@ -685,6 +784,15 @@ function renderProfilePicker() {
       await enterAppAfterLogin();
     });
     grid.appendChild(card);
+  }
+
+  if (entries.length > 1) {
+    const more = el("button", {
+      class: "profile-card more-players",
+      text: profilePickerExpanded ? "Show recent only" : `More players (${entries.length - 1})`,
+      onclick: () => { profilePickerExpanded = !profilePickerExpanded; renderProfilePicker(); },
+    });
+    grid.appendChild(more);
   }
 
   const newCard = el("div", { class: "profile-card new-player" }, [
@@ -873,29 +981,47 @@ document.addEventListener("click", (e) => {
 // ===========================================================================
 
 function renderSearch() {
-  const chipRow = $("#search-chips");
-  chipRow.innerHTML = "";
-  for (const cat of SEARCH_CATEGORIES) {
-    const chip = el("button", { class: "chip" + (cat.toLowerCase() === activeSearchChip ? " active" : ""), text: cat });
-    chip.addEventListener("click", () => { activeSearchChip = cat.toLowerCase(); renderSearch(); });
-    chipRow.appendChild(chip);
-  }
+  populateSelect($("#search-category"), [["all", "All categories"], ...SEARCH_CATEGORIES.map((cat) => [cat, cat])], activeSearchCategory);
+  populateSelect($("#search-difficulty"), [["all", "All difficulties"], ...DIFFICULTY_OPTIONS.map((value) => [value, cap(value)])], activeSearchDifficulty);
+  populateSelect($("#search-size"), [["all", "All sizes"], ...Object.keys(SIZE_OPTIONS).map((value) => [value, `${cap(value)} (${SIZE_OPTIONS[value]}×${SIZE_OPTIONS[value]})`])], activeSearchSize);
+  $("#search-input").value = lastSearchQuery;
+  $("#search-category").onchange = (e) => { activeSearchCategory = e.target.value; renderSearchResults(); };
+  $("#search-difficulty").onchange = (e) => { activeSearchDifficulty = e.target.value; renderSearchResults(); };
+  $("#search-size").onchange = (e) => { activeSearchSize = e.target.value; renderSearchResults(); };
   renderSearchResults();
-  $("#search-input").oninput = (e) => { lastSearchQuery = e.target.value.toLowerCase(); renderSearchResults(); };
+  $("#search-input").oninput = (e) => { lastSearchQuery = e.target.value; renderSearchResults(); };
+}
+
+function populateSelect(select, options, value) {
+  select.innerHTML = "";
+  for (const [optionValue, label] of options) select.appendChild(el("option", { value: optionValue, text: label }));
+  select.value = value;
 }
 
 function renderSearchResults() {
   const results = $("#search-results");
   results.innerHTML = "";
   let list = Object.values(dataCache.puzzles).filter((p) => p.visibility === "open");
-  if (lastSearchQuery) {
-    list = list.filter((p) => `${p.title} ${p.description} ${(p.keywords || []).join(" ")}`.toLowerCase().includes(lastSearchQuery));
-  } else if (activeSearchChip) {
-    list = list.filter((p) => (p.keywords || []).some((k) => k.toLowerCase() === activeSearchChip) || p.title.toLowerCase().includes(activeSearchChip));
-  }
+  const query = lastSearchQuery.trim().toLowerCase();
+  if (query) list = list.filter((p) => `${p.title} ${p.description} ${(p.keywords || []).join(" ")}`.toLowerCase().includes(query));
+  if (activeSearchCategory !== "all") list = list.filter((p) => (p.keywords || []).some((k) => normalizedCategory(k) === normalizedCategory(activeSearchCategory)));
+  if (activeSearchDifficulty !== "all") list = list.filter((p) => p.difficulty === activeSearchDifficulty);
+  if (activeSearchSize !== "all") list = list.filter((p) => p.size === activeSearchSize || p.grid?.rows === SIZE_OPTIONS[activeSearchSize]);
   list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   if (list.length === 0) {
-    results.appendChild(el("div", { class: "empty-note", text: "Nothing here yet — be the first to create one." }));
+    results.appendChild(el("div", { class: "discover-empty" }, [
+      el("div", { class: "empty-note", text: "No crosswords match these filters yet." }),
+      el("button", {
+        class: "cta-secondary",
+        text: "Create one with these choices",
+        onclick: () => openCreate({
+          category: activeSearchCategory === "all" ? null : activeSearchCategory,
+          difficulty: activeSearchDifficulty === "all" ? "medium" : activeSearchDifficulty,
+          size: activeSearchSize === "all" ? "standard" : activeSearchSize,
+          title: lastSearchQuery.trim(),
+        }),
+      }),
+    ]));
     return;
   }
   for (const p of list) {
@@ -919,38 +1045,32 @@ let createSize = "standard";
 let createDifficulty = "medium";
 let createVisibility = "open";
 
-function openCreate() {
-  createCategory = null;
-  createSize = "standard";
-  createDifficulty = "medium";
+function openCreate(prefill = {}) {
+  createCategory = prefill.category || null;
+  createSize = prefill.size || "standard";
+  createDifficulty = prefill.difficulty || "medium";
   createVisibility = "open";
   offeredTitles = new Set();
-  $("#create-title").value = "";
+  $("#create-title").value = prefill.title || "";
   $("#create-description").value = "";
   renderCreateCategoryList();
   updateGenerateTitleButton();
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
-  renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderCreatePreview(); });
-  $("#create-visibility").textContent = "Open · anyone with the link can join";
+  renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderDifficultyHelp(); renderCreatePreview(); });
+  renderDifficultyHelp();
+  renderSegmented("#create-visibility", createVisibility, (v) => { createVisibility = v; renderVisibilityHelp(); });
+  renderVisibilityHelp();
   renderCreatePreview();
   navigate("screen-create");
 }
 
-// Category is now the required, primary driver of what a puzzle's words are
-// about — a wrapping cluster of single-select pills.
 function renderCreateCategoryList() {
-  const list = $("#create-category-list");
-  list.innerHTML = "";
-  for (const cat of SEARCH_CATEGORIES) {
-    const selected = createCategory === cat;
-    const pill = el("button", { class: "chip" + (selected ? " active" : ""), text: cat });
-    pill.addEventListener("click", () => {
-      createCategory = cat;
-      renderCreateCategoryList();
-      updateGenerateTitleButton();
-    });
-    list.appendChild(pill);
-  }
+  const select = $("#create-category");
+  populateSelect(select, [["", "Choose a category"], ...SEARCH_CATEGORIES.map((cat) => [cat, cat])], createCategory || "");
+  select.onchange = () => {
+    createCategory = select.value || null;
+    updateGenerateTitleButton();
+  };
 }
 
 function updateGenerateTitleButton() {
@@ -964,7 +1084,7 @@ let offeredTitles = new Set();
 
 $("#create-generate-title").addEventListener("click", () => {
   if (!createCategory) return;
-  const ideas = TITLE_IDEAS[createCategory.toLowerCase()] || [];
+  const ideas = titleIdeasFor(createCategory);
   if (ideas.length === 0) return;
   const current = $("#create-title").value.trim();
   let pool = ideas.filter((t) => !offeredTitles.has(t) && t !== current);
@@ -986,33 +1106,38 @@ function renderSegmented(sel, value, onChange) {
 
 function renderCreatePreview() {
   const grid = $("#create-preview-grid");
-  const dims = { mini: 5, standard: 11, large: 15 };
-  const n = dims[createSize];
-  grid.style.gridTemplateColumns = `repeat(${Math.min(n, 5)}, 1fr)`;
-  grid.style.gridTemplateRows = `repeat(${Math.min(n, 5)}, 1fr)`;
+  const n = SIZE_OPTIONS[createSize];
+  grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${n}, 1fr)`;
+  grid.style.gap = n >= 15 ? "1px" : n >= 9 ? "2px" : "3px";
   grid.innerHTML = "";
-  const sample = Math.min(n, 5);
-  for (let i = 0; i < sample * sample; i++) {
-    const on = Math.random() > 0.35;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const mirrorR = Math.min(r, n - 1 - r);
+    const mirrorC = Math.min(c, n - 1 - c);
+    const on = (mirrorR + mirrorC * 2) % 5 !== 1 || r === Math.floor(n / 2) || c === Math.floor(n / 2);
     grid.appendChild(el("div", { style: `aspect-ratio:1;border-radius:2px;background:${on ? "oklch(94% .02 250)" : "var(--block-cell)"}` }));
   }
   $("#create-preview-caption").textContent = `${cap(createSize)} · ${cap(createDifficulty)} · Up to 8 players`;
 }
 
-$("#create-visibility").addEventListener("click", () => {
-  createVisibility = createVisibility === "open" ? "private" : "open";
-  $("#create-visibility").textContent = createVisibility === "open"
-    ? "Open · anyone with the link can join"
-    : "Private · only reachable via the invite link";
-});
+function renderVisibilityHelp() {
+  $("#create-visibility-help").textContent = createVisibility === "open"
+    ? "Anyone who finds it in Discover or has the link can join."
+    : "Only people with the invite link can join.";
+}
 
-$("#create-submit").addEventListener("click", async () => {
+function renderDifficultyHelp() {
+  $("#create-difficulty-help").textContent = DIFFICULTY_HELP[createDifficulty];
+}
+
+async function createPuzzleFromForm(playAfterCreate) {
   if (!createCategory) { showToast("Pick a category first"); return; }
   const title = $("#create-title").value.trim();
   if (!title) { showToast("Give your puzzle a title first"); return; }
-  const btn = $("#create-submit");
-  btn.disabled = true;
-  btn.textContent = "Generating…";
+  const buttons = [$("#create-submit"), $("#create-only")];
+  buttons.forEach((button) => { button.disabled = true; });
+  const clicked = playAfterCreate ? buttons[0] : buttons[1];
+  clicked.textContent = "Generating…";
   try {
     const puzzle = await Backend.createPuzzle({
       title,
@@ -1024,26 +1149,36 @@ $("#create-submit").addEventListener("click", async () => {
       createdBy: currentUser.name,
     });
     await refreshData();
-    openPuzzle(puzzle.id);
+    if (playAfterCreate) openPuzzle(puzzle.id);
+    else {
+      renderHome();
+      navigate("screen-home");
+      showToast(`“${puzzle.title}” created`);
+    }
   } catch (e) {
     showToast(e.message || "Couldn't generate that puzzle — try a different category");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Create";
+    buttons.forEach((button) => { button.disabled = false; });
+    buttons[0].textContent = "Create & play";
+    buttons[1].textContent = "Create only";
   }
-});
+}
+
+$("#create-submit").addEventListener("click", () => createPuzzleFromForm(true));
+$("#create-only").addEventListener("click", () => createPuzzleFromForm(false));
 
 function prefillCreateSimilar(puzzle) {
   openCreate();
   $("#create-title").value = `${puzzle.title} II`;
   const prevCategory = (puzzle.keywords || [])[0];
-  createCategory = SEARCH_CATEGORIES.find((c) => c.toLowerCase() === prevCategory?.toLowerCase()) || null;
+  createCategory = SEARCH_CATEGORIES.find((c) => normalizedCategory(c) === normalizedCategory(prevCategory)) || null;
   renderCreateCategoryList();
   updateGenerateTitleButton();
   createSize = puzzle.size;
   createDifficulty = puzzle.difficulty;
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
-  renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderCreatePreview(); });
+  renderSegmented("#create-difficulty", createDifficulty, (v) => { createDifficulty = v; renderDifficultyHelp(); renderCreatePreview(); });
+  renderDifficultyHelp();
   renderCreatePreview();
 }
 
@@ -1066,11 +1201,29 @@ function flushTime(final) {
   if (!currentPuzzleConn || !sessionStartTime) return;
   const now = Date.now();
   const delta = now - sessionStartTime;
-  if (delta <= 0) return;
+  if (delta <= 0) { if (final) sessionStartTime = null; return; }
   myBaselineMs += delta;
-  sessionStartTime = now;
+  sessionStartTime = final ? null : now;
   currentPuzzleConn.sendTimeHeartbeat(delta);
 }
+
+function isPuzzleActivelyViewed() {
+  return document.visibilityState === "visible" && document.hasFocus() && $("#screen-puzzle")?.classList.contains("active") && !!currentPuzzleConn && !!currentPuzzle;
+}
+
+function syncPuzzleTiming() {
+  if (isPuzzleActivelyViewed()) {
+    if (!sessionStartTime) sessionStartTime = Date.now();
+  } else if (sessionStartTime) {
+    flushTime(true);
+  }
+  updatePuzzleTimers();
+}
+
+document.addEventListener("visibilitychange", syncPuzzleTiming);
+window.addEventListener("focus", syncPuzzleTiming);
+window.addEventListener("blur", syncPuzzleTiming);
+window.addEventListener("pagehide", () => flushTime(true));
 
 function openPuzzle(puzzleId) {
   leavePuzzleConnection();
@@ -1092,7 +1245,8 @@ function openPuzzle(puzzleId) {
       currentPuzzle = puzzle;
       completedWordKeys = new Set();
       myBaselineMs = puzzle.sessions?.[currentUser.name]?.timeSpentMs || 0;
-      sessionStartTime = Date.now();
+      sessionStartTime = null;
+      syncPuzzleTiming();
       selectedCell = firstFillableCell(puzzle.grid);
       selectedDirection = "across";
       renderPuzzleHeader(presence);
@@ -1153,6 +1307,12 @@ function openPuzzle(puzzleId) {
       currentPuzzle.sessions = sessions;
       renderPuzzleHeader(currentPresence);
     },
+    onUserRenamed({ oldName, newName, puzzle }) {
+      if (!currentPuzzle) return;
+      if (puzzle) currentPuzzle = puzzle;
+      currentPresence = currentPresence.map((name) => name === oldName ? newName : name);
+      refreshData().then(() => renderPuzzleHeader(currentPresence));
+    },
   });
 }
 
@@ -1185,8 +1345,8 @@ function renderPuzzleHeader(presence) {
 }
 
 function updatePuzzleTimers() {
-  if (!sessionStartTime || !currentPuzzle) return;
-  const myTimeMs = myBaselineMs + (Date.now() - sessionStartTime);
+  if (!currentPuzzle) return;
+  const myTimeMs = myBaselineMs + (sessionStartTime ? Date.now() - sessionStartTime : 0);
   $("#puzzle-my-time").textContent = formatMinSec(myTimeMs);
 
   const sessions = currentPuzzle.sessions || {};
@@ -1385,23 +1545,31 @@ function stepClue(delta) {
 $("#clue-prev").addEventListener("click", () => stepClue(-1));
 $("#clue-next").addEventListener("click", () => stepClue(1));
 
-function advanceSelection(reverse) {
+function isLockedCell(cell) {
+  if (!cell || !currentPuzzle) return true;
+  const def = currentPuzzle.grid.cells.find((candidate) => candidate.row === cell.row && candidate.col === cell.col);
+  const value = currentPuzzle.cells[`${cell.row}-${cell.col}`];
+  return !!value?.revealed || !!(value?.letter && def && value.letter === def.letter);
+}
+
+function advanceSelection(reverse, clueHops = 0) {
   const cells = currentWord();
   const idx = cells.findIndex((c) => c.row === selectedCell.row && c.col === selectedCell.col);
   if (reverse) {
-    const prevIdx = idx - 1;
-    if (prevIdx >= 0) {
-      selectedCell = cells[prevIdx];
-      refreshGridState();
+    for (let i = idx - 1; i >= 0; i--) {
+      if (!isLockedCell(cells[i])) {
+        selectedCell = cells[i];
+        refreshGridState();
+        return;
+      }
     }
     return;
   }
-  // Forward: skip past any cell that's already filled (typing a run of
-  // letters shouldn't force re-entering one that crosses an already-solved
-  // word) and land on the next empty one instead.
+  // Revealed and already-correct squares are immutable. Wrong guesses stay
+  // editable, so typing naturally lands on them for correction.
   for (let i = idx + 1; i < cells.length; i++) {
     const c = cells[i];
-    if (!currentPuzzle.cells[`${c.row}-${c.col}`]?.letter) {
+    if (!isLockedCell(c)) {
       selectedCell = c;
       refreshGridState();
       return;
@@ -1410,10 +1578,16 @@ function advanceSelection(reverse) {
   // No empty cell left ahead in this word — typed the last letter, jump to
   // the next clue instead of just leaving the cursor stranded.
   stepClue(1);
+  if (isLockedCell(selectedCell) && clueHops < currentPuzzle.grid.words.length) advanceSelection(false, clueHops + 1);
 }
 
 function typeLetter(letter) {
   if (!selectedCell || !currentPuzzleConn) return;
+  if (isLockedCell(selectedCell)) {
+    const before = `${selectedCell.row}-${selectedCell.col}`;
+    advanceSelection(false);
+    if (`${selectedCell.row}-${selectedCell.col}` === before || isLockedCell(selectedCell)) return;
+  }
   const cellDef = currentPuzzle.grid.cells.find((c) => c.row === selectedCell.row && c.col === selectedCell.col);
   if (!cellDef || cellDef.block) return;
   const key = `${selectedCell.row}-${selectedCell.col}`;
@@ -1445,6 +1619,7 @@ function celebrateWordCompletion(cells) {
 
 function backspace() {
   if (!selectedCell || !currentPuzzleConn) return;
+  if (isLockedCell(selectedCell)) { advanceSelection(true); return; }
   const key = `${selectedCell.row}-${selectedCell.col}`;
   if (currentPuzzle.cells[key]?.letter) {
     currentPuzzleConn.sendCellUpdate(selectedCell.row, selectedCell.col, "");
@@ -1873,6 +2048,7 @@ function renderColorPicker() {
 }
 
 function renderSettings() {
+  $("#settings-name").value = currentUser.name;
   renderColorPicker();
   const list = $("#settings-user-list");
   list.innerHTML = "";
@@ -1894,6 +2070,33 @@ function renderSettings() {
     ]));
   }
 }
+
+async function renameCurrentUser() {
+  const oldName = currentUser.name;
+  const newName = $("#settings-name").value.trim().slice(0, 40);
+  if (!newName || newName === oldName) return;
+  if (Object.keys(dataCache.users).some((name) => name !== oldName && name.toLowerCase() === newName.toLowerCase())) {
+    showToast("That name is already taken");
+    return;
+  }
+  const button = $("#settings-name-save");
+  button.disabled = true;
+  try {
+    const renamed = await Backend.renameUser(oldName, newName);
+    currentUser = { ...currentUser, ...renamed, name: newName };
+    localStorage.setItem("across_user_name", newName);
+    await refreshData();
+    renderSettings();
+    showToast(`Renamed ${oldName} to ${newName}`);
+  } catch (error) {
+    showToast(error.message || "Couldn't change that name");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("#settings-name-save").addEventListener("click", renameCurrentUser);
+$("#settings-name").addEventListener("keydown", (event) => { if (event.key === "Enter") renameCurrentUser(); });
 
 async function confirmDeleteUser(name) {
   if (!confirm(`Delete "${name}"? This can't be undone.`)) return;

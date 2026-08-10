@@ -16,8 +16,14 @@
 // within budget, generation falls back to the legacy greedy algorithm
 // (kept below, unmodified in spirit) so puzzle creation never just fails.
 
-const SIZE_MAP = { mini: 5, standard: 11, large: 15 };
-const DIFFICULTY_MAP = { easy: 1, medium: 2, hard: 3 };
+export const SIZE_MAP = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+export const DIFFICULTY_PROFILES = {
+  beginner: { maxDiff: 1, targetDiff: 1 },
+  easy: { maxDiff: 2, targetDiff: 1 },
+  medium: { maxDiff: 2, targetDiff: 2 },
+  hard: { maxDiff: 3, targetDiff: 2.6 },
+  expert: { maxDiff: 3, targetDiff: 3 },
+};
 
 // ---------------------------------------------------------------------
 // 1. Symmetric block templates (180-degree rotational symmetry).
@@ -55,6 +61,19 @@ const TEMPLATES = {
     ["....#", "....#", ".....", "#....", "#...."],
     // blocks=6 fill=76% tightness=0.09 lens={"3":4,"4":4,"5":2}
     ["##...", "#....", ".....", "....#", "...##"],
+  ],
+  quick: [
+    ["###...#", "##.....", ".......", ".......", ".......", ".....##", "#...###"],
+    ["....###", "....###", "......#", ".......", "#......", "###....", "###...."],
+    ["....###", ".....##", ".......", ".......", ".......", "##.....", "###...."],
+    [".....##", "......#", "......#", ".......", "#......", "#......", "##....."],
+  ],
+  compact: [
+    ["###.....#", "##......#", "........#", ".........", ".........", ".........", "#........", "#......##", "#.....###"],
+    ["#####...#", "##......#", "#........", ".........", ".........", ".........", "........#", "#......##", "#...#####"],
+    ["###.....#", "##......#", "........#", "........#", ".........", "#........", "#........", "#......##", "#.....###"],
+    ["#......##", "#.......#", "#........", ".....#...", ".........", "...#.....", "........#", "#.......#", "##......#"],
+    ["###......", "##.......", "#........", ".........", ".........", ".........", "........#", ".......##", "......###"],
   ],
   standard: [
     // blocks=20 fill=83% tightness=0.35 lens={"3":4,"4":6,"5":4,"6":4,"9":2,"10":6,"11":4}
@@ -266,7 +285,7 @@ export function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
     if (entry.diff > maxDiff) continue;
     if (seen.has(w)) continue;
     seen.add(w);
-    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), tier: 0 });
+    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), diff: entry.diff || 1, tier: 0 });
   }
 
   const categoryTokens = withSingulars(tokenize((keywords || []).join(" ")));
@@ -394,7 +413,7 @@ function shuffleInPlace(arr) {
 // shuffle. Restarting with a new shuffle is what actually spends the rest
 // of the budget productively, the same way random-restart search does for
 // any CSP with a large but not-fully-explorable branching factor.
-export function runBacktrackFill(slots, index, longIds, deadline, domains) {
+export function runBacktrackFill(slots, index, longIds, deadline, domains, targetDiff = 2) {
   let steps = 0; // shared across restarts, bounds total work for this template
   let aborted = false; // budget fully exhausted — stop restarting entirely
   let attemptSteps = 0; // steps used by the current attempt only
@@ -508,15 +527,13 @@ export function runBacktrackFill(slots, index, longIds, deadline, domains) {
     }
 
     function orderCandidates(slot, candidates) {
+      const byDifficulty = (items) => shuffleInPlace(items.slice()).sort((a, b) => Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff));
       if (longIds.has(slot.id)) {
         const t2 = [], t1 = [], t0 = [];
         for (const e of candidates) (e.tier === 2 ? t2 : e.tier === 1 ? t1 : t0).push(e);
-        shuffleInPlace(t2);
-        shuffleInPlace(t1);
-        shuffleInPlace(t0);
-        return [...t2, ...t1, ...t0];
+        return [...byDifficulty(t2), ...byDifficulty(t1), ...byDifficulty(t0)];
       }
-      return shuffleInPlace(candidates.slice());
+      return byDifficulty(candidates);
     }
 
     function selectSlot() {
@@ -645,7 +662,8 @@ const TIME_BUDGET_MS = 3000;
 
 export function generatePuzzle({ keywords = [], title = "", size = "standard", difficulty = "medium", wordBank }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
-  const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
+  const profile = DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium;
+  const maxDiff = profile.maxDiff;
 
   const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
   const index = buildWordIndex(pool);
@@ -673,7 +691,7 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
     // backtracking search that's guaranteed to fail.
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
     const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
-    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains);
+    const { success, assignment } = runBacktrackFill(slots, index, longIds, templateDeadline, domains, profile.targetDiff);
     if (success) return buildOutputFromSlots(rows, slots, assignment, n);
   }
 
@@ -693,13 +711,13 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
 // original implementation, functionally unchanged.
 // =======================================================================
 
-const LEGACY_TARGET_WORDS = { mini: 8, standard: 24, large: 38 };
+const LEGACY_TARGET_WORDS = { mini: 8, quick: 13, compact: 18, standard: 24, large: 38 };
 const LEGACY_FILL_ATTEMPTS = 5;
 const LEGACY_FILL_PASSES = 4;
 
 function legacyGenerate(wordBank, keywords, size, difficulty) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
-  const maxDiff = DIFFICULTY_MAP[difficulty] || DIFFICULTY_MAP.medium;
+  const maxDiff = (DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium).maxDiff;
   const targetWords = LEGACY_TARGET_WORDS[size] || LEGACY_TARGET_WORDS.standard;
 
   const groups = legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n);
@@ -948,20 +966,11 @@ function legacyPlaceWord(grid, word, row, col, direction) {
 }
 
 function legacyCropAndNumber(grid, words, n) {
-  let minRow = n, maxRow = -1, minCol = n, maxCol = -1;
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      if (grid[r][c].letter) {
-        minRow = Math.min(minRow, r);
-        maxRow = Math.max(maxRow, r);
-        minCol = Math.min(minCol, c);
-        maxCol = Math.max(maxCol, c);
-      }
-    }
-  }
-
-  const rows = maxRow - minRow + 1;
-  const cols = maxCol - minCol + 1;
+  // Preserve the selected dimensions even when the dense-template solver
+  // falls back to the greedy fill. Cropping made Quick and Compact appear
+  // indistinguishable from neighboring sizes and contradicted the preview.
+  const minRow = 0, minCol = 0;
+  const rows = n, cols = n;
 
   const cells = [];
   const numberAt = new Map();

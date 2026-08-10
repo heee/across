@@ -7,6 +7,7 @@
 //   GET  /data                       -> current D1 contents in the legacy API shape (no auth to read)
 //   POST /register-user   { user }                              -> creates the user if new, assigns a stable color hue
 //   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
+//   POST /rename-user     { oldName, newName }                  -> globally renames a user while preserving identity and history
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
 //   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy }
 //                                                                 -> generates a grid from the word bank, creates the puzzle, server-assigns id
@@ -95,6 +96,32 @@ export default {
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
+      }
+    }
+
+    if (url.pathname === "/rename-user" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const oldName = typeof body?.oldName === "string" ? body.oldName.trim().slice(0, 40) : "";
+      const newName = typeof body?.newName === "string" ? body.newName.trim().slice(0, 40) : "";
+      if (!oldName || !newName) return json({ error: "invalid payload" }, 400, cors);
+
+      try {
+        const { user, affectedPuzzleIds } = await renameUser(env.DB, oldName, newName);
+        await Promise.all(affectedPuzzleIds.map(async (puzzleId) => {
+          const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
+          const stub = env.PUZZLE_ROOM.get(roomId);
+          try {
+            await stub.fetch("https://internal/rename-user", {
+              method: "POST",
+              body: JSON.stringify({ oldName, newName }),
+              headers: { "Content-Type": "application/json" },
+            });
+          } catch (e) {}
+        }));
+        return json({ ok: true, user: { name: newName, ...user } }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, e.code === "NAME_TAKEN" ? 409 : e.code === "NOT_FOUND" ? 404 : 502, cors);
       }
     }
 
@@ -354,6 +381,19 @@ export class PuzzleRoom {
       return new Response("ok");
     }
 
+    if (url.pathname === "/rename-user" && request.method === "POST") {
+      const { oldName, newName } = await request.json();
+      await this.loadPuzzle();
+      if (this.puzzle && oldName && newName) {
+        renamePuzzleIdentity(this.puzzle, oldName, newName);
+        for (const metadata of this.sockets.values()) if (metadata.user === oldName) metadata.user = newName;
+        await this.state.storage.put("puzzle", this.puzzle);
+        this.broadcast({ type: "user-renamed", oldName, newName, puzzle: this.puzzle }, null);
+        this.broadcastPresence();
+      }
+      return new Response("ok");
+    }
+
     if (request.headers.get("Upgrade") !== "websocket") {
       return new Response("expected websocket", { status: 426 });
     }
@@ -381,7 +421,7 @@ export class PuzzleRoom {
     this.sendTo(server, { type: "init", puzzle: this.puzzle, presence: this.presenceList() });
     this.broadcastPresence();
 
-    server.addEventListener("message", (evt) => this.handleMessage(server, user, evt));
+    server.addEventListener("message", (evt) => this.handleMessage(server, this.sockets.get(server)?.user || user, evt));
     server.addEventListener("close", () => {
       this.sockets.delete(server);
       this.broadcastPresence();
@@ -437,7 +477,10 @@ export class PuzzleRoom {
       if (!Number.isInteger(row) || !Number.isInteger(col)) return;
       if (typeof letter !== "string" || letter.length > 1) return;
       const key = `${row}-${col}`;
-      if (!this.puzzle.grid.cells.some((c) => c.row === row && c.col === col && !c.block)) return;
+      const cellDef = this.puzzle.grid.cells.find((c) => c.row === row && c.col === col && !c.block);
+      if (!cellDef) return;
+      const existing = this.puzzle.cells[key];
+      if (existing?.revealed || (existing?.letter && existing.letter === cellDef.letter)) return;
 
       this.puzzle.cells[key] = { letter: letter.toUpperCase(), owner: user, revealed: false };
       if (!this.puzzle.sessions[user]) this.puzzle.sessions[user] = newSession();
@@ -538,8 +581,8 @@ function validateCreateRequest(body) {
   const title = String(body.title || "").trim().slice(0, 60);
   const description = String(body.description || "").trim().slice(0, 140);
   const keywords = Array.isArray(body.keywords) ? body.keywords.map((k) => String(k).trim().toLowerCase()).filter(Boolean).slice(0, 10) : [];
-  const size = ["mini", "standard", "large"].includes(body.size) ? body.size : "standard";
-  const difficulty = ["easy", "medium", "hard"].includes(body.difficulty) ? body.difficulty : "medium";
+  const size = ["mini", "quick", "compact", "standard", "large"].includes(body.size) ? body.size : "standard";
+  const difficulty = ["beginner", "easy", "medium", "hard", "expert"].includes(body.difficulty) ? body.difficulty : "medium";
   const visibility = body.visibility === "private" ? "private" : "open";
   const createdBy = String(body.createdBy || "").trim().slice(0, 40);
   if (!title || !createdBy) return null;
@@ -656,6 +699,26 @@ function puzzleFromRow(row) {
   return parseJson(row.payload_json, null);
 }
 
+function renamePuzzleIdentity(puzzle, oldName, newName) {
+  let changed = false;
+  if (puzzle.createdBy === oldName) { puzzle.createdBy = newName; changed = true; }
+  if (puzzle.forkedBy === oldName) { puzzle.forkedBy = newName; changed = true; }
+  if ((puzzle.players || []).includes(oldName)) {
+    puzzle.players = [...new Set(puzzle.players.map((name) => name === oldName ? newName : name))];
+    changed = true;
+  }
+  if (puzzle.sessions?.[oldName]) {
+    puzzle.sessions[newName] = puzzle.sessions[oldName];
+    delete puzzle.sessions[oldName];
+    changed = true;
+  }
+  for (const cell of Object.values(puzzle.cells || {})) {
+    if (cell.owner === oldName) { cell.owner = newName; changed = true; }
+  }
+  if (changed) puzzle.highlights = (puzzle.highlights || []).map((line) => line.replaceAll(oldName, newName));
+  return changed;
+}
+
 async function loadData(db) {
   const [userResult, puzzleResult] = await db.batch([
     db.prepare("SELECT name, hue, created_at, settings_json FROM users ORDER BY rowid"),
@@ -693,6 +756,27 @@ async function registerUser(db, name) {
 async function updateUserColor(db, name, hue) {
   await db.prepare("UPDATE users SET hue = ?, updated_at = ? WHERE name = ?")
     .bind(hue, new Date().toISOString(), name).run();
+}
+
+async function renameUser(db, oldName, newName) {
+  const [existing, collision, puzzleRows] = await Promise.all([
+    db.prepare("SELECT name, hue, created_at, settings_json FROM users WHERE name = ?").bind(oldName).first(),
+    db.prepare("SELECT name FROM users WHERE lower(name) = lower(?) AND name <> ?").bind(newName, oldName).first(),
+    db.prepare("SELECT payload_json FROM puzzles").all(),
+  ]);
+  if (!existing) { const error = new Error("Player not found"); error.code = "NOT_FOUND"; throw error; }
+  if (collision) { const error = new Error("That name is already taken"); error.code = "NAME_TAKEN"; throw error; }
+
+  const affectedPuzzleIds = [];
+  const statements = [db.prepare("UPDATE users SET name = ?, updated_at = ? WHERE name = ?").bind(newName, new Date().toISOString(), oldName)];
+  for (const row of puzzleRows.results || []) {
+    const puzzle = puzzleFromRow(row);
+    if (!puzzle || !renamePuzzleIdentity(puzzle, oldName, newName)) continue;
+    affectedPuzzleIds.push(puzzle.id);
+    statements.push(puzzleUpsertStatement(db, puzzle));
+  }
+  await db.batch(statements);
+  return { user: userFromRow(existing), affectedPuzzleIds };
 }
 
 async function getPuzzle(db, puzzleId) {
@@ -778,4 +862,4 @@ async function deleteUser(db, name) {
   return affectedPuzzleIds;
 }
 
-export { loadData, registerUser, updateUserColor, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser };
+export { loadData, registerUser, updateUserColor, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser };

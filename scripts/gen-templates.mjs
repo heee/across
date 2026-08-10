@@ -93,11 +93,14 @@ function findBest(n, blockCount, attempts, wordBank) {
 
 const CONFIGS = [
   { size: "mini", n: 5, blockCounts: [4, 6], perCount: 500 },
+  { size: "quick", n: 7, blockCounts: [8, 10, 12, 14], perCount: 900 },
+  { size: "compact", n: 9, blockCounts: [12, 14, 16, 18, 20], perCount: 1200 },
   { size: "standard", n: 11, blockCounts: [20, 22, 24, 26, 28, 30, 32], perCount: 1500 },
   { size: "large", n: 15, blockCounts: [38, 42, 46, 50, 54, 58], perCount: 1000 },
 ];
 
-for (const cfg of CONFIGS) {
+const requestedSize = process.argv[2];
+for (const cfg of CONFIGS.filter((item) => !requestedSize || item.size === requestedSize)) {
   console.log(`\n  ${cfg.size}: [`);
   const results = [];
   for (const bc of cfg.blockCounts) {

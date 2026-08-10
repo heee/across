@@ -114,8 +114,21 @@ Screen, and launch the installed PWA.
 ## Puzzle generation and current limits
 
 `worker/corpus.js` is a hand-authored clue bank. `worker/generator.js` performs
-constraint-based interlocking fill based on keywords, size, and difficulty.
-The current constructor favors simplicity over newspaper-style density and
-symmetry. Identity is name-only, and private puzzles are invite-link-only.
+template-first, symmetric interlocking fill based on category, title, five grid
+sizes, and five clue-difficulty profiles. If a dense template cannot be solved
+inside the Worker CPU budget, generation falls back to a bounded greedy fill.
+Private puzzles remain invite-link-only.
+
+### Parked generation work
+
+- Expand the clue corpus substantially with native coverage across all five
+  difficulty tiers and all 24 categories. The current profiles make the tiers
+  meaningful by filtering and prioritizing the existing three-tier corpus, but
+  a larger five-tier corpus is required for the progression to feel fully
+  natural and consistently themed.
+- Revisit crossword density separately. Some puzzles still fall back to sparse
+  layouts with more whitespace than a newspaper-style grid. Keep the current
+  light block-cell design language when evaluating denser construction; do not
+  introduce solid dark blocks as part of that work by default.
 
 See `CLAUDE.md` for repository working conventions.

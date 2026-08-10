@@ -6,6 +6,7 @@ import {
   getPuzzle,
   joinPuzzle,
   loadData,
+  renameUser,
   registerUser,
   updateUserColor,
   upsertPuzzle,
@@ -18,6 +19,7 @@ class Statement {
   async first(column) {
     let row = null;
     if (this.sql.startsWith("SELECT COUNT(*)")) row = { count: this.db.users.size };
+    else if (this.sql.includes("lower(name)")) row = [...this.db.users.values()].find((user) => user.name.toLowerCase() === String(this.params[0]).toLowerCase() && user.name !== this.params[1]) || null;
     else if (this.sql.includes("FROM users WHERE name")) row = this.db.users.get(this.params[0]) || null;
     else if (this.sql.includes("FROM puzzles WHERE id")) {
       const puzzle = this.db.puzzles.get(this.params[0]);
@@ -39,6 +41,13 @@ class Statement {
       const [hue, updated_at, name] = this.params;
       const row = this.db.users.get(name);
       if (row) Object.assign(row, { hue, updated_at });
+    } else if (this.sql.startsWith("UPDATE users SET name")) {
+      const [newName, updated_at, oldName] = this.params;
+      const row = this.db.users.get(oldName);
+      if (row) {
+        this.db.users.delete(oldName);
+        this.db.users.set(newName, { ...row, name: newName, updated_at });
+      }
     } else if (this.sql.startsWith("DELETE FROM users")) this.db.users.delete(this.params[0]);
     else if (this.sql.startsWith("DELETE FROM puzzles")) this.db.puzzles.delete(this.params[0]);
     else if (this.sql.startsWith("INSERT INTO puzzles")) {
@@ -99,6 +108,26 @@ test("deleting a user scrubs every puzzle snapshot", async () => {
   const puzzle = await getPuzzle(db, "test-1");
   assert.deepEqual(puzzle.players, []);
   assert.equal("Henning" in puzzle.sessions, false);
+});
+
+test("renaming a user preserves their global puzzle identity", async () => {
+  const db = new FakeD1();
+  await registerUser(db, "Henning");
+  const puzzle = samplePuzzle();
+  puzzle.cells["0-0"] = { letter: "A", owner: "Henning", revealed: false };
+  puzzle.highlights = ["Henning typed the most letters"];
+  await upsertPuzzle(db, puzzle);
+
+  const result = await renameUser(db, "Henning", "Henry");
+  assert.deepEqual(result.affectedPuzzleIds, ["test-1"]);
+  const data = await loadData(db);
+  assert.equal(data.users.Henning, undefined);
+  assert.equal(data.users.Henry.hue, 250);
+  assert.equal(data.puzzles["test-1"].createdBy, "Henry");
+  assert.deepEqual(data.puzzles["test-1"].players, ["Henry"]);
+  assert.ok(data.puzzles["test-1"].sessions.Henry);
+  assert.equal(data.puzzles["test-1"].cells["0-0"].owner, "Henry");
+  assert.equal(data.puzzles["test-1"].highlights[0], "Henry typed the most letters");
 });
 
 test("maintenance mode blocks mutations and WebSocket connects", async () => {
