@@ -6907,15 +6907,11 @@ function legacyCropAndNumber(grid, words, n) {
 
 // Across — Cloudflare Worker.
 //
-// Same "holds the one GitHub token server-side" pattern as Boys Pushup
-// Bonanza's worker, plus one new piece Bonanza didn't need: a Durable Object
-// (PuzzleRoom) that holds *live* in-progress grid state and pushes it to
-// connected players over WebSockets, since collaborative letter-by-letter
-// typing needs sub-second propagation that a commit-per-write pattern can't
-// give it. Completed/durable puzzle data still lives in data.json in GitHub,
-// exactly like Bonanza's sessions.
+// D1 is the durable source of truth for users and puzzle snapshots. One
+// PuzzleRoom Durable Object per puzzle holds live state and pushes it to
+// connected players over WebSockets, snapshotting that state back to D1.
 //
-//   GET  /data                       -> current data.json contents (no auth to read)
+//   GET  /data                       -> current D1 contents in the legacy API shape (no auth to read)
 //   POST /register-user   { user }                              -> creates the user if new, assigns a stable color hue
 //   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
@@ -6924,7 +6920,7 @@ function legacyCropAndNumber(grid, words, n) {
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
 //   POST /fork-puzzle     { puzzleId, user }                     -> creates a private, blank, solo copy of an existing
 //                                                                    puzzle for one user (idempotent per user+puzzle)
-//   POST /delete-puzzle   { puzzleId }                           -> removes the puzzle from data.json, wipes its PuzzleRoom DO
+//   POST /delete-puzzle   { puzzleId }                           -> removes the puzzle from D1, wipes its PuzzleRoom DO
 //                                                                    state, and disconnects anyone still in it
 //   POST /complete-puzzle { puzzleId, cells, sessions, totalTimeMs, completed }
 //                                                                 -> manual/fallback snapshot commit; the PuzzleRoom DO normally
@@ -6933,16 +6929,12 @@ function legacyCropAndNumber(grid, words, n) {
 //   GET/Upgrade /puzzle/:id/connect                              -> WebSocket, routed to that puzzle's PuzzleRoom Durable Object
 //
 // Required Worker secrets/variables (Settings -> Variables and Secrets):
-//   GITHUB_TOKEN   (secret)  fine-grained PAT, Contents: Read and write, scoped to one repo
-//   GH_OWNER       (var)     e.g. "heee"
-//   GH_REPO        (var)     e.g. "across"
-//   GH_BRANCH      (var)     e.g. "main"
 //   APP_KEY        (secret)  any string; must match APP_KEY in config.js — a casual
 //                            deterrent only, not real auth (visible in client source)
 //   ALLOWED_ORIGIN (var)     e.g. "https://<you>.github.io"
 //
-// Required binding (Settings -> Bindings -> Durable Object, dashboard-only —
-// see README, this is the one step that can't be done via Quick Edit):
+// Required bindings (Settings -> Bindings):
+//   DB          -> D1 database containing migrations/0001_initial.sql
 //   PUZZLE_ROOM -> class PuzzleRoom (this file)
 
 
@@ -6958,16 +6950,25 @@ export default {
     }
 
     const puzzleConnectMatch = url.pathname.match(/^\/puzzle\/([a-zA-Z0-9_-]+)\/connect$/);
+    if (env.WRITE_DISABLED === "1" && (request.method === "POST" || puzzleConnectMatch)) {
+      return json({ error: "maintenance" }, 503, { ...cors, "Retry-After": "60" });
+    }
     if (puzzleConnectMatch) {
+      const puzzle = await getPuzzle(env.DB, puzzleConnectMatch[1]);
+      if (!puzzle) return json({ error: "puzzle not found" }, 404, cors);
       const id = env.PUZZLE_ROOM.idFromName(puzzleConnectMatch[1]);
       const stub = env.PUZZLE_ROOM.get(id);
+      await stub.fetch("https://internal/seed-if-empty", {
+        method: "POST",
+        body: JSON.stringify(puzzle),
+        headers: { "Content-Type": "application/json" },
+      });
       return stub.fetch(request);
     }
 
     if (url.pathname === "/data" && request.method === "GET") {
       try {
-        const { data } = await fetchGithubFile(env);
-        return json(data, 200, cors);
+        return json(await loadData(env.DB), 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
       }
@@ -6980,18 +6981,7 @@ export default {
       if (!name) return json({ error: "invalid user" }, 400, cors);
 
       try {
-        let user;
-        await commitMutation(env, (data) => {
-          if (!data.users[name]) {
-            const hue = PLAYER_HUES[Object.keys(data.users).length % PLAYER_HUES.length];
-            data.users[name] = {
-              hue,
-              createdAt: new Date().toISOString(),
-              settings: { push: true, sound: true, haptic: true },
-            };
-          }
-          user = data.users[name];
-        }, `Register user: ${name}`);
+        const user = await registerUser(env.DB, name);
         return json({ ok: true, user: { name, ...user } }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -7006,9 +6996,7 @@ export default {
       if (!name || !PLAYER_HUES.includes(hue)) return json({ error: "invalid payload" }, 400, cors);
 
       try {
-        await commitMutation(env, (data) => {
-          if (data.users[name]) data.users[name].hue = hue;
-        }, `Update user color: ${name} -> ${hue}`);
+        await updateUserColor(env.DB, name, hue);
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -7022,21 +7010,12 @@ export default {
       if (!name) return json({ error: "invalid user" }, 400, cors);
 
       try {
-        const affectedPuzzleIds = [];
-        await commitMutation(env, (data) => {
-          delete data.users[name];
-          for (const [puzzleId, p] of Object.entries(data.puzzles)) {
-            const hadUser = (p.players || []).includes(name) || (p.sessions && name in p.sessions);
-            if (hadUser) affectedPuzzleIds.push(puzzleId);
-            p.players = (p.players || []).filter((n) => n !== name);
-            if (p.sessions) delete p.sessions[name];
-          }
-        }, `Delete user: ${name}`);
+        const affectedPuzzleIds = await deleteUser(env.DB, name);
 
         // Each puzzle's Durable Object holds its own separate live copy —
         // without this, a puzzle whose room later persists again (e.g. from
         // an unrelated player's next keystroke) would silently resurrect
-        // the deleted user's session data right back into data.json.
+        // the deleted user's session data right back into D1.
         await Promise.all(
           affectedPuzzleIds.map(async (puzzleId) => {
             const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
@@ -7048,7 +7027,7 @@ export default {
                 headers: { "Content-Type": "application/json" },
               });
             } catch (e) {
-              // Best-effort — data.json is already the source of truth and
+              // Best-effort — D1 is already the source of truth and
               // is already correct; a room that fails to scrub just risks
               // re-committing stale data if it happens to persist again.
             }
@@ -7068,9 +7047,7 @@ export default {
       if (!puzzleId) return json({ error: "invalid payload" }, 400, cors);
 
       try {
-        await commitMutation(env, (data) => {
-          delete data.puzzles[puzzleId];
-        }, `Delete puzzle: ${puzzleId}`);
+        await deletePuzzle(env.DB, puzzleId);
         // Also clear the DO's own live copy and kick anyone still connected,
         // otherwise it keeps serving (and re-committing) the deleted puzzle.
         const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
@@ -7096,9 +7073,7 @@ export default {
       }
 
       try {
-        await commitMutation(env, (data) => {
-          data.puzzles[puzzle.id] = puzzle;
-        }, `Create puzzle: ${puzzle.title}`);
+        await upsertPuzzle(env.DB, puzzle);
         // Seed the live room so the creator's first connect has state immediately.
         const roomId = env.PUZZLE_ROOM.idFromName(puzzle.id);
         const stub = env.PUZZLE_ROOM.get(roomId);
@@ -7121,12 +7096,7 @@ export default {
       if (!puzzleId || !user) return json({ error: "invalid payload" }, 400, cors);
 
       try {
-        await commitMutation(env, (data) => {
-          const puzzle = data.puzzles[puzzleId];
-          if (!puzzle) throw new Error("puzzle not found");
-          if (!puzzle.players.includes(user)) puzzle.players.push(user);
-          if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
-        }, `Join puzzle: ${user} -> ${puzzleId}`);
+        await joinPuzzle(env.DB, puzzleId, user);
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -7143,14 +7113,11 @@ export default {
       let forkedPuzzle;
       let created = false;
       try {
-        await commitMutation(env, (data) => {
-          const source = data.puzzles[sourceId];
-          if (!source) throw new Error("puzzle not found");
-          const id = `${sourceId}-priv-${slugify(user)}`;
-          if (data.puzzles[id]) {
-            forkedPuzzle = data.puzzles[id];
-            return;
-          }
+        const source = await getPuzzle(env.DB, sourceId);
+        if (!source) throw new Error("puzzle not found");
+        const id = `${sourceId}-priv-${slugify(user)}`;
+        forkedPuzzle = await getPuzzle(env.DB, id);
+        if (!forkedPuzzle) {
           created = true;
           forkedPuzzle = {
             id,
@@ -7173,13 +7140,12 @@ export default {
             totalTimeMs: 0,
             highlights: [],
           };
-          data.puzzles[id] = forkedPuzzle;
-        }, `Fork puzzle: ${sourceId} -> ${user}`);
+          await upsertPuzzle(env.DB, forkedPuzzle);
+        }
 
         if (created) {
           // Only seed a brand-new fork's room — re-seeding an existing fork
-          // would clobber its live in-progress DO state with this stale
-          // data.json snapshot (persist() only writes back every 15s).
+          // would clobber its live in-progress DO state with this D1 snapshot.
           const roomId = env.PUZZLE_ROOM.idFromName(forkedPuzzle.id);
           const stub = env.PUZZLE_ROOM.get(roomId);
           await stub.fetch("https://internal/seed", {
@@ -7201,18 +7167,17 @@ export default {
       if (!puzzleId) return json({ error: "invalid payload" }, 400, cors);
 
       try {
-        await commitMutation(env, (data) => {
-          const puzzle = data.puzzles[puzzleId];
-          if (!puzzle) throw new Error("puzzle not found");
-          puzzle.cells = cells;
-          puzzle.sessions = sessions;
-          puzzle.totalTimeMs = totalTimeMs;
-          if (completed && !puzzle.completedAt) {
-            puzzle.completedAt = new Date().toISOString();
-            puzzle.state = "completed";
-            puzzle.highlights = computeHighlights(puzzle);
-          }
-        }, `Snapshot puzzle: ${puzzleId}${completed ? " (completed)" : ""}`);
+        const puzzle = await getPuzzle(env.DB, puzzleId);
+        if (!puzzle) throw new Error("puzzle not found");
+        puzzle.cells = cells;
+        puzzle.sessions = sessions;
+        puzzle.totalTimeMs = totalTimeMs;
+        if (completed && !puzzle.completedAt) {
+          puzzle.completedAt = new Date().toISOString();
+          puzzle.state = "completed";
+          puzzle.highlights = computeHighlights(puzzle);
+        }
+        await upsertPuzzle(env.DB, puzzle);
         return json({ ok: true }, 200, cors);
       } catch (e) {
         return json({ error: e.message }, 502, cors);
@@ -7249,8 +7214,20 @@ export class PuzzleRoom {
 
     if (url.pathname === "/seed" && request.method === "POST") {
       const puzzle = await request.json();
+      this.deleted = false;
       await this.state.storage.put("puzzle", puzzle);
       this.puzzle = puzzle;
+      return new Response("ok");
+    }
+
+    if (url.pathname === "/seed-if-empty" && request.method === "POST") {
+      await this.loadPuzzle();
+      if (!this.puzzle) {
+        const puzzle = await request.json();
+        this.deleted = false;
+        await this.state.storage.put("puzzle", puzzle);
+        this.puzzle = puzzle;
+      }
       return new Response("ok");
     }
 
@@ -7267,9 +7244,9 @@ export class PuzzleRoom {
     }
 
     // Internal — called by /delete-user so a deleted account's data doesn't
-    // get silently resurrected into data.json the next time this room
+    // get silently resurrected into D1 the next time this room
     // persists (it holds its own separate live copy in durable storage;
-    // deleting from data.json alone doesn't touch that).
+    // deleting from D1 alone doesn't touch that).
     if (url.pathname === "/scrub-user" && request.method === "POST") {
       const { user: scrubUser } = await request.json();
       await this.loadPuzzle();
@@ -7292,7 +7269,7 @@ export class PuzzleRoom {
     server.accept();
     await this.loadPuzzle();
 
-    // /join-puzzle (a plain REST call) only ever updates GitHub's data.json
+    // /join-puzzle (a plain REST call) only updates D1
     // — it never reaches this Durable Object, which holds its own separate
     // live copy of the puzzle in durable storage. Without this, a player
     // who joined but wasn't the original creator would never appear in
@@ -7429,12 +7406,11 @@ export class PuzzleRoom {
 
   async persist(completed) {
     // A message that arrived just before/during deletion must not resurrect
-    // the puzzle in storage or re-commit it to data.json.
+    // the puzzle in storage or snapshot it to D1.
     if (this.deleted || !this.puzzle) return;
     await this.state.storage.put("puzzle", this.puzzle);
     const now = Date.now();
-    // Snapshot to GitHub on completion always; otherwise throttle to avoid
-    // hammering the GitHub API on every keystroke from every player.
+    // Snapshot to D1 on completion always; otherwise throttle writes.
     if (completed || now - this.lastPersist > 15000) {
       this.lastPersist = now;
       await this.commitSnapshot(completed);
@@ -7442,21 +7418,19 @@ export class PuzzleRoom {
   }
 
   async commitSnapshot(completed) {
-    // The DO has the same env bindings/secrets as the parent Worker, so it
-    // commits directly rather than round-tripping through the Worker's fetch.
-    await commitMutation(this.env, (data) => {
-      const puzzle = data.puzzles[this.puzzle.id];
-      if (!puzzle) return;
-      puzzle.cells = this.puzzle.cells;
-      puzzle.sessions = this.puzzle.sessions;
-      puzzle.totalTimeMs = this.puzzle.totalTimeMs;
-      if (completed && !puzzle.completedAt) {
-        puzzle.completedAt = new Date().toISOString();
-        puzzle.state = "completed";
-        puzzle.grid = this.puzzle.grid;
-        puzzle.highlights = computeHighlights(puzzle);
-      }
-    }, `Snapshot puzzle: ${this.puzzle.id}${completed ? " (completed)" : ""}`);
+    const puzzle = await getPuzzle(this.env.DB, this.puzzle.id);
+    if (!puzzle) return;
+    puzzle.cells = this.puzzle.cells;
+    puzzle.sessions = this.puzzle.sessions;
+    puzzle.players = this.puzzle.players;
+    puzzle.totalTimeMs = this.puzzle.totalTimeMs;
+    if (completed && !puzzle.completedAt) {
+      puzzle.completedAt = new Date().toISOString();
+      puzzle.state = "completed";
+      puzzle.grid = this.puzzle.grid;
+      puzzle.highlights = computeHighlights(puzzle);
+    }
+    await upsertPuzzle(this.env.DB, puzzle);
   }
 }
 
@@ -7567,77 +7541,144 @@ function json(obj, status, cors) {
   });
 }
 
-async function ghHeaders(env) {
-  return {
-    Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-    "User-Agent": "across-worker",
-  };
-}
-
-function decodeBase64Utf8(b64) {
-  const binary = atob(b64.replace(/\n/g, ""));
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  return new TextDecoder("utf-8").decode(bytes);
-}
-
-function encodeBase64Utf8(str) {
-  const bytes = new TextEncoder().encode(str);
-  let binary = "";
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return btoa(binary);
-}
-
-async function fetchGithubFile(env) {
-  const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/contents/data.json?ref=${encodeURIComponent(env.GH_BRANCH || "main")}`;
-  const res = await fetch(url, { headers: await ghHeaders(env) });
-  if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
-  const fileJson = await res.json();
-  let data;
+function parseJson(value, fallback) {
   try {
-    data = JSON.parse(decodeBase64Utf8(fileJson.content));
+    return JSON.parse(value);
   } catch (e) {
-    data = { users: {}, puzzles: {} };
+    return fallback;
   }
-  if (!data.users || typeof data.users !== "object") data.users = {};
-  if (!data.puzzles || typeof data.puzzles !== "object") data.puzzles = {};
-  return { data, sha: fileJson.sha };
 }
 
-async function putGithubFile(env, data, sha, message) {
-  const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/contents/data.json`;
-  const body = {
-    message,
-    content: encodeBase64Utf8(JSON.stringify(data, null, 2)),
-    sha,
-    branch: env.GH_BRANCH || "main",
+function userFromRow(row) {
+  return {
+    hue: row.hue,
+    createdAt: row.created_at,
+    settings: parseJson(row.settings_json, { push: true, sound: true, haptic: true }),
   };
-  const res = await fetch(url, {
-    method: "PUT",
-    headers: { ...(await ghHeaders(env)), "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`GitHub write failed (${res.status}): ${text.slice(0, 200)}`);
-  }
 }
 
-// Re-fetches immediately before writing (and retries a few times) so
-// concurrent writes (two puzzles finishing, a create + a join) don't
-// clobber each other's `sha` — same pattern as Bonanza's commitMutation.
-async function commitMutation(env, mutate, message, attempts = 4) {
-  let lastErr;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      const { data, sha } = await fetchGithubFile(env);
-      mutate(data);
-      await putGithubFile(env, data, sha, message);
-      return;
-    } catch (e) {
-      lastErr = e;
-      await new Promise((r) => setTimeout(r, 250 * (i + 1)));
-    }
+function puzzleFromRow(row) {
+  return parseJson(row.payload_json, null);
+}
+
+async function loadData(db) {
+  const [userResult, puzzleResult] = await db.batch([
+    db.prepare("SELECT name, hue, created_at, settings_json FROM users ORDER BY rowid"),
+    db.prepare("SELECT payload_json FROM puzzles ORDER BY rowid"),
+  ]);
+  const users = {};
+  const puzzles = {};
+  for (const row of userResult.results || []) users[row.name] = userFromRow(row);
+  for (const row of puzzleResult.results || []) {
+    const puzzle = puzzleFromRow(row);
+    if (puzzle?.id) puzzles[puzzle.id] = puzzle;
   }
-  throw lastErr;
+  return { users, puzzles };
+}
+
+async function registerUser(db, name) {
+  const existing = await db.prepare(
+    "SELECT name, hue, created_at, settings_json FROM users WHERE name = ?"
+  ).bind(name).first();
+  if (existing) return userFromRow(existing);
+
+  const count = Number(await db.prepare("SELECT COUNT(*) AS count FROM users").first("count")) || 0;
+  const createdAt = new Date().toISOString();
+  const settings = { push: true, sound: true, haptic: true };
+  await db.prepare(
+    "INSERT OR IGNORE INTO users (name, hue, created_at, settings_json, updated_at) VALUES (?, ?, ?, ?, ?)"
+  ).bind(name, PLAYER_HUES[count % PLAYER_HUES.length], createdAt, JSON.stringify(settings), createdAt).run();
+  const row = await db.prepare(
+    "SELECT name, hue, created_at, settings_json FROM users WHERE name = ?"
+  ).bind(name).first();
+  if (!row) throw new Error("user insert failed");
+  return userFromRow(row);
+}
+
+async function updateUserColor(db, name, hue) {
+  await db.prepare("UPDATE users SET hue = ?, updated_at = ? WHERE name = ?")
+    .bind(hue, new Date().toISOString(), name).run();
+}
+
+async function getPuzzle(db, puzzleId) {
+  const row = await db.prepare("SELECT payload_json FROM puzzles WHERE id = ?").bind(puzzleId).first();
+  return row ? puzzleFromRow(row) : null;
+}
+
+function puzzleUpsertStatement(db, puzzle) {
+  const now = new Date().toISOString();
+  return db.prepare(`
+    INSERT INTO puzzles (
+      id, title, description, keywords_json, size, difficulty, visibility,
+      created_by, created_at, state, completed_at, fork_of, forked_by,
+      payload_json, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      title = excluded.title,
+      description = excluded.description,
+      keywords_json = excluded.keywords_json,
+      size = excluded.size,
+      difficulty = excluded.difficulty,
+      visibility = excluded.visibility,
+      created_by = excluded.created_by,
+      created_at = excluded.created_at,
+      state = excluded.state,
+      completed_at = excluded.completed_at,
+      fork_of = excluded.fork_of,
+      forked_by = excluded.forked_by,
+      payload_json = excluded.payload_json,
+      updated_at = excluded.updated_at
+  `).bind(
+    puzzle.id,
+    puzzle.title || "",
+    puzzle.description || "",
+    JSON.stringify(puzzle.keywords || []),
+    puzzle.size || "standard",
+    puzzle.difficulty || "medium",
+    puzzle.visibility || "open",
+    puzzle.createdBy || "",
+    puzzle.createdAt || now,
+    puzzle.state || "open",
+    puzzle.completedAt || null,
+    puzzle.forkOf || null,
+    puzzle.forkedBy || null,
+    JSON.stringify(puzzle),
+    now
+  );
+}
+
+async function upsertPuzzle(db, puzzle) {
+  await puzzleUpsertStatement(db, puzzle).run();
+}
+
+async function joinPuzzle(db, puzzleId, user) {
+  const puzzle = await getPuzzle(db, puzzleId);
+  if (!puzzle) throw new Error("puzzle not found");
+  if (!Array.isArray(puzzle.players)) puzzle.players = [];
+  if (!puzzle.players.includes(user)) puzzle.players.push(user);
+  if (!puzzle.sessions || typeof puzzle.sessions !== "object") puzzle.sessions = {};
+  if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
+  await upsertPuzzle(db, puzzle);
+}
+
+async function deletePuzzle(db, puzzleId) {
+  await db.prepare("DELETE FROM puzzles WHERE id = ?").bind(puzzleId).run();
+}
+
+async function deleteUser(db, name) {
+  const rows = await db.prepare("SELECT payload_json FROM puzzles").all();
+  const affectedPuzzleIds = [];
+  const statements = [db.prepare("DELETE FROM users WHERE name = ?").bind(name)];
+  for (const row of rows.results || []) {
+    const puzzle = puzzleFromRow(row);
+    if (!puzzle) continue;
+    const hadUser = (puzzle.players || []).includes(name) || (puzzle.sessions && name in puzzle.sessions);
+    if (!hadUser) continue;
+    affectedPuzzleIds.push(puzzle.id);
+    puzzle.players = (puzzle.players || []).filter((player) => player !== name);
+    if (puzzle.sessions) delete puzzle.sessions[name];
+    statements.push(puzzleUpsertStatement(db, puzzle));
+  }
+  await db.batch(statements);
+  return affectedPuzzleIds;
 }

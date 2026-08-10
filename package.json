@@ -5,6 +5,9 @@
   "description": "No build step — this file exists so Node treats the app's .js files as ES modules for local scripts (static server, corpus build).",
   "scripts": {
     "serve": "node scripts/static-server.cjs",
+    "bundle-worker": "node scripts/bundle-worker.cjs",
+    "test": "node --test tests/*.test.mjs",
+    "validate-worker": "node scripts/validate-worker.mjs",
     "build-corpus": "node scripts/build-corpus.js",
     "icons": "node scripts/generate-icons.cjs"
   }

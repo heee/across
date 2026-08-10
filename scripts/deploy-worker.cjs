@@ -11,14 +11,18 @@
 //   node scripts/deploy-worker.cjs
 //
 // Required env vars:
-//   CF_API_TOKEN     Cloudflare API token with "Workers Scripts: Edit" permission
+//   CF_API_TOKEN (or CLOUDFLARE_API_TOKEN)
+//                    Cloudflare API token with "Workers Scripts: Edit" permission
 //                     (create at https://dash.cloudflare.com/profile/api-tokens)
-//   CF_ACCOUNT_ID     Your Cloudflare account ID (Workers & Pages overview page,
+//   CF_ACCOUNT_ID (or CLOUDFLARE_ACCOUNT_ID)
+//                    Your Cloudflare account ID (Workers & Pages overview page,
 //                     right-hand sidebar)
 //   CF_WORKER_NAME    The Worker's name, e.g. "across-worker" (must already exist —
 //                     create it once via the dashboard's "Create Worker" button first)
-//   GH_OWNER, GH_REPO, GH_BRANCH, ALLOWED_ORIGIN, GITHUB_TOKEN, APP_KEY
-//                     Same values described in the README's Worker setup section.
+//   CF_D1_DATABASE_ID  D1 database UUID created/imported by migrate-data-to-d1.cjs
+// Existing ALLOWED_ORIGIN and APP_KEY bindings are inherited from the deployed
+// Worker, so their values do not need to be exposed to this process.
+// Optional: WRITE_DISABLED=1 deploys a read-only maintenance gate for cutover.
 //
 // Re-running this is safe — Cloudflare treats a migration with the same tag
 // as already-applied and skips re-creating the class.
@@ -35,17 +39,32 @@ function requireEnv(name) {
   return v;
 }
 
+function requireEither(primary, alias) {
+  const value = process.env[primary] || process.env[alias];
+  if (!value) {
+    console.error(`Missing required environment variable: ${primary} (or ${alias})`);
+    process.exit(1);
+  }
+  return value;
+}
+
 async function main() {
-  const apiToken = requireEnv("CF_API_TOKEN");
-  const accountId = requireEnv("CF_ACCOUNT_ID");
+  const apiToken = requireEither("CF_API_TOKEN", "CLOUDFLARE_API_TOKEN");
+  const accountId = requireEither("CF_ACCOUNT_ID", "CLOUDFLARE_ACCOUNT_ID");
   const workerName = process.env.CF_WORKER_NAME || "across-worker";
 
-  const ghOwner = requireEnv("GH_OWNER");
-  const ghRepo = requireEnv("GH_REPO");
-  const ghBranch = process.env.GH_BRANCH || "main";
-  const allowedOrigin = requireEnv("ALLOWED_ORIGIN");
-  const githubToken = requireEnv("GITHUB_TOKEN");
-  const appKey = requireEnv("APP_KEY");
+  const databaseId = requireEnv("CF_D1_DATABASE_ID");
+
+  const settingsUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${workerName}/settings`;
+  const settingsRes = await fetch(settingsUrl, { headers: { Authorization: `Bearer ${apiToken}` } });
+  const settingsJson = await settingsRes.json();
+  if (!settingsRes.ok || !settingsJson.success) {
+    throw new Error(`Could not read existing Worker settings: ${JSON.stringify(settingsJson.errors || settingsJson)}`);
+  }
+  const existingBindingNames = new Set((settingsJson.result?.bindings || []).map((binding) => binding.name));
+  for (const name of ["ALLOWED_ORIGIN", "APP_KEY"]) {
+    if (!existingBindingNames.has(name)) throw new Error(`Existing Worker is missing required binding: ${name}`);
+  }
 
   const bundlePath = path.join(__dirname, "..", "worker", "dist", "bundle.js");
   if (!fs.existsSync(bundlePath)) {
@@ -56,17 +75,18 @@ async function main() {
 
   const metadata = {
     main_module: "bundle.js",
-    compatibility_date: "2026-01-01",
+    compatibility_date: "2026-08-09",
     bindings: [
-      { type: "plain_text", name: "GH_OWNER", text: ghOwner },
-      { type: "plain_text", name: "GH_REPO", text: ghRepo },
-      { type: "plain_text", name: "GH_BRANCH", text: ghBranch },
-      { type: "plain_text", name: "ALLOWED_ORIGIN", text: allowedOrigin },
-      { type: "secret_text", name: "GITHUB_TOKEN", text: githubToken },
-      { type: "secret_text", name: "APP_KEY", text: appKey },
+      { type: "d1", name: "DB", id: databaseId },
+      { type: "inherit", name: "ALLOWED_ORIGIN" },
+      { type: "inherit", name: "APP_KEY" },
       { type: "durable_object_namespace", name: "PUZZLE_ROOM", class_name: "PuzzleRoom" },
     ],
   };
+
+  if (process.env.WRITE_DISABLED === "1") {
+    metadata.bindings.push({ type: "plain_text", name: "WRITE_DISABLED", text: "1" });
+  }
 
   // The migration that creates the PuzzleRoom class only needs to run once —
   // Cloudflare rejects re-declaring new_sqlite_classes for a class that
@@ -81,7 +101,7 @@ async function main() {
   form.set("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
   form.set("bundle.js", new Blob([scriptContent], { type: "application/javascript+module" }), "bundle.js");
 
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${workerName}`;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${workerName}?bindings_inherit=strict`;
   const res = await fetch(url, {
     method: "PUT",
     headers: { Authorization: `Bearer ${apiToken}` },

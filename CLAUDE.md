@@ -3,7 +3,7 @@
 - **Minimize dialogue.** Keep responses terse — critical messages and summaries only, no play-by-play narration.
 - Worker (`worker/index.js`) redeploys are manual: paste into Cloudflare dashboard Quick Edit. No wrangler (Windows ARM64 has no `workerd` build) — see README for the one-time dashboard-based Durable Object binding step, which has no Quick-Edit equivalent and must be redone by hand if the DO class name ever changes.
 - Before any preview check: unregister service workers + clear caches, then reload.
-- Before `git push`: `git fetch` + check `origin/main` for new commits (the live app writes real gameplay data straight to `data.json` via the Worker, independent of this working tree) — merge if needed.
+- Before `git push`: `git fetch` + check `origin/main` for new commits — merge if needed. Live gameplay data is stored in D1 and no longer changes this working tree.
 - **Push finished work straight to `origin/main` by default** — don't wait for an explicit "push" instruction each time. Still do the fetch/merge safety check above first, and still call out any manual step the user has to do themselves (e.g. the Worker dashboard paste-deploy).
 - Bump `sw.js`'s `CACHE_NAME` on every shipped change.
 - Root scripts are ESM (`package.json` has `"type": "module"`); the older CommonJS scripts are `.cjs`.

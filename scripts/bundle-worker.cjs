@@ -23,6 +23,7 @@ function stripModuleSyntax(src, { keepDefaultExport = false, keepClassExport = f
     .join("\n")
     .replace(/^export const /gm, "const ")
     .replace(/^export function /gm, "function ")
+    .replace(/^export \{[^}]+\};?$/gm, "")
     .replace(keepDefaultExport ? /\0/ : /^export default /gm, keepDefaultExport ? "$&" : "const __worker_default__ = ")
     .replace(keepClassExport ? /\0/ : /^export class /gm, keepClassExport ? "$&" : "class ");
 }
@@ -39,6 +40,7 @@ const index = stripModuleSyntax(fs.readFileSync(path.join(workerDir, "index.js")
 const banner = `// AUTO-GENERATED — do not edit directly.\n// Source: worker/corpus.js + worker/generator.js + worker/index.js\n// Regenerate with: node scripts/bundle-worker.cjs\n\n`;
 
 fs.mkdirSync(distDir, { recursive: true });
-fs.writeFileSync(path.join(distDir, "bundle.js"), banner + corpus + "\n\n" + generator + "\n\n" + index, "utf8");
+const bundle = banner + corpus + "\n\n" + generator + "\n\n" + index;
+fs.writeFileSync(path.join(distDir, "bundle.js"), `${bundle.trimEnd()}\n`, "utf8");
 
 console.log("Wrote worker/dist/bundle.js");

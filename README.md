@@ -1,198 +1,121 @@
 # Across 🧩
 
 A mobile-first PWA for solving crosswords together with 2–8 friends in real
-time. Same philosophy as Boys Pushup Bonanza: no build step, no framework,
-GitHub Pages for the static front-end, a Cloudflare Worker holding the one
-GitHub credential server-side. The one new piece Bonanza didn't need: a
-Cloudflare **Durable Object** holding live in-progress grid state, so
-letters typed by one player show up on everyone else's screen in well under
-a second — a plain commit-to-GitHub-per-write pattern is far too slow for
-that.
+time. GitHub Pages serves the static app. A Cloudflare Worker provides the API,
+D1 stores durable users and puzzle snapshots, and one `PuzzleRoom` Durable
+Object per puzzle coordinates live WebSocket play.
 
-Everything the front-end needs is static: `index.html` + `style.css` +
-`app.js`, plus `manifest.json` and `sw.js` for installing it as a PWA.
-`worker/` holds the Worker code — REST endpoints, the puzzle generator, and
-the `PuzzleRoom` Durable Object class.
+## Local front end
 
----
-
-## 1. Try it locally first (no Cloudflare/GitHub needed yet)
-
-The app runs entirely client-side against a localStorage + BroadcastChannel
-mock backend whenever `config.js` still has its placeholder `WORKER_URL` —
-this is what's active out of the box. Open two browser tabs on the same
-puzzle and typed letters sync between them live, same as the real thing
-will, just scoped to one browser instead of the internet.
+When `config.js` still has its placeholder `WORKER_URL`, the app uses a
+localStorage + BroadcastChannel mock backend.
 
 ```bash
 npm run serve
 ```
 
-Then open `http://localhost:8080`. Pick a name (or add one), create a
-puzzle, open it in a second tab to see live sync.
+Open `http://localhost:8080`. Before any preview check, unregister service
+workers, clear caches, and reload so the previous app shell cannot mask edits.
 
-**Before checking any change**, per this repo's own convention below:
-unregister service workers and clear caches, or you'll be debugging a
-stale cached copy instead of your actual edit (DevTools → Application →
-Service Workers → Unregister, and Clear storage).
+## Durable data model
 
-## 2. Create the GitHub repo and seed `data.json`
+`migrations/0001_initial.sql` creates:
 
-1. Create a new GitHub repository (public or private both work), e.g. `across`.
-2. Push all the files in this project to it.
-3. Add a `data.json` file at the repo root with exactly:
-   ```json
-   { "users": {}, "puzzles": {} }
-   ```
-   This is the shared database — the Worker reads/writes it via the GitHub
-   Contents API, same as Bonanza's `data.json`.
+- `users`, with stable global hue, creation time, and settings;
+- `puzzles`, with indexed discovery metadata and the complete evolving puzzle
+  payload in `payload_json`.
 
-## 3. Generate one fine-grained GitHub token (you only, one time)
+`GET /data` reconstructs the original `{ users: {}, puzzles: {} }` response, so
+the client API shape is unchanged. Durable Objects still persist their live
+room state locally for fast recovery and snapshot it into the matching D1 row
+every 15 seconds and on completion. Revealed cells remain unattributed and
+excluded from stats; Auto Check remains a per-player, per-puzzle half-weight
+flag; player hue is assigned only on first-ever registration.
 
-Same as Bonanza: **Settings → Developer settings → Personal access tokens →
-Fine-grained tokens**. Repository access: only the `across` repo.
-Permissions: **Contents: Read and write**. Set an expiration and note it
-to renew later. Copy the token — you'll paste it into the Worker next.
+## First D1 import
 
-## 4. Deploy the Cloudflare Worker + Durable Object
+The migration tool uses the Cloudflare HTTPS API, so it works on Windows ARM64
+without Wrangler. Create a final JSON snapshot from the existing production
+source and keep it outside the repository after migration.
 
-This project has **two ways to do this** — pick whichever applies to you.
+Set:
 
-### Option A — Cloudflare MCP (if you set it up)
+- `CF_API_TOKEN` (or `CLOUDFLARE_API_TOKEN`) — token with D1 Edit permission;
+- `CF_ACCOUNT_ID` (or `CLOUDFLARE_ACCOUNT_ID`) — Cloudflare account ID;
+- optionally `CF_D1_DATABASE_ID`; otherwise `CF_D1_DATABASE_NAME` defaults to
+  `across` and the script finds or creates it.
 
-If you installed the Cloudflare MCP plugin (`claude plugin install
-cloudflare@cloudflare` + `/reload-plugins`, with a one-time OAuth login),
-Claude can create the Worker, push `worker/index.js` (or the bundled
-`worker/dist/bundle.js`), and configure the `PUZZLE_ROOM` Durable Object
-binding directly through that connection — no dashboard clicking required.
-Ask Claude to deploy once you're ready; it'll walk you through anything
-that still needs your direct approval (e.g. the OAuth consent itself).
+Then run:
 
-### Option B — Cloudflare dashboard, by hand
+```bash
+node scripts/migrate-data-to-d1.cjs C:\path\to\final-data.json
+```
 
-This is the same "no wrangler" path Bonanza uses, since `wrangler`/`workerd`
-still has no Windows-ARM64 build (confirmed — `npm install wrangler` fails
-outright on this kind of machine, not just `wrangler dev`).
+The import is idempotent: users and puzzles are upserted, then every source
+record is read back and compared by canonical SHA-256 digest. Key sets must
+also match. Use `--verify-only` for a read-only audit. Use `--prune` only when
+the destination must exactly mirror deletions in the source.
 
-1. Sign in at <https://dash.cloudflare.com> (free plan is enough).
-2. **Workers & Pages → Create → Create Worker.** Name it e.g. `across-worker`,
-   deploy the default template first, then open **Edit code**.
-3. If your dashboard's code editor supports multiple files (the modern
-   "Edit code" view generally does): create `corpus.js`, `generator.js`,
-   and `index.js` matching this repo's `worker/` folder, paste each file's
-   contents in, and deploy. **If it's the older single-file Quick Edit**
-   instead, run `node scripts/bundle-worker.cjs` and paste the single
-   resulting `worker/dist/bundle.js` instead — same code, pre-flattened.
-4. **Settings → Variables and Secrets**, add:
-   - `GH_OWNER` (var) — your GitHub username/org
-   - `GH_REPO` (var) — `across`
-   - `GH_BRANCH` (var) — `main`
-   - `ALLOWED_ORIGIN` (var) — your GitHub Pages URL, e.g. `https://<owner>.github.io`
-   - `GITHUB_TOKEN` (**secret**) — the fine-grained token from step 3
-   - `APP_KEY` (**secret**) — any random string; paste the same string into `config.js` next
-5. **Settings → Bindings → Add → Durable Object.** This is the one
-   dashboard-only step with no Quick-Edit equivalent — binding name
-   `PUZZLE_ROOM`, class name `PuzzleRoom`. The dashboard handles the
-   storage migration automatically the first time you do this.
-6. Note the Worker's URL from its overview page
-   (`https://across-worker.<subdomain>.workers.dev`).
-7. Edit `config.js` in this repo:
-   ```js
-   const WORKER_URL = "https://across-worker.<subdomain>.workers.dev";
-   const APP_KEY = "<the same random string from step 4>";
-   ```
-   Commit and push — the app switches out of local-mock mode automatically
-   once `WORKER_URL` no longer contains the placeholder text.
+The script prints the database UUID. Set that as `CF_D1_DATABASE_ID` for Worker
+deployment.
 
-> **On `APP_KEY`:** same caveat as Bonanza — it's visible in public client
-> source, so it's a speed bump against casual poking at your Worker URL,
-> not real security. `GITHUB_TOKEN` is the actual secret and never leaves
-> the Worker.
+## Safe production cutover
 
-## 5. Deploy to GitHub Pages
+1. Export the current GitHub `data.json` and run the initial D1 import.
+2. Build and deploy with `WRITE_DISABLED=1`. `GET /data` stays available, but
+   POST mutations and WebSocket connects return `503 maintenance`.
+3. Export GitHub `data.json` again, rerun the D1 import, and confirm the
+   record-by-record verification passes.
+4. Deploy again without `WRITE_DISABLED`, then smoke-test `GET /data`, user
+   registration, puzzle join/create, WebSocket updates, and persistence.
+5. Remove the obsolete GitHub Worker variables/secrets if the upload did not
+   already replace them. The repository no longer contains an active
+   `data.json`; Git history is the rollback copy.
 
-Same as Bonanza: **Settings → Pages → Deploy from a branch → main → / (root)**.
-No build step — any push redeploys.
+The maintenance gate is intentionally an explicit Worker binding. Omitting it
+restores writes.
 
-## 6. Add it to your phone
+## Build and deploy the Worker
 
-Open the Pages URL in **Safari** on iPhone (must be Safari for the PWA
-install to work) → Share icon → **Add to Home Screen**. Launches fullscreen,
-Wake Lock keeps the screen on during a session.
+Generate the single-file dashboard/API bundle and validate it:
 
----
+```bash
+npm run bundle-worker
+npm test
+npm run validate-worker
+```
 
-## How the shared data + realtime sync works
+Set these deployment variables:
 
-- **Durable, cross-session data** (users, puzzle metadata, final grids,
-  completion stats) lives in `data.json` in GitHub, written through the
-  Worker's REST endpoints using the same fetch-fresh-sha/retry pattern as
-  Bonanza's `commitMutation` — so two things finishing at once (two puzzles
-  completing, a join + a create) don't clobber each other.
-- **Live in-progress grid state** (the actual letter-by-letter typing) never
-  touches GitHub directly. Each active puzzle gets one `PuzzleRoom` Durable
-  Object instance; players connect to it over WebSocket, and every cell
-  update broadcasts to everyone else's socket in real time. The DO
-  periodically (and always on completion) snapshots its state back into
-  `data.json` via the Worker's GitHub-commit helpers, so a finished puzzle
-  is durably recorded even though the play-by-play wasn't.
-- If a client disconnects mid-puzzle, reconnecting re-fetches the DO's
-  current state — nothing is lost, since the DO's own storage (not just
-  in-memory) is the source of truth while a puzzle is active.
+- `CF_API_TOKEN` (or `CLOUDFLARE_API_TOKEN`) — Workers Scripts Edit permission;
+- `CF_ACCOUNT_ID` (or `CLOUDFLARE_ACCOUNT_ID`);
+- `CF_WORKER_NAME` — defaults to `across-worker`;
+- `CF_D1_DATABASE_ID`;
 
-## Puzzle generation
+The deploy script reads the current Worker settings and strictly inherits its
+existing `ALLOWED_ORIGIN` and secret `APP_KEY` bindings; their values do not
+need to be supplied locally. It replaces the obsolete GitHub bindings.
 
-`worker/corpus.js` is a **hand-authored** word/clue bank (a few hundred
-entries across Geography, Movies, History, Sports, Science, Food, Kids, and
-general fill words) — written from scratch rather than pulled from a
-published/scraped crossword corpus, to avoid redistributing someone else's
-copyrighted clue text. `worker/generator.js` runs a real constraint-based
-interlocking fill (place the longest word, then greedily place further
-words at valid intersections, crop to the used bounding box, number per
-standard crossword convention) constrained by the requested keywords, size,
-and difficulty.
+Then run `node scripts/deploy-worker.cjs`. The upload binds D1 as `DB` and the
+existing Durable Object namespace as `PUZZLE_ROOM`. Set
+`CF_APPLY_MIGRATION=1` only for the first deployment of the `PuzzleRoom` class,
+not for this D1 migration. The D1 schema is applied by the import script.
 
-This is **v1-quality, not NYT-quality**: grids are sparser than a proper
-symmetric-block-pattern constructor would produce, and the corpus is small
-enough that repeat plays will start recognizing words. Two natural
-follow-ups once real usage shows where it pinches:
-- Grow `corpus.js`, or swap in a larger licensed word/clue dataset.
-- Replace the greedy fill with proper backtracking against a symmetric
-  block template for denser, more traditional-looking grids.
+The dashboard Quick Edit alternative is to paste `worker/dist/bundle.js`, then
+manually configure the `DB` D1 binding and `PUZZLE_ROOM` Durable Object binding.
+Quick Edit cannot create the Durable Object binding itself.
 
-## Scoring rules (in case they're surprising)
+## Static deployment and install
 
-- **Reveal** (Assist → Reveal cell/word/puzzle): revealed letters are
-  attributed to no player and excluded entirely from contribution %,
-  letters-entered, and accuracy stats — reveal is a genuine assist, not a
-  way to inflate your stats.
-- **Auto Check**: a binary per-puzzle-session flag per player. If it was
-  ever on during a given puzzle, that player's entire contribution to that
-  puzzle counts at half weight in Completion's Contribution card and in
-  Rankings.
-- **Player color** (the OKLCH hue used everywhere — tiles, avatars,
-  rankings) is assigned once, globally, the first time a name is ever used
-  on the app. It never changes, and it's the same across every puzzle.
+GitHub Pages deploys from `main` at the repository root; there is no front-end
+build step. On iPhone, open the Pages URL in Safari, use Share → Add to Home
+Screen, and launch the installed PWA.
 
-## Notes & limitations
+## Puzzle generation and current limits
 
-- Identity is name-only, exactly like Bonanza — no password. Fine for a
-  small trusted friend group; someone could type a friend's name on
-  purpose. Not a real auth system.
-- "Private" visibility means invite-link-only (never appears in
-  Search/Discovery); it is not a fixed per-user invite list.
-- All 11 spec'd Rankings metrics are implemented from real per-session data
-  (`METRIC_DEFS` in `app.js`), including the two "lowest is best" ones
-  (reveal usage, auto check usage), which sort ascending instead of
-  descending. "Words completed" only tracks the actively-selected word at
-  the moment it's finished — a crossing word completed by the same
-  keystroke but not currently selected won't count. Players with no
-  relevant activity in a given window/metric are excluded from that list
-  rather than shown at 0%.
-- Create's "Advanced controls" toggle is present but intentionally inert
-  for v1 (per the build plan) — fine-grained grid-size/vocabulary controls
-  are a later phase.
+`worker/corpus.js` is a hand-authored clue bank. `worker/generator.js` performs
+constraint-based interlocking fill based on keywords, size, and difficulty.
+The current constructor favors simplicity over newspaper-style density and
+symmetry. Identity is name-only, and private puzzles are invite-link-only.
 
-## Working conventions
-
-See `CLAUDE.md`.
+See `CLAUDE.md` for repository working conventions.
