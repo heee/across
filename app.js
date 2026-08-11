@@ -8,6 +8,7 @@
 //    It reuses the real generator/corpus modules, so puzzles generated in
 //    local mode are produced by the same algorithm the Worker uses.
 import { hasStartedPuzzle, puzzleParticipantNames, sortPuzzlesByUserActivity } from "./home-order.js";
+import { pickRandomItem, shuffledCopy } from "./create-options.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 const USING_LOCAL_BACKEND = !window.WORKER_URL || window.WORKER_URL.includes("YOUR-SUBDOMAIN");
@@ -1302,9 +1303,12 @@ function openCreate(prefill = {}) {
 
 function renderCreateCategoryList() {
   const select = $("#create-category");
-  populateSelect(select, [["", "Choose a category"], ...SEARCH_CATEGORIES.map((cat) => [cat, cat])], createCategory || "");
+  const categories = shuffledCopy(SEARCH_CATEGORIES);
+  populateSelect(select, [["", "Choose a category"], ...categories.map((cat) => [cat, cat])], createCategory || "");
   select.onchange = () => {
     createCategory = select.value || null;
+    offeredTitles = new Set();
+    offerRandomTitle();
     updateGenerateTitleButton();
   };
 }
@@ -1318,7 +1322,7 @@ function updateGenerateTitleButton() {
 // (which produces obvious dupes within a few taps even from a big list).
 let offeredTitles = new Set();
 
-$("#create-generate-title").addEventListener("click", () => {
+function offerRandomTitle() {
   if (!createCategory) return;
   const ideas = titleIdeasFor(createCategory);
   if (ideas.length === 0) return;
@@ -1328,9 +1332,14 @@ $("#create-generate-title").addEventListener("click", () => {
     offeredTitles = new Set(); // exhausted the pool — start a fresh cycle
     pool = ideas.filter((t) => t !== current);
   }
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const pick = pickRandomItem(pool);
+  if (!pick) return;
   offeredTitles.add(pick);
   $("#create-title").value = pick;
+}
+
+$("#create-generate-title").addEventListener("click", () => {
+  offerRandomTitle();
 });
 
 function renderSegmented(sel, value, onChange) {
