@@ -5,7 +5,14 @@
 // hand-written templates never filled within budget. Prints the winners as
 // JS array literals to paste into generator.js's TEMPLATES.
 import { WORD_BANK } from "../worker/corpus.js";
-import { validateTemplate, extractSlots } from "../worker/generator.js";
+import {
+  buildCandidatePool,
+  buildWordIndex,
+  extractSlots,
+  pruneDomains,
+  runMaintainingArcConsistencyFill,
+  validateTemplate,
+} from "../worker/generator.js";
 
 // Incremental construction: start from the all-white grid (always valid —
 // trivially connected, every run is the full length >=3, full coverage),
@@ -79,19 +86,38 @@ function score(rows, n, poolByLen) {
     tightness += count * Math.pow(Math.max(0, Number(len) - 6), 3) * 0.08;
   }
   const fill = v.whiteCount / (v.whiteCount + v.blockCount);
-  return { fill, tightness, slots: slots.length, byLen };
+  const shortSlots = slots.filter((slot) => slot.length <= 6).length;
+  return { fill, blockCount: v.blockCount, tightness, slots: slots.length, shortRatio: shortSlots / slots.length, byLen };
 }
 
-function findBest(n, blockCount, attempts, wordBank) {
+function findBest(n, blockCount, attempts, wordBank, keep = 40) {
   const poolByLen = maxLenPool(wordBank, n);
-  let best = null;
+  const candidates = new Map();
   for (let i = 0; i < attempts; i++) {
     const rows = randomSymmetricTemplate(n, blockCount);
     const s = score(rows, n, poolByLen);
     if (!s) continue;
-    if (!best || s.tightness < best.s.tightness) best = { rows, s };
+    if (s.fill < 0.8) continue;
+    candidates.set(rows.join("/"), { rows, s });
   }
-  return best;
+  return [...candidates.values()]
+    .sort((a, b) => a.s.tightness - b.s.tightness || b.s.shortRatio - a.s.shortRatio)
+    .slice(0, keep);
+}
+
+function solveGenericMedium(rows, n, wordBank, budgetMs, retries) {
+  const pool = buildCandidatePool(wordBank, [], "", 2, n);
+  const index = buildWordIndex(pool);
+  const slots = extractSlots(rows);
+  const started = Date.now();
+  for (let retry = 0; retry < retries; retry++) {
+    const deadline = Date.now() + budgetMs;
+    const domains = pruneDomains(slots, index, deadline);
+    if (slots.some((slot) => (domains.get(slot.id) || []).length === 0)) continue;
+    const result = runMaintainingArcConsistencyFill(slots, domains, new Set(), deadline, 2);
+    if (result.success) return { solved: true, elapsedMs: Date.now() - started, retries: retry + 1 };
+  }
+  return { solved: false, elapsedMs: Date.now() - started, retries };
 }
 
 const CONFIGS = [
@@ -102,18 +128,28 @@ const CONFIGS = [
   { size: "large", n: 15, blockCounts: [38, 42, 46], perCount: 3000 },
 ];
 
-const requestedSize = process.argv[2];
+const requestedSize = process.argv.find((arg) => !arg.startsWith("--") && arg !== process.argv[0] && arg !== process.argv[1]);
+const solveCandidates = process.argv.includes("--solve");
+const attemptOverride = Number.parseInt(process.env.TEMPLATE_ATTEMPTS || "", 10);
+const solveBudgetMs = Number.parseInt(process.env.TEMPLATE_SOLVE_MS || "1500", 10);
+const solveRetries = Number.parseInt(process.env.TEMPLATE_SOLVE_RETRIES || "2", 10);
+const shortlist = Number.parseInt(process.env.TEMPLATE_SHORTLIST || "40", 10);
 for (const cfg of CONFIGS.filter((item) => !requestedSize || item.size === requestedSize)) {
   console.log(`\n  ${cfg.size}: [`);
   const results = [];
   for (const bc of cfg.blockCounts) {
-    const best = findBest(cfg.n, bc, cfg.perCount, WORD_BANK);
-    if (best) results.push({ bc, ...best });
+    const candidates = findBest(cfg.n, bc, attemptOverride || cfg.perCount, WORD_BANK, shortlist);
+    for (const candidate of candidates) {
+      const solve = solveCandidates
+        ? solveGenericMedium(candidate.rows, cfg.n, WORD_BANK, solveBudgetMs, solveRetries)
+        : { solved: true, elapsedMs: 0, retries: 0 };
+      if (solve.solved) results.push({ bc, ...candidate, solve });
+    }
   }
   results.sort((a, b) => a.s.tightness - b.s.tightness);
   for (const r of results) {
     const fillPct = Math.round(r.s.fill * 100);
-    console.log(`    // blocks=${r.bc} fill=${fillPct}% tightness=${r.s.tightness.toFixed(2)} lens=${JSON.stringify(r.s.byLen)}`);
+    console.log(`    // blocks=${r.s.blockCount} fill=${fillPct}% tightness=${r.s.tightness.toFixed(2)} short=${Math.round(r.s.shortRatio * 100)}% genericMedium=${r.solve.elapsedMs}ms lens=${JSON.stringify(r.s.byLen)}`);
     console.log(`    [${r.rows.map((row) => `"${row}"`).join(", ")}],`);
   }
   console.log(`  ],`);

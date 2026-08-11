@@ -327,7 +327,14 @@ test("creation rejects missing or malformed client grids before persistence", as
     visibility: "private",
     createdBy: "Henning",
   };
-  const env = { APP_KEY: "test-key", DB: db };
+  const env = {
+    APP_KEY: "test-key",
+    DB: db,
+    PUZZLE_ROOM: {
+      idFromName(id) { return id; },
+      get() { return { async fetch() { return new Response("ok"); } }; },
+    },
+  };
 
   const missing = await worker.fetch(new Request("https://worker/create-puzzle", {
     method: "POST",
@@ -342,7 +349,14 @@ test("creation rejects missing or malformed client grids before persistence", as
     body: JSON.stringify({ ...base, grid: { rows: 5, cols: 5, cells: [], words: [] } }),
   }), env);
   assert.equal(malformed.status, 400);
-  assert.equal(db.puzzles.size, 0);
+
+  const valid = await worker.fetch(new Request("https://worker/create-puzzle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
+    body: JSON.stringify({ ...base, grid: validMiniGrid() }),
+  }), env);
+  assert.equal(valid.status, 200);
+  assert.equal(db.puzzles.size, 1);
 });
 
 test("completed replays create distinct linked private attempts without changing the title", async () => {

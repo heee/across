@@ -5,6 +5,7 @@ import {
   SIZE_MAP,
   TEMPLATES,
   buildCandidatePool,
+  buildThemePlans,
   computeLongSlotIds,
   extractSlots,
   generatePuzzle,
@@ -30,6 +31,15 @@ test("every eligible dense template is square, connected, uncropped, and at leas
       assert.equal(validateTemplate(rows).ok, true, `${size} template validity`);
     }
   }
+});
+
+test("standard includes an empirically solvable short-slot template", () => {
+  const flexible = TEMPLATES.standard.find((rows) => {
+    const slots = extractSlots(rows);
+    return slots.every((slot) => slot.length <= 6);
+  });
+  assert.ok(flexible);
+  assert.ok(flexible.join("").replaceAll("#", "").length / 121 >= 0.8);
 });
 
 test("category relevance uses explicit category membership and ignores decorative titles", () => {
@@ -95,4 +105,25 @@ test("the fill solver enforces a 40–60% theme band and mandatory long anchors"
   assert.equal(result.success, true);
   assert.equal(result.assignment.filter((entry) => entry.themed).length / slots.length, 0.4);
   assert.ok([...longIds].filter((id) => result.assignment[id].themed).length >= Math.ceil(longIds.size * 0.5));
+});
+
+test("theme plans use feasible domains and theme at least half of long slots", () => {
+  const slots = extractSlots(TEMPLATES.compact[0]);
+  const domains = new Map(slots.map((slot) => [slot.id, [
+    { word: "B".repeat(slot.length), themed: true },
+    { word: "B".repeat(slot.length), themed: false },
+  ]]));
+  // Make one ordinary slot impossible to use as theme; domain-aware plans
+  // must avoid it rather than wasting a solver attempt on an empty domain.
+  const unavailableId = slots.at(-1).id;
+  domains.set(unavailableId, [{ word: "B".repeat(slots.at(-1).length), themed: false }]);
+  const longIds = computeLongSlotIds(slots);
+  const themedCount = Math.ceil(slots.length * 0.4);
+  const plans = buildThemePlans(slots, longIds, themedCount, domains, 12);
+  assert.ok(plans.length > 0);
+  for (const plan of plans) {
+    assert.equal(plan.size, themedCount);
+    assert.equal(plan.has(unavailableId), false);
+    assert.ok([...longIds].filter((id) => plan.has(id)).length >= Math.ceil(longIds.size * 0.5));
+  }
 });

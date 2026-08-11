@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "kind": "across-corpus-candidate-summary",
+  "createdAt": "2026-08-11T16:29:04.667Z",
+  "endpoint": "/v1/responses",
+  "model": "gpt-5.6-terra",
+  "requestCount": 216,
+  "outputCount": 216,
+  "candidateCount": 4503,
+  "rejectedCount": 8493,
+  "rejectionReasons": {
+    "duplicate_batch_candidate": 8124,
+    "commonness_below_2": 295,
+    "relevance_below_4": 70,
+    "answer_not_3_to_15_letters": 16
+  },
+  "notes": "Reason counts may overlap because one rejected proposal can violate multiple gates. The full candidate audit remains a local, ignored build artifact."
+}

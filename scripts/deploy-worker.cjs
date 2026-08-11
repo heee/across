@@ -55,6 +55,18 @@ async function main() {
 
   const databaseId = requireEnv("CF_D1_DATABASE_ID");
 
+  const schemaCheckUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
+  const schemaCheckRes = await fetch(schemaCheckUrl, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ sql: "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('puzzle_blueprints', 'blueprint_exposures') ORDER BY name" }),
+  });
+  const schemaCheck = await schemaCheckRes.json();
+  const inventoryTables = new Set(schemaCheck.result?.[0]?.results?.map((row) => row.name) || []);
+  if (!schemaCheckRes.ok || !schemaCheck.success || !inventoryTables.has("puzzle_blueprints") || !inventoryTables.has("blueprint_exposures")) {
+    throw new Error("D1 migration 0002_puzzle_blueprints.sql must be applied before deploying this Worker.");
+  }
+
   const settingsUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${workerName}/settings`;
   const settingsRes = await fetch(settingsUrl, { headers: { Authorization: `Bearer ${apiToken}` } });
   const settingsJson = await settingsRes.json();

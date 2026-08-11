@@ -4,6 +4,7 @@ import { WORD_BANK } from "../worker/corpus.js";
 import { EXPANDED_WORD_BANK } from "../worker/corpus.generated.js";
 import { COMMUNITY_WORD_BANK } from "../worker/corpus.community.js";
 import { WHISKY_WORD_BANK } from "../worker/corpus.whisky.js";
+import { LLM_WORD_BANK } from "../worker/corpus.llm.js";
 
 const CATEGORIES = [
   "geography", "history", "science", "nature", "animals", "space",
@@ -89,5 +90,20 @@ test("generated corpus supplies every category and difficulty tier", () => {
   for (const entry of EXPANDED_WORD_BANK) {
     assert.match(entry.w, /^[A-Z]{3,15}$/);
     assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
+  }
+});
+
+test("screened Batch corpus preserves category coverage and crossword constraints", () => {
+  assert.equal(LLM_WORD_BANK.length, 4503);
+  assert.equal(new Set(LLM_WORD_BANK.map((entry) => entry.w)).size, LLM_WORD_BANK.length);
+  assert.equal(new Set(LLM_WORD_BANK.map((entry) => entry.cat)).size, 27);
+  assert.equal(LLM_WORD_BANK.filter((entry) => entry.cat === "beer & brewing").length, 173);
+  assert.equal(LLM_WORD_BANK.filter((entry) => entry.cat === "whisky").length, 160);
+  const cocktailAnswers = new Set(["MANHATTAN", "OLDFASHIONED", "HIGHBALL", "WHISKYSOUR", "ROBROY", "MINTJULEP"]);
+  for (const entry of LLM_WORD_BANK) {
+    assert.match(entry.w, /^[A-Z]{3,15}$/);
+    assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
+    assert.ok([1, 2, 3].includes(entry.diff));
+    if (entry.cat === "whisky") assert.equal(cocktailAnswers.has(entry.w), false);
   }
 });

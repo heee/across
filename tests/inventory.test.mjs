@@ -125,22 +125,22 @@ test("maintenance purge clears every room before D1 and requires its separate se
 });
 
 test("offline inventory validation enforces density and 40-60% relevance", () => {
-  const cells = Array.from({ length: 25 }, (_, index) => ({ row: Math.floor(index / 5), col: index % 5, block: index >= 21 }));
+  const grid = validMiniGrid();
   const candidate = {
-    category: "beer & brewing", size: "mini", difficulty: "medium", cells,
-    grid: {
-      rows: 5, cols: 5, cells,
-      words: [
-        { number: 1, direction: "across", answer: "MALT", clue: "Brewing grain", row: 0, col: 0, length: 4, cells: [] },
-        { number: 2, direction: "down", answer: "HOPS", clue: "Bittering flowers", row: 0, col: 0, length: 4, cells: [] },
-        { number: 3, direction: "across", answer: "AREA", clue: "Region", row: 1, col: 0, length: 4, cells: [] },
-        { number: 4, direction: "down", answer: "EASE", clue: "Comfort", row: 0, col: 1, length: 4, cells: [] },
-      ],
-    },
-    themeAnswers: ["MALT", "HOPS"],
+    category: "beer & brewing", size: "mini", difficulty: "medium", grid,
+    themeAnswers: ["SATOR", "AREPO"],
   };
   assert.equal(validateBlueprint(candidate).ok, true);
-  candidate.grid.cells[20].block = true;
-  candidate.grid.cells[19].block = true;
-  assert.match(validateBlueprint(candidate).errors.join(" "), /below 80%/);
+
+  const sparse = structuredClone(candidate);
+  sparse.grid.words = sparse.grid.words.slice(0, 3);
+  for (const cell of sparse.grid.cells.slice(19)) {
+    cell.block = true;
+    cell.letter = null;
+  }
+  assert.match(validateBlueprint(sparse).errors.join(" "), /below 80%/);
+
+  const malformed = structuredClone(candidate);
+  malformed.grid.words[0].cells = [];
+  assert.match(validateBlueprint(malformed).errors.join(" "), /structurally valid/);
 });

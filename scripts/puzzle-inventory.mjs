@@ -15,6 +15,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { generatePuzzle, SIZE_MAP } from "../worker/generator.js";
 import { WORD_BANK } from "../worker/corpus.js";
+import { validateClientGrid } from "../worker/index.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIFFICULTIES = new Set(["beginner", "easy", "medium", "hard", "expert"]);
@@ -46,14 +47,13 @@ export function validateBlueprint(raw) {
   const category = String(raw?.category || "").trim().toLowerCase();
   const size = String(raw?.size || "");
   const difficulty = String(raw?.difficulty || "");
-  const grid = raw?.grid;
+  const rawGrid = raw?.grid;
   const expected = SIZE_MAP[size];
   if (!category) errors.push("category is required");
   if (!expected) errors.push(`unsupported size: ${size}`);
   if (!DIFFICULTIES.has(difficulty)) errors.push(`unsupported difficulty: ${difficulty}`);
-  if (!grid || grid.rows !== expected || grid.cols !== expected) errors.push("grid dimensions do not match size");
-  if (!Array.isArray(grid?.cells) || grid.cells.length !== expected * expected) errors.push("grid must contain every cell");
-  if (!Array.isArray(grid?.words) || grid.words.length < 3) errors.push("grid must contain at least three answers");
+  const grid = expected ? validateClientGrid(rawGrid, size) : null;
+  if (!grid) errors.push("grid is not a structurally valid crossword for its size");
   if (errors.length) return { ok: false, errors };
 
   const openCells = grid.cells.filter((cell) => cell.block === false).length;
@@ -78,7 +78,7 @@ export function validateBlueprint(raw) {
 
   const gridHash = hashGrid(grid);
   if (raw.gridHash && raw.gridHash !== gridHash) errors.push("gridHash does not match grid contents");
-  return { ok: errors.length === 0, errors, density, themedAnswerCount, answerCount: answers.length, gridHash };
+  return { ok: errors.length === 0, errors, density, themedAnswerCount, answerCount: answers.length, gridHash, grid };
 }
 
 function normalizedBlueprint(raw, validation) {
@@ -90,7 +90,7 @@ function normalizedBlueprint(raw, validation) {
     size: raw.size,
     difficulty: raw.difficulty,
     gridHash: validation.gridHash,
-    grid: canonicalGrid(raw.grid),
+    grid: canonicalGrid(validation.grid),
     density: validation.density,
     themedAnswerCount: validation.themedAnswerCount,
     answerCount: validation.answerCount,
@@ -167,15 +167,22 @@ async function cloudflareQuery(statements) {
   const accountId = process.env.CF_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
   const databaseId = process.env.CF_D1_DATABASE_ID;
   if (!token || !accountId || !databaseId) throw new Error("Set Cloudflare API token, account ID, and CF_D1_DATABASE_ID.");
-  const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify(Array.isArray(statements) ? { batch: statements } : statements),
-  });
-  const text = await response.text();
-  const result = JSON.parse(text);
-  if (!response.ok || !result.success) throw new Error(`D1 request failed: ${JSON.stringify(result.errors || result)}`);
-  return result.result;
+  const list = Array.isArray(statements) ? statements : [statements];
+  const results = [];
+  for (const statement of list) {
+    const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(statement),
+    });
+    const text = await response.text();
+    let result;
+    try { result = JSON.parse(text); } catch { throw new Error(`D1 returned HTTP ${response.status}: ${text.slice(0, 300)}`); }
+    if (!response.ok || !result.success) throw new Error(`D1 request failed: ${JSON.stringify(result.errors || result)}`);
+    if (Array.isArray(result.result)) results.push(...result.result);
+    else results.push(result.result);
+  }
+  return results;
 }
 
 async function seedManifest(blueprints) {
@@ -200,7 +207,7 @@ async function seedManifest(blueprints) {
       item.createdAt, item.updatedAt,
     ],
   }));
-  for (let index = 0; index < statements.length; index += 50) await cloudflareQuery(statements.slice(index, index + 50));
+  await cloudflareQuery(statements);
   console.log(`Seeded ${blueprints.length} puzzle blueprints.`);
 }
 

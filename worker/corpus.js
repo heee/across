@@ -1,4 +1,5 @@
 import { EXPANDED_WORD_BANK } from "./corpus.generated.js";
+import { LLM_WORD_BANK } from "./corpus.llm.js";
 import { COMMUNITY_WORD_BANK } from "./corpus.community.js";
 import { WHISKY_WORD_BANK } from "./corpus.whisky.js";
 
@@ -5900,4 +5901,4 @@ const HAND_AUTHORED_WORD_BANK = [
 
 // Community themes come first so their edited clues/categories win the
 // generator's answer-level deduplication over generic WordNet senses.
-export const WORD_BANK = [...WHISKY_WORD_BANK, ...COMMUNITY_WORD_BANK, ...HAND_AUTHORED_WORD_BANK, ...EXPANDED_WORD_BANK];
+export const WORD_BANK = [...WHISKY_WORD_BANK, ...COMMUNITY_WORD_BANK, ...HAND_AUTHORED_WORD_BANK, ...LLM_WORD_BANK, ...EXPANDED_WORD_BANK];

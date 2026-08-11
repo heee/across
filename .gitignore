@@ -3,3 +3,7 @@ node_modules/
 *.log
 .tmp/
 .claude/scheduled_tasks.lock
+data/openai-corpus-batch-receipt.json
+data/openai-corpus-candidates.json
+data/openai-corpus-output.jsonl
+data/openai-corpus-requests.jsonl

@@ -68,6 +68,9 @@ export const TEMPLATES = {
     [".....#...", ".....#...", ".....#...", "###......", "#.......#", "......###", "...#.....", "...#.....", "...#....."],
   ],
   standard: [
+    // blocks=24 fill=80% tightness=0.41 short-slots=100%; generic medium
+    // solved in five consecutive 5s trials (1.76-1.84s each).
+    ["...##......", "....#......", "....#......", ".....##...#", "...#....###", "...#...#...", "###....#...", "#...##.....", "......#....", "......#....", "......##..."],
     // blocks=20 fill=83% tightness=0.35 lens={"3":4,"4":6,"5":4,"6":4,"9":2,"10":6,"11":4}
     ["####.....##", "#..........", "...........", "....#......", "....#.....#", "...........", "#.....#....", "......#....", "...........", "..........#", "##.....####"],
     // blocks=28 fill=77% tightness=0.35 lens={"3":6,"4":8,"5":4,"6":2,"7":4,"8":2,"9":2,"10":2,"11":2}
@@ -240,19 +243,61 @@ export function computeLongSlotIds(slots) {
   return new Set(sorted.slice(0, count).map((s) => s.id));
 }
 
-function buildThemePlans(slots, anchorIds, themedCount, attempts = 24) {
+export function buildThemePlans(slots, anchorIds, themedCount, domains, attempts = 24) {
   const plans = [];
-  for (let attempt = 0; attempt < attempts; attempt++) {
-    const requiredAnchors = Math.ceil(anchorIds.size * 0.5);
-    const chosen = new Set(shuffleInPlace([...anchorIds]).slice(0, requiredAnchors));
-    const optional = slots.map((slot) => slot.id).filter((id) => !chosen.has(id));
-    for (const id of shuffleInPlace(optional.slice())) {
-      if (chosen.size >= themedCount) break;
-      chosen.add(id);
+  const requiredLong = Math.ceil(anchorIds.size * 0.5);
+  const genericLetters = new Map(slots.map((slot) => {
+    const sets = Array.from({ length: slot.length }, () => new Set());
+    for (const entry of domains.get(slot.id) || []) {
+      if (entry.themed) continue;
+      for (let i = 0; i < slot.length; i++) sets[i].add(entry.word[i]);
     }
-    plans.push(chosen);
+    return [slot.id, sets];
+  }));
+  const stats = new Map(slots.map((slot) => {
+    const entries = domains.get(slot.id) || [];
+    const themed = entries.reduce((count, entry) => count + (entry.themed ? 1 : 0), 0);
+    const supportedThemed = entries.reduce((count, entry) => {
+      if (!entry.themed) return count;
+      const supported = slot.crossings.every((cross, index) => (
+        !cross || genericLetters.get(cross.otherSlotId)[cross.theirIndex].has(entry.word[index])
+      ));
+      return count + (supported ? 1 : 0);
+    }, 0);
+    return [slot.id, { themed, supportedThemed, generic: entries.length - themed }];
+  }));
+  const forcedTheme = slots.filter((slot) => stats.get(slot.id).generic === 0).map((slot) => slot.id);
+  if (forcedTheme.length > themedCount || forcedTheme.some((id) => stats.get(id).themed === 0)) return plans;
+
+  const score = (slot, preferredDirection) => {
+    const stat = stats.get(slot.id);
+    const directionBonus = slot.direction === preferredDirection ? 100000 : 0;
+    const longBonus = anchorIds.has(slot.id) ? 10000 : 0;
+    return directionBonus + longBonus + Math.log1p(stat.supportedThemed) * 100 + stat.supportedThemed / Math.max(1, stat.generic);
+  };
+
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const preferredDirection = attempt % 2 === 0 ? "across" : "down";
+    const jitter = new Map(slots.map((slot) => [slot.id, Math.random() * Math.max(1, 500 - attempt * 10)]));
+    const ranked = (items) => items
+      .filter((slot) => stats.get(slot.id).supportedThemed > 0)
+      .sort((a, b) => score(b, preferredDirection) + jitter.get(b.id) - score(a, preferredDirection) - jitter.get(a.id));
+
+    const chosen = new Set(forcedTheme);
+    const themedLongAlready = [...chosen].filter((id) => anchorIds.has(id)).length;
+    const longNeeded = Math.max(0, requiredLong - themedLongAlready);
+    for (const slot of ranked(slots.filter((candidate) => anchorIds.has(candidate.id))).slice(0, longNeeded)) chosen.add(slot.id);
+    for (const slot of ranked(slots.filter((candidate) => !chosen.has(candidate.id)))) {
+      if (chosen.size >= themedCount) break;
+      chosen.add(slot.id);
+    }
+    if (chosen.size !== themedCount) continue;
+    if ([...chosen].filter((id) => anchorIds.has(id)).length < requiredLong) continue;
+    if (slots.some((slot) => !chosen.has(slot.id) && stats.get(slot.id).generic === 0)) continue;
+    const key = [...chosen].sort((a, b) => a - b).join(",");
+    if (!plans.some((plan) => plan.key === key)) plans.push({ key, chosen });
   }
-  return plans;
+  return plans.map((plan) => plan.chosen);
 }
 
 // ---------------------------------------------------------------------
@@ -884,7 +929,7 @@ export function generatePuzzle({
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
     const hasRequestedCategory = pool.some((entry) => entry.themed);
     const themedCount = Math.ceil(slots.length * 0.4);
-    const themePlans = hasRequestedCategory ? buildThemePlans(slots, longIds, themedCount, planAttempts) : [null];
+    const themePlans = hasRequestedCategory ? buildThemePlans(slots, longIds, themedCount, domains, planAttempts) : [null];
     for (let planIndex = 0; planIndex < themePlans.length && Date.now() <= templateDeadline; planIndex++) {
       const plan = themePlans[planIndex];
       const planDomains = plan
