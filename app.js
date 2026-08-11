@@ -103,7 +103,7 @@ const LocalBackend = {
     const data = loadLocalData();
     if (!data.users[name]) {
       const hue = PLAYER_HUES[Object.keys(data.users).length % PLAYER_HUES.length];
-      data.users[name] = { hue, createdAt: nowIso(), settings: { push: true, sound: true, haptic: true, showTimers: true } };
+      data.users[name] = { hue, createdAt: nowIso(), settings: { push: true, sound: true, haptic: true, showTimers: true, alwaysAutoCheck: false } };
       saveLocalData(data);
     }
     return { name, ...data.users[name] };
@@ -1466,7 +1466,7 @@ function openPuzzle(puzzleId) {
   myBaselineMs = 0;
   sessionStartTime = null; // set once onInit knows this session's persisted timeSpentMs
   const savedPrefs = loadAssistPrefs();
-  autoCheckOn = savedPrefs.autoCheck;
+  autoCheckOn = currentUser.settings?.alwaysAutoCheck === true;
   impatientMode = savedPrefs.impatient;
   extremelyImpatientMode = savedPrefs.extremelyImpatient;
   clearInterval(sessionTimerHandle);
@@ -1509,10 +1509,10 @@ function openPuzzle(puzzleId) {
       renderPuzzleKeyboard();
       updateClueBar();
       updatePuzzleTimers();
-      // A saved "Auto Check on" preference still needs to flag this session
+      // An account-level "Always use Auto check" preference still needs to flag this session
       // server-side (half-credit scoring), same as flipping the toggle by
       // hand would — the connection didn't exist yet when autoCheckOn was
-      // set from saved prefs earlier in openPuzzle().
+      // set from account settings earlier in openPuzzle().
       if (autoCheckOn) currentPuzzleConn?.sendAutoCheckOn();
     },
     onCellUpdate({ row, col, letter, owner, revealed }) {
@@ -1932,20 +1932,24 @@ function renderPresenceBadge(user, row, col) {
 // ---- Assist menu ----
 
 // Keyed per-user (not just per-device) so switching profiles on a shared
-// device doesn't leak one person's Auto Check/Impatient mode preference to
-// another.
+// device doesn't leak one person's celebration preferences to another.
+// Auto check is deliberately excluded: its Assist toggle applies only to the
+// current puzzle visit, unless the account-level Settings override is on.
 function assistPrefsKey() {
   return `across_assist_prefs_${currentUser?.name || "anon"}`;
 }
 function loadAssistPrefs() {
   try {
     const raw = localStorage.getItem(assistPrefsKey());
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { impatient: !!parsed.impatient, extremelyImpatient: !!parsed.extremelyImpatient };
+    }
   } catch (e) {}
-  return { autoCheck: false, impatient: false, extremelyImpatient: false };
+  return { impatient: false, extremelyImpatient: false };
 }
 function saveAssistPrefs() {
-  localStorage.setItem(assistPrefsKey(), JSON.stringify({ autoCheck: autoCheckOn, impatient: impatientMode, extremelyImpatient: extremelyImpatientMode }));
+  localStorage.setItem(assistPrefsKey(), JSON.stringify({ impatient: impatientMode, extremelyImpatient: extremelyImpatientMode }));
 }
 
 // Randomized invite lines for the in-session Share button — a lighter,
@@ -2051,7 +2055,6 @@ $("#autocheck-toggle").addEventListener("click", () => {
     currentPuzzleConn?.sendAutoCheckOn();
   }
   refreshAllCellsForAutoCheck();
-  saveAssistPrefs();
 });
 $("#impatient-toggle").addEventListener("click", () => {
   impatientMode = !impatientMode;
@@ -2372,6 +2375,23 @@ function renderSettings() {
       settings.showTimers = previous;
       timerToggle.classList.toggle("on", previous);
       showToast(error.message || "Couldn't save timer setting");
+    }
+  };
+  const autoCheckToggle = $("#settings-always-autocheck");
+  const alwaysAutoCheck = currentUser.settings?.alwaysAutoCheck === true;
+  autoCheckToggle.classList.toggle("on", alwaysAutoCheck);
+  autoCheckToggle.onclick = async () => {
+    const previous = currentUser.settings?.alwaysAutoCheck === true;
+    const settings = { ...(currentUser.settings || {}), alwaysAutoCheck: !previous };
+    currentUser.settings = settings;
+    if (dataCache.users[currentUser.name]) dataCache.users[currentUser.name].settings = settings;
+    autoCheckToggle.classList.toggle("on", settings.alwaysAutoCheck);
+    try {
+      await Backend.updateUserSettings(currentUser.name, settings);
+    } catch (error) {
+      settings.alwaysAutoCheck = previous;
+      autoCheckToggle.classList.toggle("on", previous);
+      showToast(error.message || "Couldn't save Auto check setting");
     }
   };
   const list = $("#settings-user-list");

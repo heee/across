@@ -112,12 +112,17 @@ test("user settings persist timer visibility and default legacy users to on", as
   await registerUser(db, "Henning");
   const row = db.users.get("Henning");
   row.settings_json = JSON.stringify({ push: false, sound: true, haptic: true });
-  assert.equal((await loadData(db)).users.Henning.settings.showTimers, true);
+  const legacySettings = (await loadData(db)).users.Henning.settings;
+  assert.equal(legacySettings.showTimers, true);
+  assert.equal(legacySettings.alwaysAutoCheck, false);
 
-  const settings = await updateUserSettings(db, "Henning", { showTimers: false });
+  const settings = await updateUserSettings(db, "Henning", { showTimers: false, alwaysAutoCheck: true });
   assert.equal(settings.showTimers, false);
+  assert.equal(settings.alwaysAutoCheck, true);
   assert.equal(settings.push, false);
-  assert.equal((await loadData(db)).users.Henning.settings.showTimers, false);
+  const persistedSettings = (await loadData(db)).users.Henning.settings;
+  assert.equal(persistedSettings.showTimers, false);
+  assert.equal(persistedSettings.alwaysAutoCheck, true);
 });
 
 test("deleting a user scrubs every puzzle snapshot", async () => {

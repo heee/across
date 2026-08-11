@@ -797,7 +797,7 @@ function parseJson(value, fallback) {
 }
 
 function userFromRow(row) {
-  const defaults = { push: true, sound: true, haptic: true, showTimers: true };
+  const defaults = { push: true, sound: true, haptic: true, showTimers: true, alwaysAutoCheck: false };
   return {
     hue: row.hue,
     createdAt: row.created_at,
@@ -852,7 +852,7 @@ async function registerUser(db, name) {
 
   const count = Number(await db.prepare("SELECT COUNT(*) AS count FROM users").first("count")) || 0;
   const createdAt = new Date().toISOString();
-  const settings = { push: true, sound: true, haptic: true, showTimers: true };
+  const settings = { push: true, sound: true, haptic: true, showTimers: true, alwaysAutoCheck: false };
   await db.prepare(
     "INSERT OR IGNORE INTO users (name, hue, created_at, settings_json, updated_at) VALUES (?, ?, ?, ?, ?)"
   ).bind(name, PLAYER_HUES[count % PLAYER_HUES.length], createdAt, JSON.stringify(settings), createdAt).run();
@@ -871,7 +871,7 @@ async function updateUserColor(db, name, hue) {
 async function updateUserSettings(db, name, patch) {
   const row = await db.prepare("SELECT name, hue, created_at, settings_json FROM users WHERE name = ?").bind(name).first();
   if (!row) { const error = new Error("Player not found"); error.code = "NOT_FOUND"; throw error; }
-  const defaults = { push: true, sound: true, haptic: true, showTimers: true };
+  const defaults = { push: true, sound: true, haptic: true, showTimers: true, alwaysAutoCheck: false };
   const settings = { ...defaults, ...parseJson(row.settings_json, defaults) };
   for (const key of Object.keys(defaults)) {
     if (typeof patch[key] === "boolean") settings[key] = patch[key];
