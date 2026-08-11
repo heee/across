@@ -373,8 +373,8 @@ button, input, textarea {
 
 .discover-filters {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, .8fr);
+  gap: 6px;
   padding: 0 18px 14px;
 }
 .discover-filter {
@@ -382,7 +382,6 @@ button, input, textarea {
   font: 600 10px var(--font);
   color: var(--muted-45);
 }
-.discover-filter.category-filter { grid-column: 1 / -1; }
 .discover-filter select {
   display: block;
   width: 100%;
