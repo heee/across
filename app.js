@@ -1978,6 +1978,8 @@ $("#puzzle-share-btn").addEventListener("click", async () => {
 });
 
 $("#puzzle-assist-btn").addEventListener("click", () => {
+  const deleteButton = $("#assist-menu [data-assist='delete-puzzle']");
+  deleteButton.hidden = currentPuzzle?.createdBy !== currentUser?.name;
   $("#assist-menu").style.display = "flex";
   $("#autocheck-toggle").classList.toggle("on", autoCheckOn);
   $("#impatient-toggle").classList.toggle("on", impatientMode);
@@ -1987,7 +1989,11 @@ document.addEventListener("click", (e) => {
   const action = e.target.closest("[data-assist]")?.dataset.assist;
   if (!action) return;
   if (action === "close") { $("#assist-menu").style.display = "none"; return; }
-  if (action === "delete-puzzle") { $("#assist-menu").style.display = "none"; confirmDeletePuzzle(); return; }
+  if (action === "delete-puzzle") {
+    $("#assist-menu").style.display = "none";
+    if (currentPuzzle?.createdBy === currentUser?.name) confirmDeletePuzzle();
+    return;
+  }
   if (action === "reveal-cell") revealCells(currentWord().length ? [selectedCell] : []);
   if (action === "reveal-word") revealCells(currentWord());
   if (action === "reveal-puzzle") revealCells(currentPuzzle.grid.cells.filter((c) => !c.block));

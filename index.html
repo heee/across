@@ -166,20 +166,22 @@
       </div>
       <div class="settings-card" style="margin-bottom:12px">
         <div class="settings-row" style="justify-content:space-between">
-          <div>Auto Check <span style="color:var(--muted-4);font-weight:400">(half credit while on)</span></div>
+          <div>Auto check <span style="color:var(--muted-4);font-weight:400">(half credit while on)</span></div>
           <button class="toggle" id="autocheck-toggle"></button>
         </div>
         <div class="settings-row" style="justify-content:space-between">
-          <div>Impatient mode <span style="color:var(--muted-4);font-weight:400">(celebrate each word)</span></div>
+          <div>Impatient <span style="color:var(--muted-4);font-weight:400">(celebrate words)</span></div>
           <button class="toggle" id="impatient-toggle"></button>
         </div>
         <div class="settings-row" style="justify-content:space-between">
-          <div>Extremely impatient <span style="color:var(--muted-4);font-weight:400">(celebrate each letter)</span></div>
+          <div>Extremely impatient <span style="color:var(--muted-4);font-weight:400">(celebrate letters)</span></div>
           <button class="toggle" id="extremely-impatient-toggle"></button>
         </div>
       </div>
-      <button class="danger-row" data-assist="delete-puzzle">Delete crossword</button>
-      <button class="action-text" style="width:100%;margin-top:4px" data-assist="close">Cancel</button>
+      <div class="assist-action-row">
+        <button class="danger-row" data-assist="delete-puzzle">Delete crossword</button>
+        <button class="action-text" data-assist="close">Cancel</button>
+      </div>
     </div>
   </div>
 
