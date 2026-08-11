@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=36">
+<link rel="stylesheet" href="style.css?v=38">
 </head>
 <body>
 <div id="app">
@@ -265,24 +265,22 @@
 
   <!-- Rankings -->
   <div id="screen-rankings" class="screen">
-    <div class="screen-header">
+    <div class="screen-header rankings-header">
       <div class="screen-title">Rankings</div>
-      <div class="chip-row no-scrollbar" id="rankings-window-chips" style="padding:12px 0 0"></div>
+      <select class="rankings-window-select" id="rankings-window-select" aria-label="Ranking time period">
+        <option value="today">Today</option>
+        <option value="week" selected>Week</option>
+        <option value="month">Month</option>
+        <option value="quarter">Quarter</option>
+        <option value="year">Year</option>
+        <option value="all time">All time</option>
+      </select>
     </div>
-    <div class="metric-row" style="padding-left:18px;padding-right:18px">
-      <div class="metric-label" id="rankings-metric-label">Contribution score</div>
-      <button class="metric-change" id="rankings-metric-change">Change ▾</button>
+    <div class="chip-row no-scrollbar rankings-metric-chips" id="rankings-metric-chips" aria-label="Ranking category">
+      <button class="chip active" type="button" aria-pressed="true">Contribution</button>
     </div>
     <div class="scroll-area no-scrollbar" id="rankings-list" style="display:flex;flex-direction:column;gap:8px"></div>
     <nav class="bottom-nav" data-nav></nav>
-  </div>
-
-  <!-- Rankings metric picker overlay -->
-  <div id="metric-menu" class="modal-overlay" style="display:none">
-    <div class="modal-sheet" style="max-height:70vh;overflow-y:auto">
-      <div class="modal-grabber"></div>
-      <div id="metric-menu-list"></div>
-    </div>
   </div>
 
   <!-- Settings: user management (view a specific player's profile via Rankings instead) -->
@@ -336,6 +334,6 @@
 </div>
 
 <script src="config.js"></script>
-<script type="module" src="app.js?v=36"></script>
+<script type="module" src="app.js?v=38"></script>
 </body>
 </html>

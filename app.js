@@ -504,7 +504,7 @@ let impatientMode = false; // local-only visual flourish toggle, default off
 let extremelyImpatientMode = false; // same, but celebrates every correct letter, not just completed words
 let createCategory = null;
 let rankingsWindow = "week";
-let rankingsMetric = "Contribution score";
+let rankingsMetric = "Contribution";
 let lastSearchQuery = "";
 let activeSearchCategory = "all";
 let activeSearchDifficulty = "all";
@@ -512,11 +512,7 @@ let activeSearchSize = "all";
 let profilePickerExpanded = false;
 let completedWordKeys = new Set(); // reset per puzzle open — avoids double-counting wordsCompleted
 
-const RANKING_METRICS = [
-  "Contribution score", "Letters entered", "Words completed", "Crosswords completed",
-  "Crosswords created", "Correct letter %", "Incorrect letters corrected",
-  "Average accuracy", "Average completion time", "Lowest reveal usage", "Lowest auto check usage",
-];
+const RANKING_METRICS = ["Completed", "Contribution", "Accuracy"];
 const SEARCH_CATEGORIES = [
   "Geography", "History", "Science", "Nature", "Animals", "Space",
   "Literature", "Language", "Philosophy", "Mythology", "Art & Design", "Music",
@@ -2319,14 +2315,22 @@ function windowStart(windowLabel) {
 }
 
 function renderRankings() {
-  const chipRow = $("#rankings-window-chips");
+  const windowSelect = $("#rankings-window-select");
+  windowSelect.value = rankingsWindow;
+
+  const chipRow = $("#rankings-metric-chips");
   chipRow.innerHTML = "";
-  for (const w of RANKINGS_WINDOWS) {
-    const chip = el("button", { class: "chip" + (w.toLowerCase() === rankingsWindow ? " active" : ""), text: w });
-    chip.addEventListener("click", () => { rankingsWindow = w.toLowerCase(); renderRankings(); });
+  for (const metric of RANKING_METRICS) {
+    const selected = metric === rankingsMetric;
+    const chip = el("button", {
+      class: "chip" + (selected ? " active" : ""),
+      text: metric,
+      type: "button",
+      "aria-pressed": String(selected),
+    });
+    chip.addEventListener("click", () => { rankingsMetric = metric; renderRankings(); });
     chipRow.appendChild(chip);
   }
-  $("#rankings-metric-label").textContent = rankingsMetric.charAt(0).toLowerCase() + rankingsMetric.slice(1);
   renderRankingsList();
 }
 
@@ -2336,6 +2340,15 @@ function renderRankings() {
 // list rather than showing a misleading 0.
 const METRIC_DEFS = {
   "Contribution score": { get: (t) => t.contribution, ascending: false, format: (v) => Math.round(v) },
+  "Completed": { get: (t) => (t.completedCount > 0 ? t.completedCount : null), ascending: false, format: (v) => Math.round(v) },
+  "Contribution": { get: (t) => (t.contribution > 0 ? t.contribution : null), ascending: false, format: (v) => Math.round(v) },
+  "Accuracy": {
+    get: (t) => {
+      const attempts = t.correctLetters + t.incorrectLetters;
+      return attempts >= 20 ? (t.correctLetters / attempts) * 100 : null;
+    },
+    ascending: false, format: (v) => `${Math.round(v)}%`,
+  },
   "Letters entered": { get: (t) => t.lettersEntered, ascending: false, format: (v) => Math.round(v) },
   "Words completed": { get: (t) => t.wordsCompleted, ascending: false, format: (v) => Math.round(v) },
   "Crosswords completed": { get: (t) => t.completedCount, ascending: false, format: (v) => Math.round(v) },
@@ -2373,6 +2386,7 @@ function computeRankingTotals(since) {
 
   for (const p of Object.values(dataCache.puzzles)) {
     const ts = p.completedAt ? new Date(p.completedAt).getTime() : new Date(p.createdAt).getTime();
+    if (p.statsEligible === false) continue;
     if (ts < since) continue;
     if (p.createdBy && !p.forkOf) ensure(p.createdBy).createdCount += 1;
     for (const [name, s] of Object.entries(p.sessions || {})) {
@@ -2388,7 +2402,7 @@ function computeRankingTotals(since) {
       if (s.autoCheckUsed) t.autoCheckPuzzleCount += 1;
       const puzzleTotal = (s.correctLetters || 0) + (s.incorrectLetters || 0);
       if (puzzleTotal > 0) t.puzzleAccuracies.push((s.correctLetters / puzzleTotal) * 100);
-      if (p.state === "completed") {
+      if (p.state === "completed" && (s.lettersEntered || 0) > 0) {
         t.completedCount += 1;
         t.completionTimes.push(p.totalTimeMs || 0);
       }
@@ -2400,12 +2414,15 @@ function computeRankingTotals(since) {
 function renderRankingsList() {
   const since = windowStart(RANKINGS_WINDOWS.find((w) => w.toLowerCase() === rankingsWindow) || "Week");
   const totals = computeRankingTotals(since);
-  const def = METRIC_DEFS[rankingsMetric] || METRIC_DEFS["Contribution score"];
+  const def = METRIC_DEFS[rankingsMetric] || METRIC_DEFS["Contribution"];
 
   const ranked = Object.entries(totals)
     .map(([name, t]) => ({ name, value: def.get(t) }))
     .filter((r) => r.value !== null)
-    .sort((a, b) => (def.ascending ? a.value - b.value : b.value - a.value));
+    .sort((a, b) => {
+      const valueOrder = def.ascending ? a.value - b.value : b.value - a.value;
+      return valueOrder || a.name.localeCompare(b.name);
+    });
 
   const list = $("#rankings-list");
   list.innerHTML = "";
@@ -2418,23 +2435,19 @@ function renderRankingsList() {
       el("div", { class: "ranking-value", text: def.format(r.value) }),
     ]));
   });
-  if (ranked.length === 0) list.appendChild(el("div", { class: "empty-note", text: "No activity in this window yet." }));
+  if (ranked.length === 0) {
+    const text = rankingsMetric === "Accuracy"
+      ? "No one has attempted 20 letters in this period yet."
+      : "No activity in this period yet.";
+    list.appendChild(el("div", { class: "empty-note", text }));
+  }
 }
 
-$("#rankings-metric-change").addEventListener("click", () => {
-  const menu = $("#metric-menu-list");
-  menu.innerHTML = "";
-  for (const m of RANKING_METRICS) {
-    menu.appendChild(el("button", { class: "settings-row", style: "width:100%;background:none;border:none;text-align:left;cursor:pointer", text: m, onclick: () => {
-      rankingsMetric = m;
-      $("#metric-menu").style.display = "none";
-      renderRankings();
-    } }));
-  }
-  $("#metric-menu").style.display = "flex";
+$("#rankings-window-select").addEventListener("change", (event) => {
+  rankingsWindow = event.target.value;
+  renderRankingsList();
 });
 document.addEventListener("click", (e) => {
-  if (e.target === $("#metric-menu")) $("#metric-menu").style.display = "none";
   if (e.target === $("#assist-menu")) $("#assist-menu").style.display = "none";
   if (e.target === $("#join-fork-menu")) { $("#join-fork-menu").style.display = "none"; pendingForkPuzzleId = null; }
   if (e.target === $("#completed-choice-menu")) { $("#completed-choice-menu").style.display = "none"; pendingCompletedPuzzleId = null; }
