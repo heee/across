@@ -1850,6 +1850,39 @@ function advanceSelection(reverse, clueHops = 0) {
   if (isLockedCell(selectedCell) && clueHops < currentPuzzle.grid.words.length) advanceSelection(false, clueHops + 1);
 }
 
+function retreatSelectionForBackspace() {
+  const cells = currentWord();
+  const idx = cells.findIndex((c) => c.row === selectedCell.row && c.col === selectedCell.col);
+  for (let i = idx - 1; i >= 0; i--) {
+    if (!isLockedCell(cells[i])) {
+      selectedCell = cells[i];
+      refreshGridState();
+      updateClueBar();
+      return;
+    }
+  }
+
+  // Backspace at the start of a word continues into the preceding clue,
+  // landing on its last editable square instead of becoming a no-op.
+  const words = currentPuzzle.grid.words;
+  const currentEntry = findWordEntry(cells, selectedDirection);
+  const currentIdx = currentEntry ? words.indexOf(currentEntry) : 0;
+  for (let offset = 1; offset < words.length; offset++) {
+    const target = words[(currentIdx - offset + words.length) % words.length];
+    const targetCells = wordCellsFor({ row: target.row, col: target.col }, target.direction);
+    for (let i = targetCells.length - 1; i >= 0; i--) {
+      if (!isLockedCell(targetCells[i])) {
+        selectedDirection = target.direction;
+        selectedCell = targetCells[i];
+        currentPuzzleConn?.sendCursor(selectedCell.row, selectedCell.col, selectedDirection);
+        refreshGridState();
+        updateClueBar();
+        return;
+      }
+    }
+  }
+}
+
 function typeLetter(letter) {
   if (!selectedCell || !currentPuzzleConn) return;
   if (isLockedCell(selectedCell)) {
@@ -1889,7 +1922,7 @@ function celebrateWordCompletion(cells) {
 
 function backspace() {
   if (!selectedCell || !currentPuzzleConn) return;
-  if (isLockedCell(selectedCell)) { advanceSelection(true); return; }
+  if (isLockedCell(selectedCell)) { retreatSelectionForBackspace(); return; }
   const key = `${selectedCell.row}-${selectedCell.col}`;
   if (currentPuzzle.cells[key]?.letter) {
     markCurrentPuzzleActive();
@@ -1897,7 +1930,7 @@ function backspace() {
     delete currentPuzzle.cells[key];
     updateCellDisplay(selectedCell.row, selectedCell.col);
   } else {
-    advanceSelection(true);
+    retreatSelectionForBackspace();
   }
 }
 
