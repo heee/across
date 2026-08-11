@@ -280,7 +280,7 @@ export default {
             attemptOf: newAttempt ? source.id : null,
             attemptNumber: newAttempt ? attemptNumber : 1,
             isReplay: newAttempt,
-            statsEligible: !newAttempt,
+            statsEligible: true,
             createdAt: new Date().toISOString(),
             grid: source.grid,
             cells: {},

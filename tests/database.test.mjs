@@ -360,6 +360,6 @@ test("completed replays create distinct linked private attempts without changing
   assert.equal(second.attemptOf, source.id);
   assert.equal(second.attemptNumber, 2);
   assert.equal(third.attemptNumber, 3);
-  assert.equal(second.statsEligible, false);
+  assert.equal(second.statsEligible, true);
   assert.deepEqual(second.cells, {});
 });

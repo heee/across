@@ -8,6 +8,7 @@
 //    It reuses the real generator/corpus modules, so puzzles generated in
 //    local mode are produced by the same algorithm the Worker uses.
 import { hasStartedPuzzle, puzzleParticipantNames, sortPuzzlesByUserActivity } from "./home-order.js";
+import { profilePuzzleCollections, puzzleLeaderboard, puzzleProgress, puzzleSeriesId } from "./profile-puzzles.js";
 import { pickRandomItem, shuffledCopy } from "./create-options.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
@@ -228,7 +229,7 @@ const LocalBackend = {
       attemptOf: newAttempt ? source.id : null,
       attemptNumber: newAttempt ? attemptNumber : 1,
       isReplay: newAttempt,
-      statsEligible: !newAttempt,
+      statsEligible: true,
       createdAt: nowIso(),
       grid: source.grid,
       cells: {},
@@ -935,10 +936,6 @@ document.addEventListener("click", async (e) => {
 // ===========================================================================
 // Home screen
 // ===========================================================================
-
-function puzzleSeriesId(puzzle) {
-  return puzzle?.seriesId || puzzle?.forkOf || puzzle?.id;
-}
 
 function puzzleActivityTime(puzzle) {
   const own = puzzle?.sessions?.[currentUser?.name];
@@ -2183,6 +2180,7 @@ function renderCompletion(p) {
     badgeGrid.appendChild(el("div", { style: `background:oklch(58% .1 ${hue})` }));
   }
   $("#completion-title").textContent = p.title;
+  $("#completion-sub").textContent = p.forkOf ? "Completed solo" : "Completed together";
   $("#completion-time").textContent = formatClock(p.totalTimeMs || 0);
   $("#completion-players").textContent = p.players.length;
   $("#completion-words").textContent = p.grid?.words?.length || 0;
@@ -2218,6 +2216,47 @@ function renderCompletion(p) {
   if ((p.highlights || []).length === 0) {
     highlightsWrap.appendChild(el("div", { class: "empty-note", text: "No highlights this round." }));
   }
+
+  renderPuzzleLeaderboard(p);
+}
+
+function assistBadges(assists) {
+  const wrap = el("div", { class: "leaderboard-assists" });
+  for (const assist of assists) {
+    const prefix = assists.length > 1 ? `${assist.name}: ` : "";
+    if (assist.autoCheckUsed) wrap.appendChild(el("span", {
+      class: "assist-badge",
+      text: "A✓",
+      title: `${prefix}Auto Check used`,
+      "aria-label": `${prefix}Auto Check used`,
+    }));
+    if (assist.revealsUsed > 0) wrap.appendChild(el("span", {
+      class: "assist-badge",
+      text: "◉",
+      title: `${prefix}${assist.revealsUsed} reveal${assist.revealsUsed === 1 ? "" : "s"} used`,
+      "aria-label": `${prefix}${assist.revealsUsed} reveal${assist.revealsUsed === 1 ? "" : "s"} used`,
+    }));
+  }
+  return wrap;
+}
+
+function renderPuzzleLeaderboard(puzzle) {
+  const list = $("#completion-leaderboard");
+  list.innerHTML = "";
+  const entries = puzzleLeaderboard(Object.values(dataCache.puzzles), puzzle);
+  entries.forEach((entry, index) => {
+    const label = entry.kind === "team" ? entry.names.join(", ") : entry.names[0];
+    list.appendChild(el("div", { class: "leaderboard-row" }, [
+      el("div", { class: `rank-num${index === 0 ? " gold" : ""}`, text: index + 1 }),
+      el("div", { class: "leaderboard-identity" }, [
+        el("div", { class: "leaderboard-name", text: label || "Team" }),
+        el("div", { class: "leaderboard-kind", text: entry.kind === "team" ? "Team solve" : "Solo solve" }),
+      ]),
+      assistBadges(entry.assists),
+      el("div", { class: "leaderboard-time", text: formatClock(entry.timeMs) }),
+    ]));
+  });
+  if (!entries.length) list.appendChild(el("div", { class: "empty-note", text: "No completed solves yet." }));
 }
 
 function showCompletedFullGrid(puzzle) {
@@ -2253,6 +2292,7 @@ $("#completion-share").addEventListener("click", async () => {
 });
 $("#completion-create-similar").addEventListener("click", () => prefillCreateSimilar(currentPuzzle));
 $("#completion-view-grid").addEventListener("click", () => showCompletedFullGrid(currentPuzzle));
+$("#completion-challenge").addEventListener("click", () => startReplay(currentPuzzle.id));
 $("#completion-done").addEventListener("click", () => {
   if (currentPuzzleConn) { currentPuzzleConn.close(); currentPuzzleConn = null; }
   renderHome();
@@ -2332,12 +2372,9 @@ function computeRankingTotals(since) {
   for (const name of Object.keys(dataCache.users)) ensure(name);
 
   for (const p of Object.values(dataCache.puzzles)) {
-    // Replays preserve history but never contribute a second set of player
-    // or creator statistics for the same crossword.
-    if (p.statsEligible === false || p.isReplay) continue;
     const ts = p.completedAt ? new Date(p.completedAt).getTime() : new Date(p.createdAt).getTime();
     if (ts < since) continue;
-    if (p.createdBy) ensure(p.createdBy).createdCount += 1;
+    if (p.createdBy && !p.forkOf) ensure(p.createdBy).createdCount += 1;
     for (const [name, s] of Object.entries(p.sessions || {})) {
       const t = ensure(name);
       const weight = s.autoCheckUsed ? 0.5 : 1;
@@ -2533,6 +2570,8 @@ async function confirmDeleteUser(name) {
 }
 
 function openProfileDetail(name) {
+  profilePuzzleTab = "active";
+  profilePuzzleExpanded = { active: false, completed: false, created: false };
   renderProfileDetail(name);
   navigate("screen-profile-detail");
 }
@@ -2546,8 +2585,8 @@ function renderProfileDetail(name) {
   $("#profile-detail-name").textContent = name === currentUser.name ? `${name} (you)` : name;
 
   const allPuzzles = Object.values(dataCache.puzzles);
-  const completed = allPuzzles.filter((p) => p.state === "completed" && p.players.includes(name) && p.statsEligible !== false && !p.isReplay);
-  const created = allPuzzles.filter((p) => p.createdBy === name && p.statsEligible !== false && !p.isReplay);
+  const completed = allPuzzles.filter((p) => p.state === "completed" && hasStartedPuzzle(p, name));
+  const created = allPuzzles.filter((p) => p.createdBy === name && !p.forkOf);
   const avgTime = completed.length ? formatMinSec(completed.reduce((s, p) => s + (p.totalTimeMs || 0), 0) / completed.length) : "—";
   const totals = computeRankingTotals(0)[name];
   const avgAccuracy = totals ? METRIC_DEFS["Average accuracy"].get(totals) : null;
@@ -2566,6 +2605,8 @@ function renderProfileDetail(name) {
       el("div", { class: "stat-tile-label", text: label }),
     ]));
   }
+
+  renderProfilePuzzleHistory(name);
 
   // Device settings only make sense for your own account, not someone
   // else's profile you're just viewing via Rankings.
@@ -2588,6 +2629,77 @@ function renderProfileDetail(name) {
     }
     settingsWrap.appendChild(card);
   }
+}
+
+let profilePuzzleTab = "active";
+let profilePuzzleExpanded = { active: false, completed: false, created: false };
+
+function profilePuzzleDate(puzzle, profileName) {
+  const value = puzzle.sessions?.[profileName]?.lastActiveAt || puzzle.completedAt || puzzle.createdAt;
+  const date = new Date(value || 0);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function profilePuzzleRow(puzzle, profileName) {
+  const isCompleted = puzzle.state === "completed";
+  const progress = puzzleProgress(puzzle);
+  const category = cap((puzzle.keywords || [])[0] || "General");
+  const dimensions = puzzle.grid ? `${puzzle.grid.rows}×${puzzle.grid.cols}` : sizeLabel(puzzle.size);
+  const privacy = puzzle.visibility === "private" ? " · 🔒" : "";
+  const row = el("button", { class: "profile-puzzle-row" }, [
+    el("div", { class: `profile-puzzle-status${isCompleted ? " completed" : ""}`, text: isCompleted ? "✓" : `${progress}%` }),
+    el("div", { class: "profile-puzzle-info" }, [
+      el("div", { class: "profile-puzzle-title", text: puzzle.title }),
+      el("div", { class: "profile-puzzle-meta", text: `${category} · ${cap(puzzle.difficulty)} · ${dimensions}${privacy}` }),
+    ]),
+    el("div", { class: "profile-puzzle-tail" }, [
+      el("div", { class: "profile-puzzle-value", text: isCompleted ? formatMinSec(puzzle.totalTimeMs || 0) : "Active" }),
+      el("div", { class: "profile-puzzle-date", text: profilePuzzleDate(puzzle, profileName) }),
+    ]),
+    el("span", { class: "chevron", text: "›" }),
+  ]);
+  row.onclick = () => {
+    if (isCompleted) viewCompletedPuzzle(puzzle.id);
+    else if (puzzle.players?.includes(currentUser.name) || puzzle.createdBy === currentUser.name) openPuzzle(puzzle.id);
+    else openSharedPuzzle(puzzle.id);
+  };
+  return row;
+}
+
+function renderProfilePuzzleHistory(name) {
+  const wrap = $("#profile-puzzle-history");
+  wrap.innerHTML = "";
+  const collections = profilePuzzleCollections(Object.values(dataCache.puzzles), name, currentUser.name);
+  const tabs = el("div", { class: "profile-puzzle-tabs", role: "tablist", "aria-label": "Crosswords" });
+  for (const key of ["active", "completed", "created"]) {
+    const button = el("button", {
+      class: `profile-puzzle-tab${profilePuzzleTab === key ? " selected" : ""}`,
+      text: cap(key),
+      role: "tab",
+      "aria-selected": profilePuzzleTab === key ? "true" : "false",
+    });
+    button.onclick = () => { profilePuzzleTab = key; renderProfilePuzzleHistory(name); };
+    tabs.appendChild(button);
+  }
+  wrap.appendChild(tabs);
+
+  const puzzles = collections[profilePuzzleTab];
+  const visible = profilePuzzleExpanded[profilePuzzleTab] ? puzzles : puzzles.slice(0, 5);
+  const list = el("div", { class: "profile-puzzle-list" });
+  visible.forEach((puzzle) => list.appendChild(profilePuzzleRow(puzzle, name)));
+  if (!visible.length) list.appendChild(el("div", { class: "profile-puzzle-empty", text: `No ${profilePuzzleTab} crosswords yet.` }));
+  if (puzzles.length > 5) {
+    const all = el("button", {
+      class: "profile-puzzle-all",
+      text: profilePuzzleExpanded[profilePuzzleTab] ? "Show less" : `All (${puzzles.length})`,
+    });
+    all.onclick = () => {
+      profilePuzzleExpanded[profilePuzzleTab] = !profilePuzzleExpanded[profilePuzzleTab];
+      renderProfilePuzzleHistory(name);
+    };
+    list.appendChild(all);
+  }
+  wrap.appendChild(list);
 }
 
 document.addEventListener("click", (e) => {

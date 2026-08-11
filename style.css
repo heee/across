@@ -789,6 +789,7 @@ button, input, textarea {
 .completion-title { font: 700 19px var(--font); text-align: center; }
 .completion-sub { font: 500 12.5px var(--font); color: var(--muted-5); margin: 2px 0 18px; }
 .completion-view-grid { width: 100%; flex: none; margin: 0 0 16px; }
+.action-primary.completion-challenge { width: 100%; flex: 0 0 auto; margin: -8px 0 16px; }
 
 .attempt-history-row {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -846,6 +847,15 @@ button, input, textarea {
 .highlight-icon { font-size: 14px; }
 .highlight-text { flex: 1; font: 500 12px var(--font); }
 
+.leaderboard-row { display: flex; align-items: center; gap: 8px; min-height: 34px; border-bottom: 1px solid var(--hairline-soft); }
+.leaderboard-row:last-child { border-bottom: none; }
+.leaderboard-identity { flex: 1; min-width: 0; }
+.leaderboard-name { font: 600 12px var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard-kind { font: 500 9.5px var(--font); color: var(--muted-45); margin-top: 1px; }
+.leaderboard-assists { display: flex; gap: 3px; flex: none; }
+.assist-badge { min-width: 20px; height: 20px; padding: 0 4px; border-radius: var(--radius-pill); display: grid; place-items: center; background: var(--block-cell); color: var(--assist); font: 800 9px var(--font); }
+.leaderboard-time { min-width: 42px; text-align: right; font: 700 12px var(--font); }
+
 .action-row { padding: 14px 22px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; }
 .action-primary { flex: 1.3; background: var(--accent); color: #fff; text-align: center; padding: 13px 0; border-radius: var(--radius-card); font: 700 13px var(--font); border: none; cursor: pointer; }
 .action-secondary { flex: 1.3; background: #fff; color: var(--ink); text-align: center; padding: 13px 0; border-radius: var(--radius-card); font: 600 13px var(--font); box-shadow: var(--shadow-card); border: none; cursor: pointer; }
@@ -882,6 +892,23 @@ button, input, textarea {
 .stat-tile { background: var(--bg-card); border-radius: var(--radius-card-sm); padding: 12px; box-shadow: var(--shadow-card); }
 .stat-tile-value { font: 700 18px var(--font); }
 .stat-tile-label { font: 500 11px var(--font); color: var(--muted-5); margin-top: 2px; }
+
+#profile-puzzle-history { margin-bottom: 20px; }
+.profile-puzzle-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 8px; background: var(--chip-bg); border-radius: var(--radius-card-sm); }
+.profile-puzzle-tab { border: 0; border-radius: 7px; padding: 8px 4px; background: transparent; color: var(--muted-5); font: 600 11px var(--font); cursor: pointer; }
+.profile-puzzle-tab.selected { background: var(--bg-card); color: var(--ink); box-shadow: var(--shadow-card); }
+.profile-puzzle-list { overflow: hidden; background: var(--bg-card); border-radius: var(--radius-card-sm); box-shadow: var(--shadow-card); }
+.profile-puzzle-row { width: 100%; min-height: 58px; display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 0; border-bottom: 1px solid var(--hairline-soft); background: transparent; text-align: left; cursor: pointer; }
+.profile-puzzle-status { width: 34px; height: 34px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent-tint); color: var(--accent); font: 700 9px var(--font); }
+.profile-puzzle-status.completed { background: var(--block-cell); color: oklch(55% .1 140); font-size: 13px; }
+.profile-puzzle-info { flex: 1; min-width: 0; }
+.profile-puzzle-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 12.5px var(--font); }
+.profile-puzzle-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; color: var(--muted-5); font: 500 9.5px var(--font); }
+.profile-puzzle-tail { flex: none; text-align: right; }
+.profile-puzzle-value { font: 700 11px var(--font); }
+.profile-puzzle-date { margin-top: 2px; color: var(--muted-4); font: 500 9px var(--font); }
+.profile-puzzle-empty { padding: 18px 12px; text-align: center; color: var(--muted-5); font: 500 11px var(--font); }
+.profile-puzzle-all { width: 100%; padding: 11px; border: 0; background: transparent; color: var(--accent); font: 600 11px var(--font); cursor: pointer; }
 
 .settings-card { display: flex; flex-direction: column; gap: 1px; background: var(--bg-card); border-radius: var(--radius-card-sm); overflow: hidden; box-shadow: var(--shadow-card); }
 .settings-name-row { display: flex; align-items: stretch; gap: 8px; margin-bottom: 20px; }

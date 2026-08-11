@@ -234,7 +234,7 @@
     <div class="scroll-area no-scrollbar completion-scroll" style="align-items:center;display:flex;flex-direction:column">
       <div class="completion-badge"><div class="completion-badge-grid" id="completion-badge-grid"></div></div>
       <div class="completion-title" id="completion-title"></div>
-      <div class="completion-sub">Completed together</div>
+      <div class="completion-sub" id="completion-sub">Completed together</div>
       <div class="stat-columns">
         <div class="stat-col"><div class="stat-value" id="completion-time">0:00</div><div class="stat-label">Time</div></div>
         <div class="stat-col"><div class="stat-value" id="completion-players">0</div><div class="stat-label">Players</div></div>
@@ -242,9 +242,14 @@
         <div class="stat-col"><div class="stat-value" id="completion-letters">0</div><div class="stat-label">Letters</div></div>
       </div>
       <button class="action-secondary completion-view-grid" id="completion-view-grid">View completed crossword</button>
+      <button class="action-primary completion-challenge" id="completion-challenge">Challenge</button>
       <div class="card">
         <div class="card-label">Contribution</div>
         <div id="completion-contribution"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Fastest solves</div>
+        <div id="completion-leaderboard"></div>
       </div>
       <div class="card">
         <div class="card-label">Highlights</div>
@@ -322,6 +327,7 @@
     </div>
     <div class="scroll-area no-scrollbar">
       <div class="stat-grid" id="profile-detail-stats"></div>
+      <div id="profile-puzzle-history"></div>
       <div id="profile-detail-settings-wrap"></div>
     </div>
   </div>
