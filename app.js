@@ -520,7 +520,7 @@ const SEARCH_CATEGORIES = [
   "Literature", "Language", "Philosophy", "Mythology", "Art & Design", "Music",
   "Movies & TV", "Pop Culture", "Technology", "Business & Economics",
   "Politics & Society", "Food & Drink", "Travel", "Sports", "Games", "Kids",
-  "People", "General Knowledge",
+  "People", "Houston & Texas", "Beer & Brewing", "General Knowledge",
 ];
 // New creation deliberately exposes three meaningfully different sessions.
 // The legacy 7x7 and 11x11 keys remain understood everywhere puzzles are
@@ -608,6 +608,22 @@ const TITLE_IDEAS = {
     "Rainy day fun", "First day jitters", "Sticker rewards", "Puddle jumping",
     "Cartoon logic", "Growing pains", "Fairy tale fun", "Storybook adventures",
   ],
+  "houston & texas": [
+    "Bayou City", "Space City", "Rodeo season", "Lone Star landmarks",
+    "Boots & bayous", "Gulf Coast state of mind", "Deep in the grid", "Houston, we have answers",
+    "Along the ship channel", "Under the Astrodome", "From the Heights to the coast", "Texas sized",
+    "Trail rides & skylines", "The Gulf Coast guide", "Bluebonnets & brisket", "Remember the Alamo",
+    "Big Bend to Buffalo Bayou", "The Texas triangle", "H town know how", "Stars over Texas",
+    "Ranches, rockets & rodeos", "Bayous after dark", "A Houston field guide", "Lone Star lore",
+  ],
+  "beer & brewing": [
+    "Hoppy hour", "On tap", "Malt intentions", "Lager than life",
+    "Flight school", "Brewed awakening", "Ale's well", "Yeast mode",
+    "Grain expectations", "The bitter end", "Another round", "Perfect head",
+    "From grain to glass", "Small batch", "House pour", "Cellar notes",
+    "Fresh hops", "Worth the wait", "Brew day", "Pint sized",
+    "Barrel aged", "Taproom trivia", "A proper pour", "Prost",
+  ],
 };
 
 const TITLE_SUBJECTS = {
@@ -619,15 +635,17 @@ const TITLE_SUBJECTS = {
   philosophy: ["I clue, therefore I am", "Categorical imperatives", "An examined grid", "Existential squares", "The meaning of maybe", "Plato's playbook"],
   mythology: ["Myth management", "Gods behaving badly", "Heroic complications", "Classical monsters", "Legend has it", "An oracle walks into a grid"],
   "art & design": ["Form follows fun", "Negative space", "The cultured grid", "A matter of taste", "Bauhaus rules", "Still life, moving clues"],
-  music: ["Minor complications", "Noteworthy", "Classical conditioning", "The sound argument", "Rhythm section", "A measured response"],
+  music: ["Minor complications", "Noteworthy", "Classical conditioning", "The sound argument", "Rhythm section", "A measured response", "Rodeo headliners", "Festival season", "Garage playlist", "Opening act", "Live from the lawn", "One more song"],
   "movies & tv": ["Now showing", "The plot thickens", "Prestige television", "Roll credits", "Continuity errors", "The sequel problem"],
   "pop culture": ["Zeitgeist watch", "Cultural literacy", "Main character energy", "Trending, historically", "The discourse", "Fame, briefly"],
   technology: ["Known issues", "Feature, not bug", "Human-readable", "Terms and conditions", "A series of tubes", "Technical debt society"],
   "business & economics": ["Capital ideas", "Market corrections", "The invisible hand waves", "Serious business", "Supply meets demand", "Marginal gains"],
   "politics & society": ["The public square", "Civic complications", "Power structures", "A more perfect grid", "Policy wonks welcome", "The social contract"],
-  "food & drink": ["Food for thought", "Second helpings", "A balanced argument", "Tasteful questions", "Just desserts", "The well-read menu"],
-  travel: ["Departures and arrivals", "A slight detour", "Frequent flyer theory", "The scenic route", "Cultural baggage", "Away with words"],
-  games: ["Rules lawyer", "Player one thinks", "Strategic ambiguity", "A sporting chance", "Game theory, lightly", "Critical hits"],
+  "food & drink": ["Food for thought", "Second helpings", "A balanced argument", "Tasteful questions", "Just desserts", "The well-read menu", "Houston eats", "Cajun country", "Breakfast tacos", "Crawfish season", "Backyard cookout", "Smoke & spice"],
+  travel: ["Departures and arrivals", "A slight detour", "Frequent flyer theory", "The scenic route", "Cultural baggage", "Away with words", "Galveston weekend", "Gulf Coast getaway", "Weekend away", "The open road", "Coastal detour", "Pack light"],
+  sports: ["Rodeo run", "World Cup fever", "Municipal course legends", "Tailgate season", "Tee time", "Full time"],
+  games: ["Rules lawyer", "Player one thinks", "Strategic ambiguity", "A sporting chance", "Game theory, lightly", "Critical hits", "Daily streak", "One more round", "Five cards and a dream", "Puzzle rivalry", "Guess again", "Score to settle"],
+  kids: ["Dad mode", "Pool full of kids", "Birthday party circuit", "Saturday sideline", "School night chaos", "Backyard energy"],
   people: ["Notable characters", "Human interest", "A few good names", "Biographical details", "People of consequence", "The social register"],
   "general knowledge": ["Things one ought to know", "Broadly speaking", "A civilized miscellany", "Useful at dinner", "The informed guess", "General intelligence"],
 };

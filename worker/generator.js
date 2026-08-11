@@ -480,9 +480,15 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
       return score;
     };
     return shuffleInPlace(items.slice()).sort((a, b) => {
+      // Category relevance leads in every slot; the more specific title tier
+      // gets extra priority in the longest slots. Crossing support still
+      // breaks ties, so generic high-support fill remains available whenever
+      // the theme corpus cannot satisfy an interlock.
+      const aThemeTier = themed ? a.tier : Math.min(a.tier, 1);
+      const bThemeTier = themed ? b.tier : Math.min(b.tier, 1);
+      if (aThemeTier !== bThemeTier) return bThemeTier - aThemeTier;
       const supportDelta = supportScore(b) - supportScore(a);
       if (Math.abs(supportDelta) > 0.0001) return supportDelta;
-      if (themed && a.tier !== b.tier) return b.tier - a.tier;
       return Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff);
     });
   }
@@ -853,7 +859,10 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
 // =======================================================================
 
 const LEGACY_TARGET_WORDS = { mini: 10, quick: 16, compact: 30, standard: 42, large: 72 };
-const LEGACY_FILL_ATTEMPTS = 5;
+// Full grids are the most sensitive to a weak initial anchor. More restarts
+// make the legacy safety net dependable without changing its dimensions or
+// relaxing the existing density threshold.
+const LEGACY_FILL_ATTEMPTS = 12;
 const LEGACY_FILL_PASSES = 4;
 
 function legacyGenerate(wordBank, keywords, size, difficulty) {
@@ -937,12 +946,18 @@ function legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n) {
 
   const strong = [];
   const weak = [];
+  const general = [];
   for (const entry of deduped) {
     const n2 = matchCount(entry);
     if (n2 >= 2) strong.push(entry);
     else if (n2 === 1) weak.push(entry);
+    else general.push(entry);
   }
-  return [strong, weak];
+  // Preserve theme priority while still allowing ordinary crossword fill to
+  // complete a sparse large grid. Omitting the final group could leave a
+  // themed fallback below its density floor even with thousands of usable
+  // crossers available in the corpus.
+  return [strong, weak, general];
 }
 
 function legacyShuffleByLength(list) {

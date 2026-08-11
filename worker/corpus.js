@@ -1,4 +1,5 @@
 import { EXPANDED_WORD_BANK } from "./corpus.generated.js";
+import { COMMUNITY_WORD_BANK } from "./corpus.community.js";
 
 // Across — original hand-authored word/clue bank.
 //
@@ -5896,4 +5897,6 @@ const HAND_AUTHORED_WORD_BANK = [
   { w: "EXCITINGDISCOVERY", c: "A thrilling new finding", cat: "kids", diff: 1 },
 ];
 
-export const WORD_BANK = [...HAND_AUTHORED_WORD_BANK, ...EXPANDED_WORD_BANK];
+// Community themes come first so their edited clues/categories win the
+// generator's answer-level deduplication over generic WordNet senses.
+export const WORD_BANK = [...COMMUNITY_WORD_BANK, ...HAND_AUTHORED_WORD_BANK, ...EXPANDED_WORD_BANK];

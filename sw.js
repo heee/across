@@ -1,7 +1,7 @@
 // Minimal app-shell cache so the PWA opens instantly and installs cleanly.
 // Never intercepts the Worker API (REST or WebSocket) — those must always
 // hit the network; puzzle data is never something a stale cache should serve.
-const CACHE_NAME = "across-shell-v31";
+const CACHE_NAME = "across-shell-v32";
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -12,6 +12,7 @@ const SHELL_FILES = [
   "./config.js",
   "./worker/generator.js",
   "./worker/corpus.js",
+  "./worker/corpus.community.js",
   "./worker/corpus.generated.js",
   "./manifest.json",
   "./icons/icon-192.png",

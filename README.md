@@ -113,8 +113,9 @@ Screen, and launch the installed PWA.
 
 ## Puzzle generation and current limits
 
-`worker/corpus.js` combines the original hand-authored clue bank with the
-generated, openly licensed expansion in `worker/corpus.generated.js`.
+`worker/corpus.js` combines the original hand-authored clue bank, the curated
+community themes in `worker/corpus.community.js`, and the generated, openly
+licensed expansion in `worker/corpus.generated.js`.
 `worker/generator.js` performs template-first, symmetric interlocking fill
 based on category, title, three creation sizes (5x5 Mini, 9x9 Standard, and
 15x15 Full), and five clue-difficulty profiles. The legacy 7x7 and 11x11 keys
@@ -124,11 +125,12 @@ must neither block the UI nor consume the Cloudflare Worker's request CPU
 budget. The Worker validates the generated grid before persisting it to D1 and
 seeding its Durable Object room. Private puzzles remain invite-link-only.
 
-The combined corpus contains roughly 18,800 unique usable answers from 3–15
-letters. The generated expansion adds native coverage for all 24 Discover categories
-and deliberately strengthens 3- and 6-letter fill plus positional letter
-diversity. It is adapted from Open English WordNet 2025 under CC BY 4.0; see
-`THIRD_PARTY_NOTICES.md`.
+The combined corpus contains roughly 19,500 unique usable answers from 3–15
+letters. The generated expansion adds native coverage for the original 24
+Discover categories and deliberately strengthens 3- and 6-letter fill plus
+positional letter diversity. The curated module supplies deep coverage for
+Houston & Texas and Beer & Brewing. The generated expansion is adapted from
+Open English WordNet 2025 under CC BY 4.0; see `THIRD_PARTY_NOTICES.md`.
 
 To rebuild the generated half, download
 `https://en-word.net/downloads/english-wordnet-2025-json.zip`, expand it, and

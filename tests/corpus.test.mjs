@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { WORD_BANK } from "../worker/corpus.js";
 import { EXPANDED_WORD_BANK } from "../worker/corpus.generated.js";
+import { COMMUNITY_WORD_BANK } from "../worker/corpus.community.js";
 
 const CATEGORIES = [
   "geography", "history", "science", "nature", "animals", "space",
@@ -27,6 +28,29 @@ test("generated corpus substantially expands usable coverage with balanced lengt
       const letters = new Set(entries.map((entry) => entry.w[position]));
       assert.ok(letters.size >= 15, `length ${length}, position ${position}: only ${letters.size} letters represented`);
     }
+  }
+});
+
+test("community corpus deeply covers the two new categories", () => {
+  const categories = ["houston & texas", "beer & brewing"];
+  assert.equal(new Set(COMMUNITY_WORD_BANK.map((entry) => entry.w)).size, COMMUNITY_WORD_BANK.length);
+
+  for (const category of categories) {
+    const entries = COMMUNITY_WORD_BANK.filter((entry) => entry.cat === category);
+    assert.ok(entries.length >= 220, `${category}: expected at least 220 entries, got ${entries.length}`);
+    for (const difficulty of [1, 2, 3]) {
+      const count = entries.filter((entry) => entry.diff === difficulty).length;
+      assert.ok(count >= 15, `${category}: difficulty ${difficulty} has only ${count} entries`);
+    }
+    for (let length = 3; length <= 15; length++) {
+      const count = entries.filter((entry) => entry.w.length === length).length;
+      assert.ok(count >= 1, `${category}: no ${length}-letter answers`);
+    }
+  }
+
+  for (const entry of COMMUNITY_WORD_BANK) {
+    assert.match(entry.w, /^[A-Z]{3,15}$/);
+    assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
   }
 });
 
