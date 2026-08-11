@@ -204,6 +204,35 @@ test("a cold Durable Object seeds from D1 once, then restores its own storage", 
   assert.equal((await restoredRoom.ensurePuzzle("test-1")).id, "test-1");
 });
 
+test("a checkpoint snapshots recent WebSocket progress to D1 before exit", async () => {
+  const db = new FakeD1();
+  const puzzle = samplePuzzle();
+  puzzle.grid.cells = [
+    { row: 0, col: 0, letter: "A", block: false },
+    { row: 0, col: 1, letter: "B", block: false },
+  ];
+  await upsertPuzzle(db, puzzle);
+  const sent = [];
+  const socket = { send(payload) { sent.push(JSON.parse(payload)); } };
+  const room = new PuzzleRoom({
+    storage: { async put() {} },
+  }, { DB: db });
+  room.puzzle = structuredClone(puzzle);
+  room.lastPersist = Date.now();
+
+  await room.handleMessage(socket, "Henning", {
+    data: JSON.stringify({ type: "cell-update", row: 0, col: 0, letter: "A", isCorrect: true }),
+  });
+  assert.equal((await getPuzzle(db, "test-1")).cells["0-0"], undefined);
+
+  await room.handleMessage(socket, "Henning", {
+    data: JSON.stringify({ type: "checkpoint", requestId: "exit-1" }),
+  });
+
+  assert.equal((await getPuzzle(db, "test-1")).cells["0-0"].letter, "A");
+  assert.deepEqual(sent.at(-1), { type: "checkpoint-saved", requestId: "exit-1" });
+});
+
 test("creation persists a validated client-generated grid without server-side generation", async () => {
   const db = new FakeD1();
   let seededPuzzle = null;

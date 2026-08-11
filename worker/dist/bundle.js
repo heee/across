@@ -564,6 +564,14 @@ export class PuzzleRoom {
       this.puzzle.totalTimeMs = Object.values(this.puzzle.sessions).reduce((s, sess) => s + (sess.timeSpentMs || 0), 0);
       this.broadcast({ type: "time-update", sessions: this.puzzle.sessions, totalTimeMs: this.puzzle.totalTimeMs }, socket);
       await this.persist(false);
+    } else if (msg.type === "checkpoint") {
+      // WebSocket frames arrive in order. By acknowledging only after a full
+      // D1 snapshot, the client can safely close the room without losing the
+      // letters and timing updates sent immediately before this request.
+      const completed = this.checkComplete();
+      await this.persist(completed);
+      await this.commitSnapshot(completed);
+      this.sendTo(socket, { type: "checkpoint-saved", requestId: msg.requestId });
     }
   }
 

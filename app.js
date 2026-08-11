@@ -430,9 +430,16 @@ const RemoteBackend = {
   connectPuzzle(puzzleId, user, handlers) {
     const wsUrl = `${window.WORKER_URL.replace(/^http/, "ws")}/puzzle/${puzzleId}/connect?user=${encodeURIComponent(user)}`;
     const socket = new WebSocket(wsUrl);
+    const checkpointWaiters = new Map();
     socket.onmessage = (evt) => {
       const msg = JSON.parse(evt.data);
-      if (msg.type === "init") handlers.onInit?.(msg.puzzle, msg.presence);
+      if (msg.type === "checkpoint-saved") {
+        const waiter = checkpointWaiters.get(msg.requestId);
+        if (waiter) {
+          checkpointWaiters.delete(msg.requestId);
+          waiter(true);
+        }
+      } else if (msg.type === "init") handlers.onInit?.(msg.puzzle, msg.presence);
       else if (msg.type === "cell-update") handlers.onCellUpdate?.(msg);
       else if (msg.type === "presence") handlers.onPresence?.(msg.players);
       else if (msg.type === "cursor") handlers.onCursor?.(msg);
@@ -442,6 +449,10 @@ const RemoteBackend = {
       else if (msg.type === "user-scrubbed") handlers.onUserScrubbed?.({ user: msg.user, players: msg.players, sessions: msg.sessions });
       else if (msg.type === "user-renamed") handlers.onUserRenamed?.(msg);
     };
+    socket.addEventListener("close", () => {
+      for (const resolve of checkpointWaiters.values()) resolve(false);
+      checkpointWaiters.clear();
+    });
     const send = (msg) => {
       if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
       else socket.addEventListener("open", () => socket.send(JSON.stringify(msg)), { once: true });
@@ -452,6 +463,22 @@ const RemoteBackend = {
       sendReveal(row, col, letter) { send({ type: "reveal", row, col, letter }); },
       sendAutoCheckOn() { send({ type: "auto-check-on" }); },
       sendTimeHeartbeat(deltaMs) { if (deltaMs > 0) send({ type: "time-heartbeat", deltaMs }); },
+      requestCheckpoint() {
+        if (socket.readyState !== WebSocket.OPEN) return Promise.resolve(false);
+        const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        return new Promise((resolve) => {
+          const finish = (saved) => {
+            clearTimeout(timeout);
+            resolve(saved);
+          };
+          const timeout = setTimeout(() => {
+            checkpointWaiters.delete(requestId);
+            finish(false);
+          }, 3000);
+          checkpointWaiters.set(requestId, finish);
+          socket.send(JSON.stringify({ type: "checkpoint", requestId }));
+        });
+      },
       close() { socket.close(); },
     };
   },
@@ -867,11 +894,23 @@ $("#name-entry-submit").addEventListener("click", async () => {
 });
 $("#name-entry-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#name-entry-submit").click(); });
 
-document.addEventListener("click", (e) => {
+let returningHome = false;
+document.addEventListener("click", async (e) => {
   if (e.target.closest("[data-action='go-home']")) {
-    leavePuzzleConnection();
-    renderProfilePicker();
-    navigate("screen-name-entry");
+    if (returningHome) return;
+    returningHome = true;
+    try {
+      await saveAndLeavePuzzleConnection();
+      try {
+        await refreshData();
+      } catch (error) {
+        showToast(error.message || "Couldn't refresh the home screen");
+      }
+      renderHome();
+      navigate("screen-home");
+    } finally {
+      returningHome = false;
+    }
   }
 });
 
@@ -1967,6 +2006,20 @@ async function confirmDeletePuzzle() {
 function leavePuzzleConnection() {
   if (currentPuzzleConn) {
     flushTime(true);
+    currentPuzzleConn.close();
+    currentPuzzleConn = null;
+  }
+  clearInterval(timeFlushHandle);
+  clearInterval(sessionTimerHandle);
+}
+
+// The header Home button is an intentional exit, so wait for the room to
+// confirm that every earlier WebSocket update has been copied to D1 before
+// closing it and refreshing the home snapshot.
+async function saveAndLeavePuzzleConnection() {
+  if (currentPuzzleConn) {
+    flushTime(true);
+    await currentPuzzleConn.requestCheckpoint?.();
     currentPuzzleConn.close();
     currentPuzzleConn = null;
   }
