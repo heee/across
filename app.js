@@ -1187,12 +1187,27 @@ function renderSearch() {
   populateSelect($("#search-category"), [["all", "All categories"], ...SEARCH_CATEGORIES.map((cat) => [cat, cat])], activeSearchCategory);
   populateSelect($("#search-difficulty"), [["all", "All difficulties"], ...DIFFICULTY_OPTIONS.map((value) => [value, cap(value)])], activeSearchDifficulty);
   populateSelect($("#search-size"), [["all", "All sizes"], ...Object.keys(ALL_SIZE_DIMENSIONS).map((value) => [value, `${sizeLabel(value)} (${ALL_SIZE_DIMENSIONS[value]}×${ALL_SIZE_DIMENSIONS[value]})`])], activeSearchSize);
-  $("#search-input").value = lastSearchQuery;
+  const searchInput = $("#search-input");
+  const searchClear = $("#search-clear");
+  const syncSearchClear = () => { searchClear.hidden = searchInput.value.length === 0; };
+  searchInput.value = lastSearchQuery;
+  syncSearchClear();
   $("#search-category").onchange = (e) => { activeSearchCategory = e.target.value; renderSearchResults(); };
   $("#search-difficulty").onchange = (e) => { activeSearchDifficulty = e.target.value; renderSearchResults(); };
   $("#search-size").onchange = (e) => { activeSearchSize = e.target.value; renderSearchResults(); };
   renderSearchResults();
-  $("#search-input").oninput = (e) => { lastSearchQuery = e.target.value; renderSearchResults(); };
+  searchInput.oninput = (e) => {
+    lastSearchQuery = e.target.value;
+    syncSearchClear();
+    renderSearchResults();
+  };
+  searchClear.onclick = () => {
+    searchInput.value = "";
+    lastSearchQuery = "";
+    syncSearchClear();
+    renderSearchResults();
+    searchInput.focus();
+  };
 }
 
 function populateSelect(select, options, value) {
