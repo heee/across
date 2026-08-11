@@ -174,7 +174,6 @@ const LocalBackend = {
     const puzzle = {
       id,
       title: req.title,
-      description: req.description,
       keywords: req.keywords,
       size: req.size,
       difficulty: req.difficulty,
@@ -518,7 +517,7 @@ const SEARCH_CATEGORIES = [
   "Literature", "Language", "Philosophy", "Mythology", "Art & Design", "Music",
   "Movies & TV", "Pop Culture", "Technology", "Business & Economics",
   "Politics & Society", "Food & Drink", "Travel", "Sports", "Games", "Kids",
-  "People", "Houston & Texas", "Beer & Brewing", "General Knowledge",
+  "People", "Houston & Texas", "Beer & Brewing", "Whisky", "General Knowledge",
 ];
 // New creation deliberately exposes three meaningfully different sessions.
 // The legacy 7x7 and 11x11 keys remain understood everywhere puzzles are
@@ -621,6 +620,14 @@ const TITLE_IDEAS = {
     "From grain to glass", "Small batch", "House pour", "Cellar notes",
     "Fresh hops", "Worth the wait", "Brew day", "Pint sized",
     "Barrel aged", "Taproom trivia", "A proper pour", "Prost",
+  ],
+  whisky: [
+    "The spirit of things", "Cask conditions", "A quiet dram", "Malt matters",
+    "Whisky business", "Oak and time", "The angel's share", "Straight from the cask",
+    "Proof of character", "Still life", "Barrel notes", "A proper measure",
+    "From grain to glass", "The long maturation", "Nose to finish", "House style",
+    "Peat and patience", "Single-minded", "The master blender", "Warehouse secrets",
+    "A world of whisky", "Spirit safe", "No age statement", "Time in oak",
   ],
 };
 
@@ -1233,7 +1240,7 @@ function renderSearchResults() {
   results.innerHTML = "";
   let list = Object.values(dataCache.puzzles).filter((p) => p.visibility === "open");
   const query = lastSearchQuery.trim().toLowerCase();
-  if (query) list = list.filter((p) => `${p.title} ${p.description} ${(p.keywords || []).join(" ")}`.toLowerCase().includes(query));
+  if (query) list = list.filter((p) => `${p.title} ${p.description || ""} ${(p.keywords || []).join(" ")}`.toLowerCase().includes(query));
   if (activeSearchCategory !== "all") list = list.filter((p) => (p.keywords || []).some((k) => normalizedCategory(k) === normalizedCategory(activeSearchCategory)));
   if (activeSearchDifficulty !== "all") list = list.filter((p) => p.difficulty === activeSearchDifficulty);
   if (activeSearchSize !== "all") list = list.filter((p) => p.size === activeSearchSize || p.grid?.rows === ALL_SIZE_DIMENSIONS[activeSearchSize]);
@@ -1282,7 +1289,6 @@ function openCreate(prefill = {}) {
   createVisibility = "open";
   offeredTitles = new Set();
   $("#create-title").value = prefill.title || "";
-  $("#create-description").value = "";
   renderCreateCategoryList();
   updateGenerateTitleButton();
   renderSegmented("#create-size", createSize, (v) => { createSize = v; renderCreatePreview(); });
@@ -1386,7 +1392,6 @@ async function createPuzzleFromForm(playAfterCreate) {
     await new Promise((resolve) => requestAnimationFrame(resolve));
     const puzzle = await Backend.createPuzzle({
       title,
-      description: $("#create-description").value.trim(),
       keywords: [createCategory],
       size: createSize,
       difficulty: createDifficulty,
@@ -2339,7 +2344,6 @@ function renderRankings() {
 // player has no relevant data yet, which excludes them from that metric's
 // list rather than showing a misleading 0.
 const METRIC_DEFS = {
-  "Contribution score": { get: (t) => t.contribution, ascending: false, format: (v) => Math.round(v) },
   "Completed": { get: (t) => (t.completedCount > 0 ? t.completedCount : null), ascending: false, format: (v) => Math.round(v) },
   "Contribution": { get: (t) => (t.contribution > 0 ? t.contribution : null), ascending: false, format: (v) => Math.round(v) },
   "Accuracy": {
@@ -2349,6 +2353,7 @@ const METRIC_DEFS = {
     },
     ascending: false, format: (v) => `${Math.round(v)}%`,
   },
+  "Contribution score": { get: (t) => t.contribution, ascending: false, format: (v) => Math.round(v) },
   "Letters entered": { get: (t) => t.lettersEntered, ascending: false, format: (v) => Math.round(v) },
   "Words completed": { get: (t) => t.wordsCompleted, ascending: false, format: (v) => Math.round(v) },
   "Crosswords completed": { get: (t) => t.completedCount, ascending: false, format: (v) => Math.round(v) },
@@ -2385,8 +2390,8 @@ function computeRankingTotals(since) {
   for (const name of Object.keys(dataCache.users)) ensure(name);
 
   for (const p of Object.values(dataCache.puzzles)) {
-    const ts = p.completedAt ? new Date(p.completedAt).getTime() : new Date(p.createdAt).getTime();
     if (p.statsEligible === false) continue;
+    const ts = p.completedAt ? new Date(p.completedAt).getTime() : new Date(p.createdAt).getTime();
     if (ts < since) continue;
     if (p.createdBy && !p.forkOf) ensure(p.createdBy).createdCount += 1;
     for (const [name, s] of Object.entries(p.sessions || {})) {

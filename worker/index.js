@@ -9,8 +9,9 @@
 //   POST /update-user-color { user, hue }                       -> changes a user's avatar color (hue must be one of PLAYER_HUES)
 //   POST /rename-user     { oldName, newName }                  -> globally renames a user while preserving identity and history
 //   POST /delete-user     { user }                              -> removes the user record and scrubs them from every puzzle's player list
-//   POST /create-puzzle   { title, description, keywords[], size, difficulty, visibility, createdBy, grid }
-//                                                                 -> validates the client-generated grid, creates the puzzle, server-assigns id
+//   POST /create-puzzle   { title, category, keywords[], size, difficulty, visibility, createdBy, grid? }
+//                                                                 -> claims an unseen pre-generated blueprint when category is provided;
+//                                                                    a validated client grid remains a transition fallback
 //   POST /join-puzzle     { puzzleId, user }                     -> adds user to the puzzle's player list
 //   POST /fork-puzzle     { puzzleId, user }                     -> creates a private, blank, solo copy of an existing
 //                                                                    puzzle for one user (idempotent per user+puzzle)
@@ -40,6 +41,34 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: cors });
+    }
+
+    // Destructive maintenance is intentionally unavailable during normal
+    // operation and uses a separate server-side secret from the browser's
+    // public APP_KEY. It clears every known room before deleting D1 puzzle
+    // rows, while leaving users, colors, settings, and blueprint inventory.
+    if (url.pathname === "/maintenance/purge-legacy-puzzles" && request.method === "POST") {
+      if (env.WRITE_DISABLED !== "1") return json({ error: "maintenance mode required" }, 409, cors);
+      if (!env.PURGE_KEY || !(await secretsEqual(request.headers.get("X-Purge-Key") || "", env.PURGE_KEY))) {
+        return json({ error: "unauthorized" }, 401, cors);
+      }
+      const body = await safeJson(request);
+      if (body?.confirmation !== "DELETE ALL PUZZLES, KEEP USERS") return json({ error: "invalid confirmation" }, 400, cors);
+      try {
+        const rows = await env.DB.prepare("SELECT id FROM puzzles ORDER BY id").all();
+        const puzzleIds = (rows.results || []).map((row) => row.id).filter(Boolean);
+        for (let index = 0; index < puzzleIds.length; index += 20) {
+          await Promise.all(puzzleIds.slice(index, index + 20).map(async (puzzleId) => {
+            const roomId = env.PUZZLE_ROOM.idFromName(puzzleId);
+            const response = await env.PUZZLE_ROOM.get(roomId).fetch("https://internal/delete", { method: "POST" });
+            if (!response.ok) throw new Error(`could not clear room ${puzzleId}`);
+          }));
+        }
+        await purgePuzzleRows(env.DB);
+        return json({ ok: true, deletedPuzzles: puzzleIds.length, preservedUsers: true, preservedBlueprints: true }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, 502, cors);
+      }
     }
 
     const puzzleConnectMatch = url.pathname.match(/^\/puzzle\/([a-zA-Z0-9_-]+)\/connect$/);
@@ -195,19 +224,24 @@ export default {
       const body = await safeJson(request);
       const validated = validateCreateRequest(body);
       if (!validated) return json({ error: "invalid puzzle payload" }, 400, cors);
-      if (!body?.grid) return json({ error: "Reload Across once before creating a crossword" }, 409, cors);
-      const clientGrid = validateClientGrid(body.grid, validated.size);
-      if (!clientGrid) return json({ error: "invalid crossword grid" }, 400, cors);
-
       let puzzle;
       try {
-        puzzle = buildPuzzle(validated, clientGrid);
+        if (body?.grid) {
+          const clientGrid = validateClientGrid(body.grid, validated.size);
+          if (!clientGrid) return json({ error: "invalid crossword grid" }, 400, cors);
+          puzzle = buildPuzzle(validated, clientGrid);
+          await upsertPuzzle(env.DB, puzzle);
+        } else if (validated.category) {
+          puzzle = await createPuzzleFromInventory(env.DB, validated);
+          if (!puzzle) return json({ error: "No unseen puzzle is ready for this category, size, and difficulty" }, 409, cors);
+        } else {
+          return json({ error: "Reload Across once before creating a crossword" }, 409, cors);
+        }
       } catch (e) {
-        return json({ error: `generation failed: ${e.message}` }, 422, cors);
+        return json({ error: `creation failed: ${e.message}` }, 422, cors);
       }
 
       try {
-        await upsertPuzzle(env.DB, puzzle);
         // Seed the live room so the creator's first connect has state immediately.
         const roomId = env.PUZZLE_ROOM.idFromName(puzzle.id);
         const stub = env.PUZZLE_ROOM.get(roomId);
@@ -281,6 +315,7 @@ export default {
             attemptNumber: newAttempt ? attemptNumber : 1,
             isReplay: newAttempt,
             statsEligible: true,
+            ...(source.blueprintId ? { blueprintId: source.blueprintId } : {}),
             createdAt: new Date().toISOString(),
             grid: source.grid,
             cells: {},
@@ -292,6 +327,7 @@ export default {
             highlights: [],
           };
           await upsertPuzzle(env.DB, forkedPuzzle);
+          await recordBlueprintExposure(env.DB, forkedPuzzle, user);
         }
 
         if (created) {
@@ -636,12 +672,16 @@ function validateCreateRequest(body) {
   const title = String(body.title || "").trim().slice(0, 60);
   const description = String(body.description || "").trim().slice(0, 140);
   const keywords = Array.isArray(body.keywords) ? body.keywords.map((k) => String(k).trim().toLowerCase()).filter(Boolean).slice(0, 10) : [];
+  const explicitCategory = typeof body.category === "string" ? body.category.trim().toLowerCase() : "";
+  // Existing clients already send the selected category as keywords[0].
+  // Keep accepting that shape while newer clients move to `category`.
+  const category = (explicitCategory || keywords[0] || "").slice(0, 80);
   const size = ["mini", "quick", "compact", "standard", "large"].includes(body.size) ? body.size : "standard";
   const difficulty = ["beginner", "easy", "medium", "hard", "expert"].includes(body.difficulty) ? body.difficulty : "medium";
   const visibility = body.visibility === "private" ? "private" : "open";
   const createdBy = String(body.createdBy || "").trim().slice(0, 40);
   if (!title || !createdBy) return null;
-  return { title, description, keywords, size, difficulty, visibility, createdBy };
+  return { title, description, keywords, category, size, difficulty, visibility, createdBy };
 }
 
 function validateClientGrid(rawGrid, size) {
@@ -697,14 +737,16 @@ function validateClientGrid(rawGrid, size) {
   return { rows: expectedSize, cols: expectedSize, cells, words };
 }
 
-function buildPuzzle(req, grid) {
+function buildPuzzle(req, grid, options = {}) {
   const slug = slugify(req.title) || "puzzle";
-  const id = `${slug}-${Date.now().toString(36)}`;
+  const id = options.id || `${slug}-${Date.now().toString(36)}`;
   return {
     id,
     title: req.title,
     description: req.description,
     keywords: req.keywords,
+    ...(req.category ? { category: req.category } : {}),
+    ...(options.blueprintId ? { blueprintId: options.blueprintId } : {}),
     size: req.size,
     difficulty: req.difficulty,
     visibility: req.visibility,
@@ -771,6 +813,21 @@ function corsHeaders(env) {
 
 function checkAppKey(request, env) {
   return !env.APP_KEY || request.headers.get("X-App-Key") === env.APP_KEY;
+}
+
+async function secretsEqual(candidate, expected) {
+  const encoder = new TextEncoder();
+  const [candidateHash, expectedHash] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(candidate)),
+    crypto.subtle.digest("SHA-256", encoder.encode(expected)),
+  ]);
+  const left = new Uint8Array(candidateHash);
+  const right = new Uint8Array(expectedHash);
+  let difference = left.length ^ right.length;
+  for (let index = 0; index < Math.max(left.length, right.length); index++) {
+    difference |= (left[index] || 0) ^ (right[index] || 0);
+  }
+  return difference === 0;
 }
 
 async function safeJson(request) {
@@ -891,7 +948,10 @@ async function renameUser(db, oldName, newName) {
   if (collision) { const error = new Error("That name is already taken"); error.code = "NAME_TAKEN"; throw error; }
 
   const affectedPuzzleIds = [];
-  const statements = [db.prepare("UPDATE users SET name = ?, updated_at = ? WHERE name = ?").bind(newName, new Date().toISOString(), oldName)];
+  const statements = [
+    db.prepare("UPDATE users SET name = ?, updated_at = ? WHERE name = ?").bind(newName, new Date().toISOString(), oldName),
+    db.prepare("UPDATE blueprint_exposures SET user_name = ? WHERE user_name = ?").bind(newName, oldName),
+  ];
   for (const row of puzzleRows.results || []) {
     const puzzle = puzzleFromRow(row);
     if (!puzzle || !renamePuzzleIdentity(puzzle, oldName, newName)) continue;
@@ -905,6 +965,59 @@ async function renameUser(db, oldName, newName) {
 async function getPuzzle(db, puzzleId) {
   const row = await db.prepare("SELECT payload_json FROM puzzles WHERE id = ?").bind(puzzleId).first();
   return row ? puzzleFromRow(row) : null;
+}
+
+async function createPuzzleFromInventory(db, request) {
+  const now = new Date().toISOString();
+  const slug = slugify(request.title) || "puzzle";
+  const uniquePart = typeof globalThis.crypto?.randomUUID === "function"
+    ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 10)
+    : Date.now().toString(36);
+  const puzzleId = `${slug.slice(0, 40)}-${uniquePart}`;
+
+  // D1 batch statements execute as one transaction. The first statement
+  // claims one grid the player has never seen; the second returns that exact
+  // claim. The composite primary key is the final guard against concurrent
+  // requests ever assigning the same blueprint twice to one player.
+  const results = await db.batch([
+    db.prepare(`
+      INSERT OR IGNORE INTO blueprint_exposures (blueprint_id, user_name, puzzle_id, used_at)
+      SELECT b.id, ?, ?, ?
+      FROM puzzle_blueprints b
+      WHERE b.category = ? AND b.size = ? AND b.difficulty = ? AND b.status = 'ready'
+        AND NOT EXISTS (
+          SELECT 1 FROM blueprint_exposures seen
+          WHERE seen.blueprint_id = b.id AND seen.user_name = ?
+        )
+      ORDER BY (
+        SELECT COUNT(*) FROM blueprint_exposures uses WHERE uses.blueprint_id = b.id
+      ) ASC, b.created_at ASC, b.id ASC
+      LIMIT 1
+    `).bind(
+      request.createdBy, puzzleId, now,
+      request.category, request.size, request.difficulty, request.createdBy
+    ),
+    db.prepare(`
+      SELECT b.id, b.grid_json
+      FROM puzzle_blueprints b
+      JOIN blueprint_exposures e ON e.blueprint_id = b.id
+      WHERE e.puzzle_id = ? AND e.user_name = ?
+    `).bind(puzzleId, request.createdBy),
+  ]);
+  const row = results?.[1]?.results?.[0] || null;
+  if (!row) return null;
+
+  try {
+    const grid = validateClientGrid(parseJson(row.grid_json, null), request.size);
+    if (!grid) throw new Error(`blueprint ${row.id} contains an invalid grid`);
+    const puzzle = buildPuzzle(request, grid, { id: puzzleId, blueprintId: row.id });
+    await upsertPuzzle(db, puzzle);
+    return puzzle;
+  } catch (error) {
+    // A failed clone must not burn an otherwise reusable inventory item.
+    await db.prepare("DELETE FROM blueprint_exposures WHERE puzzle_id = ?").bind(puzzleId).run();
+    throw error;
+  }
 }
 
 function puzzleUpsertStatement(db, puzzle) {
@@ -961,16 +1074,39 @@ async function joinPuzzle(db, puzzleId, user) {
   if (!puzzle.sessions || typeof puzzle.sessions !== "object") puzzle.sessions = {};
   if (!puzzle.sessions[user]) puzzle.sessions[user] = newSession();
   await upsertPuzzle(db, puzzle);
+  await recordBlueprintExposure(db, puzzle, user);
+}
+
+async function recordBlueprintExposure(db, puzzle, user) {
+  if (!puzzle?.blueprintId || !user) return;
+  await db.prepare(`
+    INSERT OR IGNORE INTO blueprint_exposures (blueprint_id, user_name, puzzle_id, used_at)
+    VALUES (?, ?, ?, ?)
+  `).bind(puzzle.blueprintId, user, puzzle.id, new Date().toISOString()).run();
 }
 
 async function deletePuzzle(db, puzzleId) {
   await db.prepare("DELETE FROM puzzles WHERE id = ?").bind(puzzleId).run();
 }
 
+// D1 half of the deliberately separate maintenance purge. Durable Object
+// storage must be cleared first through each room's /delete handler; see
+// scripts/purge-legacy-puzzles.cjs. User rows (including hue/settings) and
+// reusable blueprint rows are intentionally untouched.
+async function purgePuzzleRows(db) {
+  await db.batch([
+    db.prepare("DELETE FROM blueprint_exposures"),
+    db.prepare("DELETE FROM puzzles"),
+  ]);
+}
+
 async function deleteUser(db, name) {
   const rows = await db.prepare("SELECT payload_json FROM puzzles").all();
   const affectedPuzzleIds = [];
-  const statements = [db.prepare("DELETE FROM users WHERE name = ?").bind(name)];
+  const statements = [
+    db.prepare("DELETE FROM users WHERE name = ?").bind(name),
+    db.prepare("DELETE FROM blueprint_exposures WHERE user_name = ?").bind(name),
+  ];
   for (const row of rows.results || []) {
     const puzzle = puzzleFromRow(row);
     if (!puzzle) continue;
@@ -985,4 +1121,4 @@ async function deleteUser(db, name) {
   return affectedPuzzleIds;
 }
 
-export { loadData, registerUser, updateUserColor, updateUserSettings, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser, validateClientGrid };
+export { loadData, registerUser, updateUserColor, updateUserSettings, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser, validateClientGrid, createPuzzleFromInventory, purgePuzzleRows };

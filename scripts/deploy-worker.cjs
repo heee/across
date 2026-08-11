@@ -65,6 +65,9 @@ async function main() {
   for (const name of ["ALLOWED_ORIGIN", "APP_KEY"]) {
     if (!existingBindingNames.has(name)) throw new Error(`Existing Worker is missing required binding: ${name}`);
   }
+  if (process.env.WRITE_DISABLED === "1" && !existingBindingNames.has("PURGE_KEY")) {
+    throw new Error("Maintenance purge requires an existing PURGE_KEY secret binding. Add it in Cloudflare before deploying WRITE_DISABLED=1.");
+  }
 
   const bundlePath = path.join(__dirname, "..", "worker", "dist", "bundle.js");
   if (!fs.existsSync(bundlePath)) {
@@ -83,6 +86,10 @@ async function main() {
       { type: "durable_object_namespace", name: "PUZZLE_ROOM", class_name: "PuzzleRoom" },
     ],
   };
+
+  if (existingBindingNames.has("PURGE_KEY")) {
+    metadata.bindings.push({ type: "inherit", name: "PURGE_KEY" });
+  }
 
   if (process.env.WRITE_DISABLED === "1") {
     metadata.bindings.push({ type: "plain_text", name: "WRITE_DISABLED", text: "1" });

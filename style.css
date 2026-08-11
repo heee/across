@@ -567,15 +567,21 @@ button, input, textarea {
 
 .puzzle-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   padding: 14px 18px 8px;
 }
+.puzzle-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+}
+.puzzle-header-info { min-width: 0; }
 .puzzle-header-title { font: 600 17px var(--font); }
 .puzzle-header-sub { font: 500 12px var(--font); color: var(--muted-5); margin-top: 2px; }
 .puzzle-header-sub .total-time { font-weight: 400; color: var(--muted-35); }
 
-.header-actions { display: flex; align-items: center; gap: 16px; }
 .icon-btn-pair { display: flex; align-items: center; gap: 2px; }
 .icon-btn {
   width: 34px; height: 34px; border-radius: 50%;

@@ -3,6 +3,7 @@ import test from "node:test";
 import { WORD_BANK } from "../worker/corpus.js";
 import { EXPANDED_WORD_BANK } from "../worker/corpus.generated.js";
 import { COMMUNITY_WORD_BANK } from "../worker/corpus.community.js";
+import { WHISKY_WORD_BANK } from "../worker/corpus.whisky.js";
 
 const CATEGORIES = [
   "geography", "history", "science", "nature", "animals", "space",
@@ -50,6 +51,28 @@ test("community corpus deeply covers the two new categories", () => {
 
   for (const entry of COMMUNITY_WORD_BANK) {
     assert.match(entry.w, /^[A-Z]{3,15}$/);
+    assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
+  }
+});
+
+test("whisky corpus deeply covers production, maturation, regions, and tasting without cocktails", () => {
+  assert.ok(WHISKY_WORD_BANK.length >= 350, `expected at least 350 entries, got ${WHISKY_WORD_BANK.length}`);
+  assert.equal(new Set(WHISKY_WORD_BANK.map((entry) => entry.w)).size, WHISKY_WORD_BANK.length);
+  assert.ok(WORD_BANK.some((entry) => entry.cat === "whisky"));
+
+  for (const difficulty of [1, 2, 3]) {
+    const count = WHISKY_WORD_BANK.filter((entry) => entry.diff === difficulty).length;
+    assert.ok(count >= 40, `difficulty ${difficulty} has only ${count} entries`);
+  }
+  for (let length = 3; length <= 15; length++) {
+    assert.ok(WHISKY_WORD_BANK.some((entry) => entry.w.length === length), `no ${length}-letter whisky answers`);
+  }
+
+  const cocktailAnswers = new Set(["MANHATTAN", "OLDFASHIONED", "HIGHBALL", "WHISKYSOUR", "ROBROY", "MINTJULEP"]);
+  assert.equal(WHISKY_WORD_BANK.filter((entry) => cocktailAnswers.has(entry.w)).length, 0);
+  for (const entry of WHISKY_WORD_BANK) {
+    assert.match(entry.w, /^[A-Z]{3,15}$/);
+    assert.equal(entry.cat, "whisky");
     assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
   }
 });

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=38">
+<link rel="stylesheet" href="style.css?v=39">
 </head>
 <body>
 <div id="app">
@@ -86,9 +86,6 @@
         <button id="create-generate-title" class="generate-title-btn" title="Generate a title for this category" disabled>✨</button>
       </div>
 
-      <div class="field-label">Short description <span class="optional">(optional)</span></div>
-      <input id="create-description" class="text-field description" type="text" placeholder="A one-line hint at the theme" maxlength="140">
-
       <div class="field-label">Puzzle size</div>
       <div class="segmented three-options" id="create-size">
         <button class="segmented-option" data-value="mini">Mini</button>
@@ -128,20 +125,20 @@
   <!-- Crossword solve -->
   <div id="screen-puzzle" class="screen">
     <div class="puzzle-header">
-      <div>
-        <div class="puzzle-header-title" id="puzzle-title"></div>
-        <div class="puzzle-header-sub">
-          <span id="puzzle-playing-count"></span> playing<span id="puzzle-timer-summary"> · <span id="puzzle-my-time">0:00</span> mins
-          <span class="total-time">(<span id="puzzle-total-time">0:00</span> total)</span></span>
-        </div>
-      </div>
-      <div class="header-actions">
+      <div class="puzzle-header-top">
         <div class="icon-btn-pair">
           <button class="icon-btn" data-action="go-home" title="Home">⌂</button>
           <button class="icon-btn" id="puzzle-share-btn" title="Share">↗</button>
           <button class="icon-btn assist" id="puzzle-assist-btn" title="Assist">✦</button>
         </div>
         <div class="player-avatars" id="puzzle-avatars"></div>
+      </div>
+      <div class="puzzle-header-info">
+        <div class="puzzle-header-title" id="puzzle-title"></div>
+        <div class="puzzle-header-sub">
+          <span id="puzzle-playing-count"></span> playing<span id="puzzle-timer-summary"> · <span id="puzzle-my-time">0:00</span> mins
+          <span class="total-time">(<span id="puzzle-total-time">0:00</span> total)</span></span>
+        </div>
       </div>
     </div>
     <div class="grid-wrap">
@@ -334,6 +331,6 @@
 </div>
 
 <script src="config.js"></script>
-<script type="module" src="app.js?v=38"></script>
+<script type="module" src="app.js?v=39"></script>
 </body>
 </html>

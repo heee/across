@@ -51,7 +51,7 @@ export const DIFFICULTY_PROFILES = {
 // These templates are intentionally unchanged: the expansion improves their
 // candidate domains and prepares the separate, parked density pass without
 // silently changing the app's current light block-cell layout language.
-const TEMPLATES = {
+export const TEMPLATES = {
   mini: [
     // blocks=4 fill=84% tightness=0.06 lens={"3":2,"4":4,"5":4}
     ["....#", "....#", ".....", "#....", "#...."],
@@ -231,62 +231,54 @@ export function extractSlots(rows) {
   return slots;
 }
 
-// The longest ~30% of slots get strong theme preference; the rest are
-// treated as ordinary short fill and may draw from the whole corpus.
+// Track the longest ~30% of slots as the puzzle's prominent answers. At
+// least half of this group must be category answers; additional slots are
+// designated themed per solve to reach the overall 40% relevance floor.
 export function computeLongSlotIds(slots) {
   const sorted = [...slots].sort((a, b) => b.length - a.length);
   const count = Math.max(1, Math.round(sorted.length * 0.3));
   return new Set(sorted.slice(0, count).map((s) => s.id));
 }
 
+function buildThemePlans(slots, anchorIds, themedCount, attempts = 24) {
+  const plans = [];
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const requiredAnchors = Math.ceil(anchorIds.size * 0.5);
+    const chosen = new Set(shuffleInPlace([...anchorIds]).slice(0, requiredAnchors));
+    const optional = slots.map((slot) => slot.id).filter((id) => !chosen.has(id));
+    for (const id of shuffleInPlace(optional.slice())) {
+      if (chosen.size >= themedCount) break;
+      chosen.add(id);
+    }
+    plans.push(chosen);
+  }
+  return plans;
+}
+
 // ---------------------------------------------------------------------
 // 3 + 4. Word index + theme scoring
 // ---------------------------------------------------------------------
 
-const STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "are", "was", "were", "your", "you", "its", "into", "onto", "our"]);
-
-function tokenize(str) {
-  return (str || "")
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
-}
-
-// Naive-singular handling ("capitals" -> also matches "capital") reused
-// from the original buildCandidateGroups tokenization logic.
-function withSingulars(tokens) {
-  return [...new Set(tokens.flatMap((t) => (t.endsWith("s") && t.length > 4 ? [t, t.slice(0, -1)] : [t])))];
-}
-
-// Builds the deduped, size/difficulty-filtered candidate pool, scored by
-// theme relevance: title tokens match (tier 2) > category/keyword match
-// (tier 1) > general (tier 0). Crucially, nothing is *excluded* by
-// relevance — tier only affects ordering — so a narrow topic never starves
-// the grid of fill words the way the old keyword-filtered pool could.
+// Build a size/difficulty-filtered pool whose relevance comes only from
+// explicit corpus category membership. The title is decorative. If an
+// answer has both generic and category-specific records, keep the latter.
 export function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
-  const seen = new Set();
-  const all = [];
+  void title;
+  const requestedCategories = new Set((keywords || []).map((keyword) => String(keyword).trim().toLowerCase()).filter(Boolean));
+  const byAnswer = new Map();
   for (const entry of wordBank) {
     const w = entry.w.toUpperCase();
     if (!/^[A-Z]+$/.test(w)) continue;
     if (w.length < 3 || w.length > n) continue;
     if (entry.diff > maxDiff) continue;
-    if (seen.has(w)) continue;
-    seen.add(w);
-    all.push({ word: w, clue: entry.c, cat: (entry.cat || "").toLowerCase(), diff: entry.diff || 1, tier: 0 });
+    const cat = (entry.cat || "").trim().toLowerCase();
+    const themed = requestedCategories.has(cat);
+    const candidate = { word: w, clue: entry.c, cat, diff: entry.diff || 1, tier: themed ? 1 : 0, themed };
+    const prior = byAnswer.get(w);
+    if (!prior || (themed && !prior.themed)) byAnswer.set(w, candidate);
   }
 
-  const categoryTokens = withSingulars(tokenize((keywords || []).join(" ")));
-  const titleTokens = withSingulars(tokenize(title));
-
-  for (const e of all) {
-    const hay = `${e.word.toLowerCase()} ${e.clue.toLowerCase()} ${e.cat}`;
-    const titleHit = titleTokens.length > 0 && titleTokens.some((t) => hay.includes(t));
-    const catHit = categoryTokens.length > 0 && categoryTokens.some((t) => hay.includes(t));
-    e.tier = titleHit ? 2 : catHit ? 1 : 0;
-  }
-
-  return all;
+  return [...byAnswer.values()];
 }
 
 export function buildWordIndex(entries) {
@@ -321,7 +313,7 @@ export function buildWordIndex(entries) {
 // (one shared letter per crossing pair), which keeps it cheap: cost is
 // roughly iterations x slots x domain-size x crossings, all O(1) set
 // lookups, not the exponential cost backtracking search has.
-export function pruneDomains(slots, index) {
+export function pruneDomains(slots, index, deadline = Infinity) {
   const domains = new Map();
   for (const slot of slots) domains.set(slot.id, (index.byLength.get(slot.length) || []).slice());
 
@@ -346,7 +338,9 @@ export function pruneDomains(slots, index) {
     for (const slot of slots) {
       const dom = domains.get(slot.id);
       const kept = [];
-      for (const entry of dom) {
+      for (let entryIndex = 0; entryIndex < dom.length; entryIndex++) {
+        if ((entryIndex & 255) === 0 && Date.now() > deadline) return domains;
+        const entry = dom[entryIndex];
         let ok = true;
         for (let i = 0; i < slot.length; i++) {
           const cross = slot.crossings[i];
@@ -375,10 +369,15 @@ export function pruneDomains(slots, index) {
 // beside the last placement discovers those contradictions far too late.
 // Domains are restored from a compact trail on backtrack so this remains
 // practical for the 15x15 grid in a browser worker.
-export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds, deadline, targetDiff = 2) {
+export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds, deadline, targetDiff = 2, themeLimits = null) {
   const domains = new Map([...initialDomains].map(([id, items]) => [id, items.slice()]));
   const assignment = new Array(slots.length).fill(null);
   const usedWords = new Set();
+  const requireTheme = Boolean(themeLimits);
+  const minThemed = themeLimits?.min ?? 0;
+  const maxThemed = themeLimits?.max ?? slots.length;
+  const minLongThemed = requireTheme ? Math.ceil(longIds.size * 0.5) : 0;
+  let themedCount = 0;
   let steps = 0;
   const STEP_LIMIT = 3000000;
 
@@ -417,7 +416,10 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
       const letterSets = new Map();
       for (const slot of slots) {
         const sets = Array.from({ length: slot.length }, () => new Set());
-        for (const entry of liveDomain(slot)) {
+        const live = liveDomain(slot);
+        for (let candidateIndex = 0; candidateIndex < live.length; candidateIndex++) {
+          if ((candidateIndex & 255) === 0 && Date.now() > deadline) return false;
+          const entry = live[candidateIndex];
           for (let i = 0; i < slot.length; i++) sets[i].add(entry.word[i]);
         }
         letterSets.set(slot.id, sets);
@@ -427,14 +429,21 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
         if (assignment[slot.id]) continue;
         const current = liveDomain(slot);
         if (current.length === 0) return false;
-        const kept = current.filter((entry) => {
+        const kept = [];
+        for (let candidateIndex = 0; candidateIndex < current.length; candidateIndex++) {
+          if ((candidateIndex & 255) === 0 && Date.now() > deadline) return false;
+          const entry = current[candidateIndex];
+          let supported = true;
           for (let i = 0; i < slot.length; i++) {
             const cross = slot.crossings[i];
             if (!cross) continue;
-            if (!letterSets.get(cross.otherSlotId)[cross.theirIndex].has(entry.word[i])) return false;
+            if (!letterSets.get(cross.otherSlotId)[cross.theirIndex].has(entry.word[i])) {
+              supported = false;
+              break;
+            }
           }
-          return true;
-        });
+          if (supported) kept.push(entry);
+        }
         if (kept.length === 0) return false;
         if (kept.length !== (domains.get(slot.id) || []).length) {
           replaceDomain(slot.id, kept, trail);
@@ -460,6 +469,23 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
     return best ? { slot: best, items: bestItems } : null;
   }
 
+  function themeBoundsArePossible() {
+    if (!requireTheme || themedCount > maxThemed) return !requireTheme || themedCount <= maxThemed;
+    let possible = themedCount;
+    let possibleLong = 0;
+    for (const slot of slots) {
+      if (assignment[slot.id]) {
+        if (longIds.has(slot.id) && assignment[slot.id].themed) possibleLong++;
+        continue;
+      }
+      if (liveDomain(slot).some((entry) => entry.themed)) {
+        possible++;
+        if (longIds.has(slot.id)) possibleLong++;
+      }
+    }
+    return possible >= minThemed && possibleLong >= minLongThemed;
+  }
+
   function orderedCandidates(slot, items) {
     const themed = longIds.has(slot.id);
     const supportByIndex = slot.crossings.map((cross) => {
@@ -479,13 +505,16 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
       }
       return score;
     };
+    const assignedCount = assignment.reduce((count, entry) => count + (entry ? 1 : 0), 0);
+    const remaining = slots.length - assignedCount;
+    const needTheme = requireTheme && themedCount < minThemed && minThemed - themedCount >= Math.ceil(remaining * 0.4);
     return shuffleInPlace(items.slice()).sort((a, b) => {
       // Category relevance leads in every slot; the more specific title tier
       // gets extra priority in the longest slots. Crossing support still
       // breaks ties, so generic high-support fill remains available whenever
       // the theme corpus cannot satisfy an interlock.
-      const aThemeTier = themed ? a.tier : Math.min(a.tier, 1);
-      const bThemeTier = themed ? b.tier : Math.min(b.tier, 1);
+      const aThemeTier = themed || needTheme ? a.tier : 0;
+      const bThemeTier = themed || needTheme ? b.tier : 0;
       if (aThemeTier !== bThemeTier) return bThemeTier - aThemeTier;
       const supportDelta = supportScore(b) - supportScore(a);
       if (Math.abs(supportDelta) > 0.0001) return supportDelta;
@@ -496,19 +525,25 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
   function solve() {
     if (!budgetOk()) return false;
     const selected = selectSlot();
-    if (!selected) return true;
+    if (!selected) {
+      const themedLong = [...longIds].filter((id) => assignment[id]?.themed).length;
+      return !requireTheme || (themedCount >= minThemed && themedCount <= maxThemed && themedLong >= minLongThemed);
+    }
     if (selected.items.length === 0) return false;
 
     const candidates = orderedCandidates(selected.slot, selected.items);
     for (const entry of candidates) {
       if (!budgetOk()) return false;
+      if (requireTheme && entry.themed && themedCount >= maxThemed) continue;
       const trail = [];
       assignment[selected.slot.id] = entry;
       usedWords.add(entry.word);
+      if (entry.themed) themedCount++;
       replaceDomain(selected.slot.id, [entry], trail);
-      if (propagate(trail) && solve()) return true;
+      if (themeBoundsArePossible() && propagate(trail) && solve()) return true;
       assignment[selected.slot.id] = null;
       usedWords.delete(entry.word);
+      if (entry.themed) themedCount--;
       restore(trail);
     }
     return false;
@@ -794,26 +829,36 @@ function buildOutputFromSlots(rows, slots, assignment, n) {
 // Top-level entry point
 // ---------------------------------------------------------------------
 
-const TIME_BUDGET_MS = { mini: 2500, compact: 12000, large: 2500 };
-const MIN_OPEN_RATIO = { mini: 0.80, compact: 0.80, large: 0.60 };
+const TIME_BUDGET_MS = { mini: 2500, quick: 3500, compact: 5000, standard: 6000, large: 8000 };
+const MIN_OPEN_RATIO = 0.80;
 
 function openCellRatio(grid) {
   const cells = grid?.cells || [];
   return cells.length ? cells.filter((cell) => !cell.block).length / cells.length : 0;
 }
 
-export function generatePuzzle({ keywords = [], title = "", size = "standard", difficulty = "medium", wordBank }) {
+export function generatePuzzle({
+  keywords = [],
+  title = "",
+  size = "standard",
+  difficulty = "medium",
+  wordBank,
+  timeBudgetMs,
+  themePlanAttempts = 24,
+}) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const profile = DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium;
   const maxDiff = profile.maxDiff;
+  const defaultTimeBudget = TIME_BUDGET_MS[size] || 5000;
+  const timeBudget = Number.isFinite(timeBudgetMs) && timeBudgetMs > 0 ? timeBudgetMs : defaultTimeBudget;
+  const planAttempts = Number.isInteger(themePlanAttempts) && themePlanAttempts > 0 ? themePlanAttempts : 24;
+  const overallDeadline = Date.now() + timeBudget;
 
   const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
   const index = buildWordIndex(pool);
 
   const templates = shuffleInPlace([...(TEMPLATES[size] || TEMPLATES.standard)]);
-  const timeBudget = TIME_BUDGET_MS[size] || 5000;
-  const minimumDensity = MIN_OPEN_RATIO[size] || 0;
-  const overallDeadline = Date.now() + timeBudget;
+  const minimumDensity = MIN_OPEN_RATIO;
   // Each template gets its own fair slice of the total budget — critical,
   // because template difficulty varies wildly for a given word pool (two
   // templates that both validate fine and look similarly dense can differ
@@ -826,27 +871,63 @@ export function generatePuzzle({ keywords = [], title = "", size = "standard", d
 
   for (const rows of templates) {
     if (Date.now() > overallDeadline) break;
+    const templateDensity = rows.reduce((count, row) => count + [...row].filter((cell) => cell !== "#").length, 0) / (n * n);
+    if (templateDensity < minimumDensity) continue;
     const slots = extractSlots(rows);
     const longIds = computeLongSlotIds(slots);
-    const domains = pruneDomains(slots, index);
+    const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
+    const domains = pruneDomains(slots, index, templateDeadline);
     // Arc consistency can prove a template unsolvable for this exact word
     // pool outright (some slot's domain pruned to nothing) — skip straight
     // to the next template instead of burning its time slice on
     // backtracking search that's guaranteed to fail.
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
-    const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
-    const { success, assignment } = runMaintainingArcConsistencyFill(slots, domains, longIds, templateDeadline, profile.targetDiff);
-    if (success) {
-      const grid = buildOutputFromSlots(rows, slots, assignment, n);
-      if (openCellRatio(grid) >= minimumDensity) return grid;
+    const hasRequestedCategory = pool.some((entry) => entry.themed);
+    const themedCount = Math.ceil(slots.length * 0.4);
+    const themePlans = hasRequestedCategory ? buildThemePlans(slots, longIds, themedCount, planAttempts) : [null];
+    for (let planIndex = 0; planIndex < themePlans.length && Date.now() <= templateDeadline; planIndex++) {
+      const plan = themePlans[planIndex];
+      const planDomains = plan
+        ? new Map([...domains].map(([id, entries]) => [id, entries.filter((entry) => plan.has(id) ? entry.themed : !entry.themed)]))
+        : domains;
+      if (slots.some((slot) => (planDomains.get(slot.id) || []).length === 0)) continue;
+      const plansRemaining = themePlans.length - planIndex;
+      const planDeadline = Math.min(templateDeadline, Date.now() + Math.max(75, Math.floor((templateDeadline - Date.now()) / plansRemaining)));
+      const { success, assignment } = runMaintainingArcConsistencyFill(slots, planDomains, new Set(), planDeadline, profile.targetDiff);
+      if (success) {
+        const actualThemed = assignment.filter((entry) => entry.themed).length;
+        const themeRatio = actualThemed / assignment.length;
+        if (hasRequestedCategory && (themeRatio < 0.4 || themeRatio > 0.6)) continue;
+        const themedLongCount = [...longIds].filter((id) => assignment[id]?.themed).length;
+        if (hasRequestedCategory && themedLongCount < Math.ceil(longIds.size * 0.5)) continue;
+        const grid = buildOutputFromSlots(rows, slots, assignment, n);
+        if (openCellRatio(grid) >= minimumDensity) return grid;
+      }
     }
   }
 
   // Fallback chain: no template filled completely within budget (e.g. a
   // very narrow/thin word bank for this size+difficulty). Fall back to the
   // legacy greedy algorithm rather than fail puzzle creation outright.
-  const legacy = legacyGenerate(wordBank, keywords, size, difficulty);
-  if (legacy.words.length >= 3 && openCellRatio(legacy) >= minimumDensity) return legacy;
+  if (Date.now() > overallDeadline) {
+    throw new Error("could not meet the crossword density target for this combination — try again");
+  }
+
+  const legacy = legacyGenerate(wordBank, keywords, size, difficulty, overallDeadline);
+  const themedAnswers = new Set(pool.filter((entry) => entry.themed).map((entry) => entry.word));
+  const themedWords = legacy.words.filter((word) => themedAnswers.has(word.answer));
+  const legacyThemeRatio = legacy.words.length ? themedWords.length / legacy.words.length : 0;
+  const legacyLongCount = Math.max(1, Math.round(legacy.words.length * 0.3));
+  const legacyThemedLongCount = [...legacy.words]
+    .sort((a, b) => b.length - a.length)
+    .slice(0, legacyLongCount)
+    .filter((word) => themedAnswers.has(word.answer)).length;
+  const legacyThemeOk = themedAnswers.size === 0 || (
+    legacyThemeRatio >= 0.4
+    && legacyThemeRatio <= 0.6
+    && legacyThemedLongCount >= Math.ceil(legacyLongCount * 0.5)
+  );
+  if (legacy.words.length >= 3 && openCellRatio(legacy) >= minimumDensity && legacyThemeOk) return legacy;
 
   throw new Error("could not meet the crossword density target for this combination — try again");
 }
@@ -865,17 +946,17 @@ const LEGACY_TARGET_WORDS = { mini: 10, quick: 16, compact: 30, standard: 42, la
 const LEGACY_FILL_ATTEMPTS = 12;
 const LEGACY_FILL_PASSES = 4;
 
-function legacyGenerate(wordBank, keywords, size, difficulty) {
+function legacyGenerate(wordBank, keywords, size, difficulty, deadline = Infinity) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const maxDiff = (DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium).maxDiff;
   const targetWords = LEGACY_TARGET_WORDS[size] || LEGACY_TARGET_WORDS.standard;
 
   const groups = legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n);
-  let result = legacyAttemptBest(groups, n, targetWords);
+  let result = legacyAttemptBest(groups, n, targetWords, deadline);
 
   if (result.words.length < 3 && keywords.length > 0) {
     const fallbackGroups = legacyBuildCandidateGroups(wordBank, [], maxDiff, n);
-    result = legacyAttemptBest(fallbackGroups, n, targetWords);
+    result = legacyAttemptBest(fallbackGroups, n, targetWords, deadline);
   }
 
   if (result.words.length < 3) {
@@ -885,10 +966,11 @@ function legacyGenerate(wordBank, keywords, size, difficulty) {
   return legacyCropAndNumber(result.grid, result.words, n);
 }
 
-function legacyAttemptBest(groups, n, targetWords) {
+function legacyAttemptBest(groups, n, targetWords, deadline = Infinity) {
   let best = null;
   let bestScore = -1;
   for (let i = 0; i < LEGACY_FILL_ATTEMPTS; i++) {
+    if (Date.now() > deadline) break;
     const candidates = groups.flatMap((g) => legacyShuffleByLength(g));
     const result = legacyAttemptFill(candidates, n, targetWords);
     const score = legacyDensityScore(result.grid, n);
@@ -897,7 +979,7 @@ function legacyAttemptBest(groups, n, targetWords) {
       best = result;
     }
   }
-  return best;
+  return best || { grid: legacyMakeEmptyGrid(n), words: [] };
 }
 
 function legacyDensityScore(grid, n) {

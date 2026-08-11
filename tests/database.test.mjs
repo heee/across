@@ -13,8 +13,6 @@ import {
   upsertPuzzle,
 } from "../worker/index.js";
 import worker from "../worker/index.js";
-import { generatePuzzle } from "../worker/generator.js";
-import { WORD_BANK } from "../worker/corpus.js";
 
 class Statement {
   constructor(db, sql) { this.db = db; this.sql = sql.replace(/\s+/g, " ").trim(); this.params = []; }
@@ -55,6 +53,11 @@ class Statement {
         this.db.users.delete(oldName);
         this.db.users.set(newName, { ...row, name: newName, updated_at });
       }
+    } else if (this.sql.startsWith("UPDATE blueprint_exposures")) {
+      // Inventory exposure identity follows account renames; this legacy fake
+      // has no exposure rows to update.
+    } else if (this.sql.startsWith("DELETE FROM blueprint_exposures")) {
+      // Inventory exposure identity is removed with account deletion.
     } else if (this.sql.startsWith("DELETE FROM users")) this.db.users.delete(this.params[0]);
     else if (this.sql.startsWith("DELETE FROM puzzles")) this.db.puzzles.delete(this.params[0]);
     else if (this.sql.startsWith("INSERT INTO puzzles")) {
@@ -71,6 +74,9 @@ class FakeD1 {
   constructor() { this.users = new Map(); this.puzzles = new Map(); }
   prepare(sql) { return new Statement(this, sql); }
   async batch(statements) {
+    if (statements[0]?.sql.startsWith("INSERT OR IGNORE INTO blueprint_exposures")) {
+      return [{ success: true }, { success: true, results: [] }];
+    }
     const results = [];
     for (const statement of statements) {
       if (statement.sql.startsWith("SELECT name")) results.push({ results: [...this.users.values()] });
@@ -88,6 +94,19 @@ function samplePuzzle() {
     createdAt: "2026-08-09T00:00:00.000Z", grid: { cells: [] }, cells: {},
     players: ["Henning"], sessions: { Henning: { lettersEntered: 0 } }, state: "open",
     completedAt: null, totalTimeMs: 0, highlights: [],
+  };
+}
+
+function validMiniGrid() {
+  const rows = ["SATOR", "AREPO", "TENET", "OPERA", "ROTAS"];
+  return {
+    rows: 5,
+    cols: 5,
+    cells: rows.flatMap((answer, row) => [...answer].map((letter, col) => ({ row, col, letter, block: false, number: col === 0 ? row + 1 : null }))),
+    words: rows.map((answer, row) => ({
+      number: row + 1, direction: "across", answer, clue: `Row ${row + 1}`, row, col: 0, length: 5,
+      cells: Array.from({ length: 5 }, (_, col) => [row, col]),
+    })),
   };
 }
 
@@ -274,7 +293,7 @@ test("creation persists a validated client-generated grid without server-side ge
       },
     },
   };
-  const grid = generatePuzzle({ keywords: ["general knowledge"], title: "Client grid", size: "mini", difficulty: "beginner", wordBank: WORD_BANK });
+  const grid = validMiniGrid();
   const response = await worker.fetch(new Request("https://worker/create-puzzle", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-App-Key": "test-key" },
