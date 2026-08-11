@@ -291,10 +291,13 @@ button, input, textarea {
 .puzzle-title { font: 600 13px var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .puzzle-meta { font: 500 11px var(--font); color: var(--muted-5); margin-top: 1px; }
 
-.avatar-stack { display: flex; flex: none; }
+.avatar-stack { display: flex; align-items: center; flex: none; }
 .avatar-dot {
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 21px; height: 21px; border-radius: 50%;
   border: 1.5px solid #fff; margin-left: -6px;
+  display: grid; place-items: center;
+  color: #fff; font: 700 9px/1 var(--font);
+  text-shadow: 0 1px 1px rgb(0 0 0 / 20%);
 }
 .avatar-dot:first-child { margin-left: 0; }
 

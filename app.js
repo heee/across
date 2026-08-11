@@ -7,7 +7,7 @@
 //    what's active whenever config.js still has its placeholder WORKER_URL.
 //    It reuses the real generator/corpus modules, so puzzles generated in
 //    local mode are produced by the same algorithm the Worker uses.
-import { sortPuzzlesByUserActivity } from "./home-order.js";
+import { hasStartedPuzzle, puzzleParticipantNames, sortPuzzlesByUserActivity } from "./home-order.js";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 const USING_LOCAL_BACKEND = !window.WORKER_URL || window.WORKER_URL.includes("YOUR-SUBDOMAIN");
@@ -950,10 +950,13 @@ function renderHome() {
 
   const myPuzzles = Object.values(dataCache.puzzles).filter((p) => p.players.includes(currentUser.name));
   const latest = latestPuzzlePerSeries(myPuzzles);
-  const continuing = sortPuzzlesByUserActivity(latest.filter((p) => p.state === "open"), currentUser.name);
+  const continuing = sortPuzzlesByUserActivity(
+    latest.filter((p) => p.state === "open" && hasStartedPuzzle(p, currentUser.name)),
+    currentUser.name,
+  );
   const completed = latest.filter((p) => p.state === "completed").sort((a, b) => puzzleActivityTime(b) - puzzleActivityTime(a));
   const openToJoin = Object.values(dataCache.puzzles)
-    .filter((p) => p.state === "open" && p.visibility === "open" && !p.players.includes(currentUser.name))
+    .filter((p) => p.state === "open" && p.visibility === "open" && !hasStartedPuzzle(p, currentUser.name))
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   scroll.appendChild(section("Continue playing", continuing, "No puzzles in progress — tap + to start one.", continueRow));
@@ -996,17 +999,24 @@ function continueRow(p) {
   const filled = Object.keys(p.cells || {}).length;
   const total = p.grid.cells.filter((c) => !c.block).length;
   const pct = total ? Math.round((filled / total) * 100) : 0;
+  const participants = puzzleParticipantNames(p);
   const row = el("div", { class: "puzzle-row continue", role: "button", tabindex: "0", onclick: () => openPuzzle(p.id) });
   row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") openPuzzle(p.id); });
   row.appendChild(miniGrid(p, "size-44"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
-    el("div", { class: "puzzle-meta", text: `${p.players.length} player${p.players.length === 1 ? "" : "s"} · ${pct}% done` }),
+    el("div", { class: "puzzle-meta", text: `${participants.length} player${participants.length === 1 ? "" : "s"} · ${pct}% done` }),
   ]));
   const stack = el("div", { class: "avatar-stack" });
-  for (const name of p.players.slice(0, 4)) {
+  for (const name of participants.slice(0, 4)) {
     const hue = dataCache.users[name]?.hue ?? 250;
-    stack.appendChild(el("div", { class: `avatar-dot ${hueClass(hue)}`, style: `background:oklch(58% .1 ${hue})` }));
+    stack.appendChild(el("div", {
+      class: `avatar-dot ${hueClass(hue)}`,
+      style: `background:oklch(58% .1 ${hue})`,
+      text: initials(name),
+      title: name,
+      "aria-label": name,
+    }));
   }
   row.appendChild(stack);
   appendAttemptHistoryControl(row, p);
@@ -1014,11 +1024,12 @@ function continueRow(p) {
 }
 
 function openRow(p) {
+  const participants = puzzleParticipantNames(p);
   const row = el("button", { class: "puzzle-row", onclick: () => openSharedPuzzle(p.id) });
   row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
-    el("div", { class: "puzzle-meta", text: `${cap(p.difficulty)} · ${p.grid.rows}×${p.grid.cols} · ${p.players.length} joined` }),
+    el("div", { class: "puzzle-meta", text: `${cap(p.difficulty)} · ${p.grid.rows}×${p.grid.cols} · ${participants.length} joined` }),
   ]));
   row.appendChild(el("span", { class: "chevron", text: "›" }));
   return row;

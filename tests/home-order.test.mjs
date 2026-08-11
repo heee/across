@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { sortPuzzlesByUserActivity, userPuzzleActivityTimestamp } from "../home-order.js";
+import {
+  hasStartedPuzzle,
+  puzzleParticipantNames,
+  sortPuzzlesByUserActivity,
+  userPuzzleActivityTimestamp,
+} from "../home-order.js";
 
 const puzzle = (id, createdAt, sessions) => ({ id, createdAt, sessions });
 
@@ -24,4 +29,30 @@ test("legacy sessions fall back to the player's join time, then puzzle creation 
 
   assert.ok(userPuzzleActivityTimestamp(joined, "Henning") > userPuzzleActivityTimestamp(created, "Henning"));
   assert.deepEqual(sortPuzzlesByUserActivity([created, joined], "Henning").map(({ id }) => id), ["joined", "created"]);
+});
+
+test("a seeded creator is not participating until they actually solve or spend time", () => {
+  const untouched = {
+    createdBy: "Henning",
+    players: ["Henning"],
+    sessions: { Henning: { joinedAt: "2026-08-10T12:00:00.000Z", timeSpentMs: 0 } },
+    cells: {},
+  };
+  assert.equal(hasStartedPuzzle(untouched, "Henning"), false);
+  assert.deepEqual(puzzleParticipantNames(untouched), []);
+
+  untouched.sessions.Henning.timeSpentMs = 1;
+  assert.equal(hasStartedPuzzle(untouched, "Henning"), true);
+  assert.deepEqual(puzzleParticipantNames(untouched), ["Henning"]);
+});
+
+test("joining players count as participants even before their first letter", () => {
+  const joined = {
+    createdBy: "Henning",
+    players: ["Henning", "Christie"],
+    sessions: { Henning: {}, Christie: {} },
+    cells: {},
+  };
+  assert.equal(hasStartedPuzzle(joined, "Christie"), true);
+  assert.deepEqual(puzzleParticipantNames(joined), ["Christie"]);
 });
