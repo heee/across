@@ -5,7 +5,7 @@
 // before anything is uploaded.
 //
 // Examples:
-//   node scripts/puzzle-inventory.mjs generate --category "beer & brewing" --size large --difficulty medium --count 10 --out inventory.json
+//   node scripts/puzzle-inventory.mjs generate --category "beer & brewing" --size large --difficulty medium --count 10 --time-budget-ms 120000 --theme-plan-attempts 1000 --out inventory.json
 //   node scripts/puzzle-inventory.mjs validate --file inventory.json
 //   node scripts/puzzle-inventory.mjs seed --file inventory.json --confirm-seed
 
@@ -125,15 +125,32 @@ async function generateManifest() {
   const size = option("size");
   const difficulty = option("difficulty");
   const count = Number(option("count", "10"));
+  const timeBudgetMs = Number(option("time-budget-ms", "120000"));
+  const themePlanAttempts = Number(option("theme-plan-attempts", "1000"));
   const output = option("out");
-  if (!category || !SIZE_MAP[size] || !DIFFICULTIES.has(difficulty) || !Number.isInteger(count) || count < 1 || !output) {
+  if (!category || !SIZE_MAP[size] || !DIFFICULTIES.has(difficulty) || !Number.isInteger(count) || count < 1
+    || !Number.isFinite(timeBudgetMs) || timeBudgetMs < 1
+    || !Number.isInteger(themePlanAttempts) || themePlanAttempts < 1 || !output) {
     throw new Error("generate requires --category, --size, --difficulty, positive --count, and --out");
   }
   const blueprints = [];
   const hashes = new Set();
   const maxAttempts = count * 50;
   for (let attempt = 0; attempt < maxAttempts && blueprints.length < count; attempt++) {
-    const grid = generatePuzzle({ keywords: [category], title: "", size, difficulty, wordBank: WORD_BANK });
+    let grid;
+    try {
+      grid = generatePuzzle({
+        keywords: [category],
+        title: "",
+        size,
+        difficulty,
+        wordBank: WORD_BANK,
+        timeBudgetMs,
+        themePlanAttempts,
+      });
+    } catch {
+      continue;
+    }
     const candidate = { category, size, difficulty, grid, source: "offline-generator" };
     const validation = validateBlueprint(candidate);
     if (!validation.ok || hashes.has(validation.gridHash)) continue;

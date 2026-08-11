@@ -414,11 +414,18 @@ const RemoteBackend = {
     await this.apiPost("/delete-puzzle", { puzzleId });
   },
   async createPuzzle(req) {
-    // Keep the expanded corpus and CPU-heavy dense-fill search off the main
-    // UI thread. The Cloudflare Worker still validates and persists the grid.
-    const grid = await generatePuzzleOffThread(req);
-    const res = await this.apiPost("/create-puzzle", { ...req, grid });
-    return res.puzzle;
+    // Prefer an instant, quality-gated inventory blueprint. During inventory
+    // rollout, a depleted bucket may still use the strict client generator;
+    // it fails closed instead of submitting a sparse or off-theme grid.
+    try {
+      const res = await this.apiPost("/create-puzzle", req);
+      return res.puzzle;
+    } catch (error) {
+      if (!String(error?.message || "").startsWith("No unseen puzzle is ready")) throw error;
+      const grid = await generatePuzzleOffThread(req);
+      const res = await this.apiPost("/create-puzzle", { ...req, grid });
+      return res.puzzle;
+    }
   },
   async joinPuzzle(puzzleId, user) {
     await this.apiPost("/join-puzzle", { puzzleId, user });
