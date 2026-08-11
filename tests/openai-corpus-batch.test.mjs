@@ -86,6 +86,7 @@ test("promotion renders only screened candidates as a deterministic corpus modul
   const manifest = importBatchOutput(`${JSON.stringify(request)}\n`, outputText, "2026-08-11T00:00:00.000Z");
   const moduleText = renderCorpusModule(manifest);
   assert.match(moduleText, /export const LLM_WORD_BANK/);
+  assert.match(renderCorpusModule(manifest, "BEER_CROSSING_WORD_BANK"), /export const BEER_CROSSING_WORD_BANK/);
   assert.match(moduleText, /"w": "GRAINBILL"/);
   assert.doesNotMatch(moduleText, /MANHATTAN/);
 });

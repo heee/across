@@ -14,6 +14,22 @@
 // only accepts a fully-filled template.
 
 export const SIZE_MAP = { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 };
+export const THEME_RATIO_BOUNDS = {
+  default: { min: 0.4, max: 0.6 },
+  large: { min: 0.2, max: 0.3 },
+};
+export const THEME_POLICIES = {
+  default: { ...THEME_RATIO_BOUNDS.default, longMin: 0.5, cellMin: 0 },
+  large: { ...THEME_RATIO_BOUNDS.large, longMin: 0.3, cellMin: 0.3 },
+};
+
+export function themeRatioBounds(size) {
+  return THEME_RATIO_BOUNDS[size] || THEME_RATIO_BOUNDS.default;
+}
+
+export function themePolicy(size) {
+  return THEME_POLICIES[size] || THEME_POLICIES.default;
+}
 export const DIFFICULTY_PROFILES = {
   beginner: { maxDiff: 1, targetDiff: 1 },
   easy: { maxDiff: 2, targetDiff: 1 },
@@ -243,9 +259,10 @@ export function computeLongSlotIds(slots) {
   return new Set(sorted.slice(0, count).map((s) => s.id));
 }
 
-export function buildThemePlans(slots, anchorIds, themedCount, domains, attempts = 24) {
+export function buildThemePlans(slots, anchorIds, themedCount, domains, attempts = 24, longThemeRatio = 0.5, cellThemeRatio = 0) {
   const plans = [];
-  const requiredLong = Math.ceil(anchorIds.size * 0.5);
+  const requiredLong = Math.ceil(anchorIds.size * longThemeRatio);
+  const requiredThemeCells = Math.ceil(slots.reduce((sum, slot) => sum + slot.length, 0) * cellThemeRatio);
   const genericLetters = new Map(slots.map((slot) => {
     const sets = Array.from({ length: slot.length }, () => new Set());
     for (const entry of domains.get(slot.id) || []) {
@@ -293,6 +310,7 @@ export function buildThemePlans(slots, anchorIds, themedCount, domains, attempts
     }
     if (chosen.size !== themedCount) continue;
     if ([...chosen].filter((id) => anchorIds.has(id)).length < requiredLong) continue;
+    if ([...chosen].reduce((sum, id) => sum + slots[id].length, 0) < requiredThemeCells) continue;
     if (slots.some((slot) => !chosen.has(slot.id) && stats.get(slot.id).generic === 0)) continue;
     const key = [...chosen].sort((a, b) => a - b).join(",");
     if (!plans.some((plan) => plan.key === key)) plans.push({ key, chosen });
@@ -502,16 +520,50 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
   function selectSlot() {
     let best = null;
     let bestItems = null;
+    let bestThemeCount = Infinity;
+    let preferTheme = false;
+    const assignedLongThemed = requireTheme
+      ? [...longIds].reduce((count, id) => count + (assignment[id]?.themed ? 1 : 0), 0)
+      : 0;
+    const longThemeNeeded = Math.max(0, minLongThemed - assignedLongThemed);
+    const overallThemeNeeded = Math.max(0, minThemed - themedCount);
+
+    // When a theme quota is still open, MRV must look at the *themed*
+    // sub-domain, not the much larger combined domain. Otherwise generic
+    // three-to-eight-letter fill dominates slot selection and the solver
+    // discovers the theme deficit only near the bottom of the tree. Long
+    // themed slots are considered first while their separate quota is open.
+    const themedChoices = [];
+    if (requireTheme && (longThemeNeeded > 0 || overallThemeNeeded > 0)) {
+      for (const slot of slots) {
+        if (assignment[slot.id] || (longThemeNeeded > 0 && !longIds.has(slot.id))) continue;
+        const items = liveDomain(slot);
+        const themeCount = items.reduce((count, entry) => count + (entry.themed ? 1 : 0), 0);
+        if (themeCount > 0) themedChoices.push({ slot, items, themeCount });
+      }
+    }
+    if (themedChoices.length) {
+      // Theme placement is also choosing *which* slots carry the theme, so
+      // ordinary smallest-domain MRV is counterproductive here: it eagerly
+      // burns scarce three-letter category terms even though those slots can
+      // remain generic. Lead with the broadest, longest themed domains; once
+      // a slot's role is chosen, normal MRV/arc consistency handles its fill.
+      themedChoices.sort((a, b) => b.themeCount - a.themeCount || b.slot.length - a.slot.length || a.items.length - b.items.length);
+      ({ slot: best, items: bestItems, themeCount: bestThemeCount } = themedChoices[0]);
+      preferTheme = true;
+    }
+
     for (const slot of slots) {
       if (assignment[slot.id]) continue;
       const items = liveDomain(slot);
       if (items.length === 0) return { slot, items };
+      if (preferTheme) continue;
       if (!best || items.length < bestItems.length || (items.length === bestItems.length && slot.length > best.length)) {
         best = slot;
         bestItems = items;
       }
     }
-    return best ? { slot: best, items: bestItems } : null;
+    return best ? { slot: best, items: bestItems, preferTheme, themeCount: bestThemeCount } : null;
   }
 
   function themeBoundsArePossible() {
@@ -531,8 +583,8 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
     return possible >= minThemed && possibleLong >= minLongThemed;
   }
 
-  function orderedCandidates(slot, items) {
-    const themed = longIds.has(slot.id);
+  function orderedCandidates(slot, items, explicitlyPreferTheme = false) {
+    const themed = explicitlyPreferTheme || longIds.has(slot.id);
     const supportByIndex = slot.crossings.map((cross) => {
       if (!cross || assignment[cross.otherSlotId]) return null;
       const counts = new Map();
@@ -552,7 +604,9 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
     };
     const assignedCount = assignment.reduce((count, entry) => count + (entry ? 1 : 0), 0);
     const remaining = slots.length - assignedCount;
-    const needTheme = requireTheme && themedCount < minThemed && minThemed - themedCount >= Math.ceil(remaining * 0.4);
+    const targetThemeRatio = minThemed / slots.length;
+    const needTheme = requireTheme && themedCount < minThemed
+      && minThemed - themedCount >= Math.ceil(remaining * targetThemeRatio);
     return shuffleInPlace(items.slice()).sort((a, b) => {
       // Category relevance leads in every slot; the more specific title tier
       // gets extra priority in the longest slots. Crossing support still
@@ -576,7 +630,7 @@ export function runMaintainingArcConsistencyFill(slots, initialDomains, longIds,
     }
     if (selected.items.length === 0) return false;
 
-    const candidates = orderedCandidates(selected.slot, selected.items);
+    const candidates = orderedCandidates(selected.slot, selected.items, selected.preferTheme);
     for (const entry of candidates) {
       if (!budgetOk()) return false;
       if (requireTheme && entry.themed && themedCount >= maxThemed) continue;
@@ -633,6 +687,9 @@ export function runBacktrackFill(slots, index, longIds, deadline, domains, targe
   let steps = 0; // shared across restarts, bounds total work for this template
   let aborted = false; // budget fully exhausted — stop restarting entirely
   let attemptSteps = 0; // steps used by the current attempt only
+  const allowedEntries = domains
+    ? new Map([...domains].map(([id, entries]) => [id, new Set(entries)]))
+    : null;
 
   function budgetOk() {
     steps++;
@@ -718,6 +775,7 @@ export function runBacktrackFill(slots, index, longIds, deadline, domains, targe
 
       const out = [];
       for (const e of base) {
+        if (allowedEntries && !allowedEntries.get(slot.id)?.has(e)) continue;
         if (!matchesFixed(e.word, letters)) continue;
         out.push(e);
       }
@@ -743,7 +801,24 @@ export function runBacktrackFill(slots, index, longIds, deadline, domains, targe
     }
 
     function orderCandidates(slot, candidates) {
-      const byDifficulty = (items) => shuffleInPlace(items.slice()).sort((a, b) => Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff));
+      const crossingCounts = slot.crossings.map((cross) => {
+        if (!cross || assignment[cross.otherSlotId]) return null;
+        const counts = new Map();
+        for (const candidate of getLetterMatches(slots[cross.otherSlotId])) {
+          if (usedWords.has(candidate.word)) continue;
+          const letter = candidate.word[cross.theirIndex];
+          counts.set(letter, (counts.get(letter) || 0) + 1);
+        }
+        return counts;
+      });
+      const supportScore = (entry) => crossingCounts.reduce((score, counts, index) => (
+        score + (counts ? Math.log1p(counts.get(entry.word[index]) || 0) : 0)
+      ), 0);
+      const byDifficulty = (items) => shuffleInPlace(items.slice()).sort((a, b) => {
+        const supportDelta = supportScore(b) - supportScore(a);
+        if (Math.abs(supportDelta) > 0.0001) return supportDelta;
+        return Math.abs(a.diff - targetDiff) - Math.abs(b.diff - targetDiff);
+      });
       if (longIds.has(slot.id)) {
         const t2 = [], t1 = [], t0 = [];
         for (const e of candidates) (e.tier === 2 ? t2 : e.tier === 1 ? t1 : t0).push(e);
@@ -824,7 +899,7 @@ export function runBacktrackFill(slots, index, longIds, deadline, domains, targe
   return { success: false, assignment: null };
 }
 
-function buildOutputFromSlots(rows, slots, assignment, n) {
+export function buildOutputFromSlots(rows, slots, assignment, n) {
   const isBlock = (r, c) => rows[r][c] === "#";
   const startKeys = new Set();
   for (const slot of slots) startKeys.add(`${slot.row},${slot.col}`);
@@ -897,6 +972,8 @@ export function generatePuzzle({
   const defaultTimeBudget = TIME_BUDGET_MS[size] || 5000;
   const timeBudget = Number.isFinite(timeBudgetMs) && timeBudgetMs > 0 ? timeBudgetMs : defaultTimeBudget;
   const planAttempts = Number.isInteger(themePlanAttempts) && themePlanAttempts > 0 ? themePlanAttempts : 24;
+  const themeBounds = themeRatioBounds(size);
+  const policy = themePolicy(size);
   const overallDeadline = Date.now() + timeBudget;
 
   const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
@@ -928,8 +1005,10 @@ export function generatePuzzle({
     // backtracking search that's guaranteed to fail.
     if (slots.some((s) => (domains.get(s.id) || []).length === 0)) continue;
     const hasRequestedCategory = pool.some((entry) => entry.themed);
-    const themedCount = Math.ceil(slots.length * 0.4);
-    const themePlans = hasRequestedCategory ? buildThemePlans(slots, longIds, themedCount, domains, planAttempts) : [null];
+    const themedCount = Math.ceil(slots.length * themeBounds.min);
+    const themePlans = hasRequestedCategory
+      ? buildThemePlans(slots, longIds, themedCount, domains, planAttempts, policy.longMin, policy.cellMin)
+      : [null];
     for (let planIndex = 0; planIndex < themePlans.length && Date.now() <= templateDeadline; planIndex++) {
       const plan = themePlans[planIndex];
       const planDomains = plan
@@ -942,9 +1021,12 @@ export function generatePuzzle({
       if (success) {
         const actualThemed = assignment.filter((entry) => entry.themed).length;
         const themeRatio = actualThemed / assignment.length;
-        if (hasRequestedCategory && (themeRatio < 0.4 || themeRatio > 0.6)) continue;
+        if (hasRequestedCategory && (themeRatio < themeBounds.min || themeRatio > themeBounds.max)) continue;
         const themedLongCount = [...longIds].filter((id) => assignment[id]?.themed).length;
-        if (hasRequestedCategory && themedLongCount < Math.ceil(longIds.size * 0.5)) continue;
+        if (hasRequestedCategory && themedLongCount < Math.ceil(longIds.size * policy.longMin)) continue;
+        const themedCellRatio = assignment.reduce((sum, entry, id) => sum + (entry.themed ? slots[id].length : 0), 0)
+          / slots.reduce((sum, slot) => sum + slot.length, 0);
+        if (hasRequestedCategory && themedCellRatio < policy.cellMin) continue;
         const grid = buildOutputFromSlots(rows, slots, assignment, n);
         if (openCellRatio(grid) >= minimumDensity) return grid;
       }
@@ -962,15 +1044,20 @@ export function generatePuzzle({
   const themedAnswers = new Set(pool.filter((entry) => entry.themed).map((entry) => entry.word));
   const themedWords = legacy.words.filter((word) => themedAnswers.has(word.answer));
   const legacyThemeRatio = legacy.words.length ? themedWords.length / legacy.words.length : 0;
+  const legacyThemeCellRatio = legacy.words.length
+    ? legacy.words.reduce((sum, word) => sum + (themedAnswers.has(word.answer) ? word.length : 0), 0)
+      / legacy.words.reduce((sum, word) => sum + word.length, 0)
+    : 0;
   const legacyLongCount = Math.max(1, Math.round(legacy.words.length * 0.3));
   const legacyThemedLongCount = [...legacy.words]
     .sort((a, b) => b.length - a.length)
     .slice(0, legacyLongCount)
     .filter((word) => themedAnswers.has(word.answer)).length;
   const legacyThemeOk = themedAnswers.size === 0 || (
-    legacyThemeRatio >= 0.4
-    && legacyThemeRatio <= 0.6
-    && legacyThemedLongCount >= Math.ceil(legacyLongCount * 0.5)
+    legacyThemeRatio >= themeBounds.min
+    && legacyThemeRatio <= themeBounds.max
+    && legacyThemedLongCount >= Math.ceil(legacyLongCount * policy.longMin)
+    && legacyThemeCellRatio >= policy.cellMin
   );
   if (legacy.words.length >= 3 && openCellRatio(legacy) >= minimumDensity && legacyThemeOk) return legacy;
 

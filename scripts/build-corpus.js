@@ -6,7 +6,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE_DIR = path.resolve(process.argv[2] || path.join(ROOT, ".tmp", "oewn"));
+const IS_MAIN = process.argv[1] === fileURLToPath(import.meta.url);
+const SOURCE_DIR = path.resolve(IS_MAIN && process.argv[2] ? process.argv[2] : path.join(ROOT, ".tmp", "oewn"));
 const OUTPUT = path.join(ROOT, "worker", "corpus.generated.js");
 const HAND_CORPUS = path.join(ROOT, "worker", "corpus.js");
 
@@ -96,7 +97,7 @@ function existingWords() {
   return new Set([...source.matchAll(/\{\s*w:\s*"([A-Z]+)"/g)].map((match) => match[1]));
 }
 
-function loadCandidates() {
+export function loadCandidates(excludedWords = existingWords()) {
   if (!fs.existsSync(SOURCE_DIR)) throw new Error(`Open English WordNet JSON directory not found: ${SOURCE_DIR}`);
   const files = fs.readdirSync(SOURCE_DIR).filter((name) => /^(noun|verb|adj|adv)\..+\.json$/.test(name)).sort();
   const occurrences = new Map();
@@ -123,10 +124,9 @@ function loadCandidates() {
     }
   }
 
-  const existing = existingWords();
   const candidates = [];
   for (const [word, senses] of occurrences) {
-    if (existing.has(word)) continue;
+    if (excludedWords.has(word)) continue;
     const senseCount = senses.length;
     for (const sense of senses) sense.quality = candidateQuality(sense, senseCount);
     senses.sort((a, b) => b.quality - a.quality || a.definition.length - b.definition.length || a.member.localeCompare(b.member));
@@ -201,16 +201,18 @@ function selectCorpus(candidates) {
   return selected.sort((a, b) => a.length - b.length || a.cat.localeCompare(b.cat) || a.w.localeCompare(b.w));
 }
 
-function render(entries) {
+export function render(entries, exportName = "EXPANDED_WORD_BANK", sourceNote = "Open English WordNet 2025 (CC BY 4.0), filtered and categorized") {
   const lines = entries.map(({ w, c, cat, diff }) => `  ${JSON.stringify({ w, c, cat, diff })},`);
-  return `// AUTO-GENERATED — do not edit directly.\n// Source: Open English WordNet 2025 (CC BY 4.0), filtered and categorized\n// for Across. See THIRD_PARTY_NOTICES.md and scripts/build-corpus.js.\n\nexport const EXPANDED_WORD_BANK = [\n${lines.join("\n")}\n];\n`;
+  return `// AUTO-GENERATED — do not edit directly.\n// Source: ${sourceNote}\n// for Across. See THIRD_PARTY_NOTICES.md and scripts/build-corpus.js.\n\nexport const ${exportName} = [\n${lines.join("\n")}\n];\n`;
 }
 
-const candidates = loadCandidates();
-const selected = selectCorpus(candidates);
-fs.writeFileSync(OUTPUT, render(selected), "utf8");
+if (IS_MAIN) {
+  const candidates = loadCandidates();
+  const selected = selectCorpus(candidates);
+  fs.writeFileSync(OUTPUT, render(selected), "utf8");
 
-const byLength = Object.fromEntries([...LENGTH_QUOTAS].map(([length]) => [length, selected.filter((entry) => entry.length === length).length]));
-const byCategory = Object.fromEntries(CATEGORIES.map((category) => [category, selected.filter((entry) => entry.cat === category).length]));
-const byDifficulty = Object.fromEntries([1, 2, 3].map((difficulty) => [difficulty, selected.filter((entry) => entry.diff === difficulty).length]));
-console.log(JSON.stringify({ source: SOURCE_DIR, candidates: candidates.length, selected: selected.length, byLength, byCategory, byDifficulty }, null, 2));
+  const byLength = Object.fromEntries([...LENGTH_QUOTAS].map(([length]) => [length, selected.filter((entry) => entry.length === length).length]));
+  const byCategory = Object.fromEntries(CATEGORIES.map((category) => [category, selected.filter((entry) => entry.cat === category).length]));
+  const byDifficulty = Object.fromEntries([1, 2, 3].map((difficulty) => [difficulty, selected.filter((entry) => entry.diff === difficulty).length]));
+  console.log(JSON.stringify({ source: SOURCE_DIR, candidates: candidates.length, selected: selected.length, byLength, byCategory, byDifficulty }, null, 2));
+}

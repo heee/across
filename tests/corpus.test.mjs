@@ -5,6 +5,8 @@ import { EXPANDED_WORD_BANK } from "../worker/corpus.generated.js";
 import { COMMUNITY_WORD_BANK } from "../worker/corpus.community.js";
 import { WHISKY_WORD_BANK } from "../worker/corpus.whisky.js";
 import { LLM_WORD_BANK } from "../worker/corpus.llm.js";
+import { BEER_CROSSING_WORD_BANK } from "../worker/corpus.beer.crossing.js";
+import { BEER_SENSE_WORD_BANK } from "../worker/corpus.beer.senses.js";
 
 const CATEGORIES = [
   "geography", "history", "science", "nature", "animals", "space",
@@ -105,5 +107,19 @@ test("screened Batch corpus preserves category coverage and crossword constraint
     assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
     assert.ok([1, 2, 3].includes(entry.diff));
     if (entry.cat === "whisky") assert.equal(cocktailAnswers.has(entry.w), false);
+  }
+});
+
+test("screened Beer crossing layers add relevant short fill", () => {
+  assert.equal(BEER_CROSSING_WORD_BANK.length, 62);
+  assert.equal(BEER_SENSE_WORD_BANK.length, 96);
+  for (const entries of [BEER_CROSSING_WORD_BANK, BEER_SENSE_WORD_BANK]) {
+    assert.equal(new Set(entries.map((entry) => entry.w)).size, entries.length);
+    for (const entry of entries) {
+      assert.match(entry.w, /^[A-Z]{3,15}$/);
+      assert.equal(entry.cat, "beer & brewing");
+      assert.ok(entry.c.length >= 8 && entry.c.length <= 150);
+      assert.ok([1, 2, 3].includes(entry.diff));
+    }
   }
 });

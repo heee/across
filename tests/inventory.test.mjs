@@ -57,7 +57,7 @@ function request(createdBy = "Ada") {
 }
 
 function validMiniGrid() {
-  const rows = ["SATOR", "AREPO", "TENET", "OPERA", "ROTAS"];
+  const rows = ["LAGER", "STOUT", "TENET", "OPERA", "ROTAS"];
   const cells = rows.flatMap((answer, row) => [...answer].map((letter, col) => ({ row, col, letter, block: false, number: col === 0 ? row + 1 : null })));
   const words = rows.map((answer, row) => ({
     number: row + 1, direction: "across", answer, clue: `Row ${row + 1}`, row, col: 0, length: 5,
@@ -124,11 +124,11 @@ test("maintenance purge clears every room before D1 and requires its separate se
   assert.equal(db.blueprints.length, 1);
 });
 
-test("offline inventory validation enforces density and 40-60% relevance", () => {
+test("offline inventory validation enforces density and size-specific relevance", () => {
   const grid = validMiniGrid();
   const candidate = {
     category: "beer & brewing", size: "mini", difficulty: "medium", grid,
-    themeAnswers: ["SATOR", "AREPO"],
+    themeAnswers: ["LAGER", "STOUT"],
   };
   assert.equal(validateBlueprint(candidate).ok, true);
 

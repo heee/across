@@ -482,6 +482,10 @@ button, input, textarea {
   border: 1.5px solid var(--accent);
   color: var(--accent);
 }
+.segmented-option:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
 
 .toggle-row {
   display: flex;

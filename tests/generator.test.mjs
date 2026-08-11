@@ -4,12 +4,16 @@ import {
   DIFFICULTY_PROFILES,
   SIZE_MAP,
   TEMPLATES,
+  THEME_RATIO_BOUNDS,
+  THEME_POLICIES,
   buildCandidatePool,
+  buildWordIndex,
   buildThemePlans,
   computeLongSlotIds,
   extractSlots,
   generatePuzzle,
   runMaintainingArcConsistencyFill,
+  runBacktrackFill,
   validateTemplate,
 } from "../worker/generator.js";
 import { WORD_BANK } from "../worker/corpus.js";
@@ -18,6 +22,9 @@ test("generator preserves every supported output size and difficulty profile", (
   assert.deepEqual(SIZE_MAP, { mini: 5, quick: 7, compact: 9, standard: 11, large: 15 });
   assert.deepEqual(Object.keys(DIFFICULTY_PROFILES), ["beginner", "easy", "medium", "hard", "expert"]);
   assert.ok(DIFFICULTY_PROFILES.beginner.maxDiff < DIFFICULTY_PROFILES.expert.maxDiff);
+  assert.deepEqual(THEME_RATIO_BOUNDS.default, { min: 0.4, max: 0.6 });
+  assert.deepEqual(THEME_RATIO_BOUNDS.large, { min: 0.2, max: 0.3 });
+  assert.deepEqual(THEME_POLICIES.large, { min: 0.2, max: 0.3, longMin: 0.3, cellMin: 0.3 });
 });
 
 test("every eligible dense template is square, connected, uncropped, and at least 80% open", () => {
@@ -126,4 +133,17 @@ test("theme plans use feasible domains and theme at least half of long slots", (
     assert.equal(plan.has(unavailableId), false);
     assert.ok([...longIds].filter((id) => plan.has(id)).length >= Math.ceil(longIds.size * 0.5));
   }
+});
+
+test("indexed backtracking never escapes role-filtered slot domains", () => {
+  const rows = TEMPLATES.mini[0];
+  const slots = extractSlots(rows);
+  const answers = ["ABCD", "EFGH", "IJKLM", "NOPQ", "RSTU", "AEI", "BFJNR", "CGKOS", "DHLPT", "MQU"];
+  const allowed = answers.map((word, id) => ({ word, clue: `Allowed ${id}`, cat: "beer & brewing", diff: 1, tier: 1, themed: true }));
+  const distractors = answers.map((word, id) => ({ word, clue: `Distractor ${id}`, cat: "general", diff: 1, tier: 0, themed: false }));
+  const index = buildWordIndex([...distractors, ...allowed]);
+  const domains = new Map(slots.map((slot) => [slot.id, [allowed[slot.id]]]));
+  const result = runBacktrackFill(slots, index, computeLongSlotIds(slots), Date.now() + 1000, domains, 1);
+  assert.equal(result.success, true);
+  assert.deepEqual(result.assignment, allowed);
 });

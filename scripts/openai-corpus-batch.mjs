@@ -74,11 +74,34 @@ function categoryRules(category) {
       "Do not propose an answer merely because whisky can be used in it.",
     ].join(" ");
   }
+  if (category === "beer & brewing") {
+    return [
+      "Only propose answers whose exact clue sense is directly and unmistakably about beer or brewing.",
+      "Ingredients and named varieties, brewing chemistry and processes, brewery equipment, recognized beer styles, fermentation, conditioning, packaging, service, sensory evaluation, and beer-specific history or regulation are in scope.",
+      "Exclude cocktails, generic bar vocabulary, foods merely paired with beer, promotional language, brand names, and ordinary words that become relevant only by mentioning beer in the clue.",
+    ].join(" ");
+  }
   return "Only propose answers whose exact clue sense is directly and unmistakably relevant to the category; generic crossing fill is out of scope.";
 }
 
 function requestPrompt(category, count, index) {
+  const beerFocus = [
+    "Use normalized answer lengths 3-4; focus on established brewing abbreviations, ingredients, measurements, styles, and technical terms, spelling out nothing artificially.",
+    "Use normalized answer lengths 3-4; focus on beer service, sensory evaluation, packaging, fermentation, and historic terms. Every short form must be standard and recognizable.",
+    "Use normalized answer length exactly 5; focus on ingredients, hop and malt terminology, chemistry, and brewhouse operations.",
+    "Use normalized answer length exactly 5; focus on styles, fermentation, conditioning, packaging, serving, and sensory terminology.",
+    "Use normalized answer length exactly 6; focus on ingredients, equipment, production steps, measurements, and brewing science.",
+    "Use normalized answer length exactly 6; focus on styles, traditions, fermentation, maturation, packaging, and evaluation.",
+    "Use normalized answer length exactly 7; focus on ingredients, equipment, brewery operations, microbiology, and process control.",
+    "Use normalized answer length exactly 7; focus on recognized styles, regional traditions, conditioning, service, and sensory terminology.",
+    "Use normalized answer length exactly 8; focus on ingredients, equipment, production, chemistry, fermentation, and quality control.",
+    "Use normalized answer length exactly 8; focus on styles, brewing traditions, maturation, packaging, service, and sensory evaluation.",
+    "Use normalized answer lengths 4-6; seek high-crossability terms with varied initial and internal letters from any directly beer-specific subtopic.",
+    "Use normalized answer lengths 6-8; seek high-crossability terms with varied initial and internal letters from any directly beer-specific subtopic.",
+  ][index % 12];
+  const focus = category === "beer & brewing" ? `This tranche has an additional hard focus: ${beerFocus}` : "";
   return `Generate ${count} potential crossword answer-and-clue records for the category "${category}". This is expansion tranche ${index + 1}; seek a varied mix of answer lengths, initial letters, and subtopics instead of repeating only the most obvious terms. ${categoryRules(category)}
+${focus}
 Answers must normalize to 3-15 A-Z letters. Use original factual clues, not copied published crossword clues. Avoid abbreviations, obscure variant spellings, proper nouns with uncertain spelling, duplicates, and answers already listed below. Score relevance and commonness honestly; relevance 5 means category-defining and 1 means merely adjacent. Native clue difficulty is 1-3.
 
 Existing answers to avoid:
@@ -386,7 +409,7 @@ export function validateCandidateManifest(manifest) {
   return { ok: errors.length === 0, errors };
 }
 
-export function renderCorpusModule(manifest) {
+function renderDefaultCorpusModule(manifest) {
   const validation = validateCandidateManifest(manifest);
   if (!validation.ok) throw new Error(`Candidate manifest is invalid:\n${validation.errors.join("\n")}`);
   const records = manifest.records
@@ -394,6 +417,11 @@ export function renderCorpusModule(manifest) {
     .sort((a, b) => a.category.localeCompare(b.category) || a.answer.length - b.answer.length || a.answer.localeCompare(b.answer))
     .map((record) => ({ w: record.answer, c: record.clue, cat: record.category, diff: record.difficulty }));
   return `// AUTO-GENERATED — do not edit directly.\n// Source: screened OpenAI Batch candidates; see data/openai-corpus-candidates.summary.json.\n// The full local manifest retains request provenance and per-record rejection reasons.\n\nexport const LLM_WORD_BANK = ${JSON.stringify(records, null, 2)};\n`;
+}
+
+export function renderCorpusModule(manifest, exportName = "LLM_WORD_BANK") {
+  if (!/^[A-Z_][A-Z0-9_]*$/.test(exportName)) throw new Error("export name must be an uppercase JavaScript identifier");
+  return renderDefaultCorpusModule(manifest).replace("export const LLM_WORD_BANK", `export const ${exportName}`);
 }
 
 function option(name, fallback = "") {
@@ -489,7 +517,7 @@ async function main() {
     const file = option("file");
     const out = option("out");
     if (!file || !out) throw new Error("promote requires --file and --out");
-    writeFile(out, renderCorpusModule(JSON.parse(fs.readFileSync(path.resolve(file), "utf8"))));
+    writeFile(out, renderCorpusModule(JSON.parse(fs.readFileSync(path.resolve(file), "utf8")), option("export-name", "LLM_WORD_BANK")));
     return;
   }
   throw new Error("Use prepare, submit, status, download, import, validate, or promote.");

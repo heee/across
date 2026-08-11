@@ -13,7 +13,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { generatePuzzle, SIZE_MAP } from "../worker/generator.js";
+import { generatePuzzle, SIZE_MAP, themePolicy } from "../worker/generator.js";
 import { WORD_BANK } from "../worker/corpus.js";
 import { validateClientGrid } from "../worker/index.js";
 
@@ -62,23 +62,38 @@ export function validateBlueprint(raw) {
 
   const answers = grid.words.map((word) => String(word.answer || "").toUpperCase());
   if (new Set(answers).size !== answers.length) errors.push("answers must be unique");
-  const explicitTheme = Array.isArray(raw.themeAnswers)
-    ? new Set(raw.themeAnswers.map((answer) => String(answer).toUpperCase()))
-    : categoryAnswers(category);
+  const explicitTheme = categoryAnswers(category);
+  if (Array.isArray(raw.themeAnswers)) {
+    for (const answer of raw.themeAnswers.map((item) => String(item).toUpperCase())) {
+      if (!explicitTheme.has(answer)) errors.push(`theme answer is not in the ${category} corpus: ${answer}`);
+    }
+  }
   const themedAnswerCount = answers.filter((answer) => explicitTheme.has(answer)).length;
   const themeRatio = themedAnswerCount / answers.length;
-  if (themeRatio < 0.4 || themeRatio > 0.6) {
-    errors.push(`theme ratio ${(themeRatio * 100).toFixed(1)}% is outside 40-60%`);
+  const themeBounds = themePolicy(size);
+  if (themeRatio < themeBounds.min || themeRatio > themeBounds.max) {
+    errors.push(`theme ratio ${(themeRatio * 100).toFixed(1)}% is outside ${themeBounds.min * 100}-${themeBounds.max * 100}%`);
   }
-  const longAnswers = grid.words.filter((word) => word.length >= 8);
+  const longAnswerCount = Math.max(1, Math.round(grid.words.length * 0.3));
+  const longAnswers = [...grid.words]
+    .sort((a, b) => b.length - a.length || a.number - b.number || a.direction.localeCompare(b.direction))
+    .slice(0, longAnswerCount);
   const themedLongCount = longAnswers.filter((word) => explicitTheme.has(String(word.answer).toUpperCase())).length;
-  if (longAnswers.length && themedLongCount / longAnswers.length < 0.5) {
-    errors.push(`at least half of long answers must be themed (${themedLongCount}/${longAnswers.length})`);
+  if (themedLongCount < Math.ceil(longAnswers.length * themeBounds.longMin)) {
+    errors.push(`at least ${themeBounds.longMin * 100}% of the longest 30% of answers must be themed (${themedLongCount}/${longAnswers.length})`);
+  }
+  const totalAnswerCells = grid.words.reduce((sum, word) => sum + word.length, 0);
+  const themedAnswerCells = grid.words.reduce((sum, word) => (
+    sum + (explicitTheme.has(String(word.answer).toUpperCase()) ? word.length : 0)
+  ), 0);
+  const themedCellRatio = totalAnswerCells ? themedAnswerCells / totalAnswerCells : 0;
+  if (themedCellRatio < themeBounds.cellMin) {
+    errors.push(`themed answer-cell coverage ${(themedCellRatio * 100).toFixed(1)}% is below ${themeBounds.cellMin * 100}%`);
   }
 
   const gridHash = hashGrid(grid);
   if (raw.gridHash && raw.gridHash !== gridHash) errors.push("gridHash does not match grid contents");
-  return { ok: errors.length === 0, errors, density, themedAnswerCount, answerCount: answers.length, gridHash, grid };
+  return { ok: errors.length === 0, errors, density, themedAnswerCount, answerCount: answers.length, themedCellRatio, gridHash, grid };
 }
 
 function normalizedBlueprint(raw, validation) {
