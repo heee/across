@@ -130,8 +130,8 @@
       <div>
         <div class="puzzle-header-title" id="puzzle-title"></div>
         <div class="puzzle-header-sub">
-          <span id="puzzle-playing-count"></span> playing · <span id="puzzle-my-time">0:00</span> mins
-          <span class="total-time">(<span id="puzzle-total-time">0:00</span> total)</span>
+          <span id="puzzle-playing-count"></span> playing<span id="puzzle-timer-summary"> · <span id="puzzle-my-time">0:00</span> mins
+          <span class="total-time">(<span id="puzzle-total-time">0:00</span> total)</span></span>
         </div>
       </div>
       <div class="header-actions">
@@ -290,7 +290,14 @@
       </div>
       <div class="field-label">Your color</div>
       <div class="color-picker-grid" id="settings-color-picker"></div>
-      <div class="field-label">Players on this device</div>
+      <div class="field-label">Crossword display</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div>Show timers</div>
+          <button class="toggle" id="settings-show-timers"></button>
+        </div>
+      </div>
+      <div class="field-label">All players</div>
       <div class="settings-card" id="settings-user-list"></div>
     </div>
     <nav class="bottom-nav" data-nav></nav>

@@ -118,6 +118,22 @@ export default {
       }
     }
 
+    if (url.pathname === "/update-user-settings" && request.method === "POST") {
+      if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
+      const body = await safeJson(request);
+      const name = typeof body?.user === "string" ? body.user.trim().slice(0, 40) : "";
+      if (!name || !body?.settings || typeof body.settings !== "object" || Array.isArray(body.settings)) {
+        return json({ error: "invalid payload" }, 400, cors);
+      }
+
+      try {
+        const settings = await updateUserSettings(env.DB, name, body.settings);
+        return json({ ok: true, settings }, 200, cors);
+      } catch (e) {
+        return json({ error: e.message }, e.code === "NOT_FOUND" ? 404 : 502, cors);
+      }
+    }
+
     if (url.pathname === "/delete-user" && request.method === "POST") {
       if (!checkAppKey(request, env)) return json({ error: "unauthorized" }, 401, cors);
       const body = await safeJson(request);
@@ -781,10 +797,11 @@ function parseJson(value, fallback) {
 }
 
 function userFromRow(row) {
+  const defaults = { push: true, sound: true, haptic: true, showTimers: true };
   return {
     hue: row.hue,
     createdAt: row.created_at,
-    settings: parseJson(row.settings_json, { push: true, sound: true, haptic: true }),
+    settings: { ...defaults, ...parseJson(row.settings_json, defaults) },
   };
 }
 
@@ -835,7 +852,7 @@ async function registerUser(db, name) {
 
   const count = Number(await db.prepare("SELECT COUNT(*) AS count FROM users").first("count")) || 0;
   const createdAt = new Date().toISOString();
-  const settings = { push: true, sound: true, haptic: true };
+  const settings = { push: true, sound: true, haptic: true, showTimers: true };
   await db.prepare(
     "INSERT OR IGNORE INTO users (name, hue, created_at, settings_json, updated_at) VALUES (?, ?, ?, ?, ?)"
   ).bind(name, PLAYER_HUES[count % PLAYER_HUES.length], createdAt, JSON.stringify(settings), createdAt).run();
@@ -849,6 +866,19 @@ async function registerUser(db, name) {
 async function updateUserColor(db, name, hue) {
   await db.prepare("UPDATE users SET hue = ?, updated_at = ? WHERE name = ?")
     .bind(hue, new Date().toISOString(), name).run();
+}
+
+async function updateUserSettings(db, name, patch) {
+  const row = await db.prepare("SELECT name, hue, created_at, settings_json FROM users WHERE name = ?").bind(name).first();
+  if (!row) { const error = new Error("Player not found"); error.code = "NOT_FOUND"; throw error; }
+  const defaults = { push: true, sound: true, haptic: true, showTimers: true };
+  const settings = { ...defaults, ...parseJson(row.settings_json, defaults) };
+  for (const key of Object.keys(defaults)) {
+    if (typeof patch[key] === "boolean") settings[key] = patch[key];
+  }
+  await db.prepare("UPDATE users SET settings_json = ?, updated_at = ? WHERE name = ?")
+    .bind(JSON.stringify(settings), new Date().toISOString(), name).run();
+  return settings;
 }
 
 async function renameUser(db, oldName, newName) {
@@ -955,4 +985,4 @@ async function deleteUser(db, name) {
   return affectedPuzzleIds;
 }
 
-export { loadData, registerUser, updateUserColor, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser, validateClientGrid };
+export { loadData, registerUser, updateUserColor, updateUserSettings, renameUser, renamePuzzleIdentity, getPuzzle, upsertPuzzle, joinPuzzle, deletePuzzle, deleteUser, validateClientGrid };

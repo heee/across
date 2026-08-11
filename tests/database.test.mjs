@@ -9,6 +9,7 @@ import {
   renameUser,
   registerUser,
   updateUserColor,
+  updateUserSettings,
   upsertPuzzle,
 } from "../worker/index.js";
 import worker from "../worker/index.js";
@@ -43,6 +44,10 @@ class Statement {
       const [hue, updated_at, name] = this.params;
       const row = this.db.users.get(name);
       if (row) Object.assign(row, { hue, updated_at });
+    } else if (this.sql.startsWith("UPDATE users SET settings_json")) {
+      const [settings_json, updated_at, name] = this.params;
+      const row = this.db.users.get(name);
+      if (row) Object.assign(row, { settings_json, updated_at });
     } else if (this.sql.startsWith("UPDATE users SET name")) {
       const [newName, updated_at, oldName] = this.params;
       const row = this.db.users.get(oldName);
@@ -100,6 +105,19 @@ test("D1 helpers preserve the legacy /data shape", async () => {
   assert.deepEqual(data.puzzles["test-1"].players, ["Henning", "Christie"]);
   assert.ok(data.puzzles["test-1"].sessions.Christie);
   assert.deepEqual(await getPuzzle(db, "test-1"), data.puzzles["test-1"]);
+});
+
+test("user settings persist timer visibility and default legacy users to on", async () => {
+  const db = new FakeD1();
+  await registerUser(db, "Henning");
+  const row = db.users.get("Henning");
+  row.settings_json = JSON.stringify({ push: false, sound: true, haptic: true });
+  assert.equal((await loadData(db)).users.Henning.settings.showTimers, true);
+
+  const settings = await updateUserSettings(db, "Henning", { showTimers: false });
+  assert.equal(settings.showTimers, false);
+  assert.equal(settings.push, false);
+  assert.equal((await loadData(db)).users.Henning.settings.showTimers, false);
 });
 
 test("deleting a user scrubs every puzzle snapshot", async () => {

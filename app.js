@@ -103,7 +103,7 @@ const LocalBackend = {
     const data = loadLocalData();
     if (!data.users[name]) {
       const hue = PLAYER_HUES[Object.keys(data.users).length % PLAYER_HUES.length];
-      data.users[name] = { hue, createdAt: nowIso(), settings: { push: true, sound: true, haptic: true } };
+      data.users[name] = { hue, createdAt: nowIso(), settings: { push: true, sound: true, haptic: true, showTimers: true } };
       saveLocalData(data);
     }
     return { name, ...data.users[name] };
@@ -396,9 +396,8 @@ const RemoteBackend = {
     const res = await this.apiPost("/register-user", { user: name });
     return res.user;
   },
-  async updateUserSettings() {
-    // Not implemented server-side yet — settings are UI-local for now
-    // (README notes this as a follow-up if it needs to sync across devices).
+  async updateUserSettings(name, settings) {
+    await this.apiPost("/update-user-settings", { user: name, settings });
   },
   async updateUserColor(name, hue) {
     await this.apiPost("/update-user-color", { user: name, hue });
@@ -1602,6 +1601,7 @@ function renderPuzzleHeader(presence) {
 
 function updatePuzzleTimers() {
   if (!currentPuzzle) return;
+  $("#puzzle-timer-summary").hidden = currentUser?.settings?.showTimers === false;
   const myTimeMs = myBaselineMs + (sessionStartTime ? Date.now() - sessionStartTime : 0);
   $("#puzzle-my-time").textContent = formatMinSec(myTimeMs);
 
@@ -2357,6 +2357,23 @@ function renderColorPicker() {
 function renderSettings() {
   $("#settings-name").value = currentUser.name;
   renderColorPicker();
+  const timerToggle = $("#settings-show-timers");
+  const timersOn = currentUser.settings?.showTimers !== false;
+  timerToggle.classList.toggle("on", timersOn);
+  timerToggle.onclick = async () => {
+    const previous = currentUser.settings?.showTimers !== false;
+    const settings = { ...(currentUser.settings || {}), showTimers: !previous };
+    currentUser.settings = settings;
+    if (dataCache.users[currentUser.name]) dataCache.users[currentUser.name].settings = settings;
+    timerToggle.classList.toggle("on", settings.showTimers);
+    try {
+      await Backend.updateUserSettings(currentUser.name, settings);
+    } catch (error) {
+      settings.showTimers = previous;
+      timerToggle.classList.toggle("on", previous);
+      showToast(error.message || "Couldn't save timer setting");
+    }
+  };
   const list = $("#settings-user-list");
   list.innerHTML = "";
   const names = Object.keys(dataCache.users);
