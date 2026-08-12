@@ -1,0 +1,4290 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-12T00:53:50.482Z",
+  "blueprints": [
+    {
+      "id": "sports-mini-beginner-93606e49d892",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "93606e49d892fc60eb31330074a35c15f4dd9d6a243460a36d1ab3a169b8fbf9",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "B",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "T",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "M",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "SCAB",
+            "clue": "The crustlike surface of a healing skin lesion",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "SET",
+            "clue": "A scoring segment in tennis or volleyball",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "CAROM",
+            "clue": "Billiards shot in which the cue ball strikes two object balls",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "ARENA",
+            "clue": "Enclosed venue for sports or events",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "BLACK",
+            "clue": "Extremely dark",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "EARL",
+            "clue": "A British nobleman's title",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "TREAT",
+            "clue": "To handle in a particular way, or a small gift",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "down",
+            "answer": "TEE",
+            "clue": "The starting place for each hole on a golf course",
+            "row": 2,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "ONCE",
+            "clue": "As soon as",
+            "row": 3,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "MAKE",
+            "clue": "Engage in",
+            "row": 4,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:45:49.700Z",
+      "updatedAt": "2026-08-12T00:45:49.712Z"
+    },
+    {
+      "id": "sports-mini-beginner-5112bceda9b5",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "5112bceda9b57caa4372113570e0b897bc5985356ba3dd11a4b93f4659387f93",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "LOB",
+            "clue": "Tennis shot hit high over an opponent near the net",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "LASS",
+            "clue": "Girl or young woman",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "OPPA",
+            "clue": "A male who is older than the speaker, especially used by Korean female",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "BRIBE",
+            "clue": "Make illegal payments to in exchange for favors or influence",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "APRON",
+            "clue": "(golf) the part of the fairway leading onto the green",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "OKRA",
+            "clue": "Long mucilaginous green pods; may be simmered or sauteed but used especially in soups and stews",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "NEER",
+            "clue": "Not at all; certainly not; not in any circumstances; not ever; at no time in the past or future",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "SPIKE",
+            "clue": "A hard downward hit in volleyball",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "SABRE",
+            "clue": "A fencing sword allowing cutting and thrusting",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "EAR",
+            "clue": "The organ used for hearing",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:45:51.677Z",
+      "updatedAt": "2026-08-12T00:45:51.677Z"
+    },
+    {
+      "id": "sports-mini-beginner-0fcb8a85dc7e",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "0fcb8a85dc7e6156691a91692d16decf937c7bbe4e85da6bdbd5d50b74ca2e8f",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "S",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "N",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "LASS",
+            "clue": "Girl or young woman",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "LOB",
+            "clue": "Tennis shot hit high over an opponent near the net",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "APRON",
+            "clue": "(golf) the part of the fairway leading onto the green",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "SPIKE",
+            "clue": "A hard downward hit in volleyball",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "SABRE",
+            "clue": "A fencing sword allowing cutting and thrusting",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "OPPA",
+            "clue": "A male who is older than the speaker, especially used by Korean female",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "BRIBE",
+            "clue": "Make illegal payments to in exchange for favors or influence",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "down",
+            "answer": "EAR",
+            "clue": "The organ used for hearing",
+            "row": 2,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "OKRA",
+            "clue": "Long mucilaginous green pods; may be simmered or sauteed but used especially in soups and stews",
+            "row": 3,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "NEER",
+            "clue": "Not at all; certainly not; not in any circumstances; not ever; at no time in the past or future",
+            "row": 4,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:45:52.462Z",
+      "updatedAt": "2026-08-12T00:45:52.462Z"
+    },
+    {
+      "id": "sports-mini-beginner-5e2834f67d24",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "5e2834f67d24dc348920dbca7349e5d4db51524632ee96fb870b546d516da7dc",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "T",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "B",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "C",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "M",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "M",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "L",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "TAB",
+            "clue": "A small flap, or a running bill",
+            "row": 0,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "TAMIL",
+            "clue": "Dravidian language spoken in southern India and Sri Lanka",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ARENA",
+            "clue": "Enclosed venue for sports or events",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "BOGEY",
+            "clue": "A golf score of one over par",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "CAROM",
+            "clue": "Billiards shot in which the cue ball strikes two object balls",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "COL",
+            "clue": "A pass between mountain peaks; geomorphological term for the lowest point on a mountain ridge between two peaks",
+            "row": 1,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "MAR",
+            "clue": "Make imperfect",
+            "row": 1,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "OMEGA",
+            "clue": "The ending of a series or sequence",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "LINER",
+            "clue": "(baseball) a hit that flies straight out from the batter",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "LAY",
+            "clue": "To put something down",
+            "row": 4,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:46:04.294Z",
+      "updatedAt": "2026-08-12T00:46:04.294Z"
+    },
+    {
+      "id": "sports-mini-beginner-8c06d32f6070",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "8c06d32f607017ac7cc2433eadde57c256142d874f009cc3f0b8d7dcfbb09234",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "C",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "M",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "P",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "K",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "L",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "CAM",
+            "clue": "A rotating disk shaped to convert circular into linear motion",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "COPT",
+            "clue": "A member of the Coptic Church",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "APER",
+            "clue": "Someone who copies the words or behavior of another",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "MEDAL",
+            "clue": "What Olympic winners take home",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "OPERA",
+            "clue": "Dramatic art form in which much of the text is sung",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "RACE",
+            "clue": "A competition of speed",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "ALKY",
+            "clue": "A person who drinks alcohol to excess habitually",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "PEDAL",
+            "clue": "What a cyclist pushes to go",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "TRACK",
+            "clue": "Where runners race",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "LEY",
+            "clue": "A field covered with grass or herbage and suitable for grazing by livestock",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:46:04.722Z",
+      "updatedAt": "2026-08-12T00:46:04.722Z"
+    },
+    {
+      "id": "sports-mini-beginner-a6deec1b2adf",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "a6deec1b2adf933ed56536d1866d1036065026c61c66e6aa82b37009ad6b0c15",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "R",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "C",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "Y",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "K",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "T",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "RET",
+            "clue": "Place (flax, hemp, or jute) in liquid so as to promote loosening of the fibers from the woody tissue",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "RACY",
+            "clue": "Designed or suitable for competing in a race",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "EPHA",
+            "clue": "An ancient Hebrew unit of dry measure equal to about a bushel",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "TRACK",
+            "clue": "Where runners race",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "APRON",
+            "clue": "(golf) the part of the fairway leading onto the green",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "OSHA",
+            "clue": "A government agency in the Department of Labor to maintain a safe and healthy work environment",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "NETT",
+            "clue": "Catch with a net",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "CHASE",
+            "clue": "To pursue quickly",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "YACHT",
+            "clue": "An expensive vessel propelled by sail or power and used for cruising or racing",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "KAT",
+            "clue": "The leaves of the shrub Catha edulis which are chewed like tobacco or used to make tea; has the effect of a euphoric stimulant",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:46:14.364Z",
+      "updatedAt": "2026-08-12T00:46:14.364Z"
+    },
+    {
+      "id": "sports-mini-beginner-df388a6e73fe",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "df388a6e73fe94f557bb8d5d1f489e0ab14fe0dfb9dd1ca60d9de16de9f9a736",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "M",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "L",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "Y",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "M",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "COL",
+            "clue": "A pass between mountain peaks; geomorphological term for the lowest point on a mountain ridge between two peaks",
+            "row": 0,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "CAROM",
+            "clue": "Billiards shot in which the cue ball strikes two object balls",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "OMEGA",
+            "clue": "The ending of a series or sequence",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "LINER",
+            "clue": "(baseball) a hit that flies straight out from the batter",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "TAMIL",
+            "clue": "Dravidian language spoken in southern India and Sri Lanka",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "TAB",
+            "clue": "A small flap, or a running bill",
+            "row": 1,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "LAY",
+            "clue": "To put something down",
+            "row": 1,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "ARENA",
+            "clue": "Enclosed venue for sports or events",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "BOGEY",
+            "clue": "A golf score of one over par",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "MAR",
+            "clue": "Make imperfect",
+            "row": 4,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:46:18.696Z",
+      "updatedAt": "2026-08-12T00:46:18.696Z"
+    },
+    {
+      "id": "sports-mini-beginner-33f62e729f18",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "33f62e729f18381c93e3b460b8ab4e80f1cde097e99f8dce3264f570935a93ef",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "P",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "V",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "S",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "M",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "L",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "BOP",
+            "clue": "Dance the bebop",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "BOMB",
+            "clue": "An explosive device fused to explode under specific conditions",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "OVER",
+            "clue": "Throughout an area",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "PEDAL",
+            "clue": "What a cyclist pushes to go",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "OVERS",
+            "clue": "Sets of six legal deliveries in cricket",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "RACE",
+            "clue": "A competition of speed",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "SLED",
+            "clue": "A ride down a snowy hill",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "MEDAL",
+            "clue": "What Olympic winners take home",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "BRACE",
+            "clue": "Support by bracing",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "LED",
+            "clue": "Diode such that light emitted at a p-n junction is proportional to the bias current; color depends on the material used",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:47:53.945Z",
+      "updatedAt": "2026-08-12T00:47:53.945Z"
+    },
+    {
+      "id": "sports-mini-beginner-d9992d81f730",
+      "category": "sports",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "d9992d81f730b5c86068088aee9fd26f92a85497e0403714ea9874fd2770455c",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "P",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "V",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "S",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "M",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "L",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "TOP",
+            "clue": "The highest point",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "TOMB",
+            "clue": "A burial chamber",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "OVER",
+            "clue": "Throughout an area",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "PEDAL",
+            "clue": "What a cyclist pushes to go",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "OVERS",
+            "clue": "Sets of six legal deliveries in cricket",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "RACE",
+            "clue": "A competition of speed",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "SLED",
+            "clue": "A ride down a snowy hill",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "MEDAL",
+            "clue": "What Olympic winners take home",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "BRACE",
+            "clue": "Support by bracing",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "LED",
+            "clue": "Diode such that light emitted at a p-n junction is proportional to the bias current; color depends on the material used",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:53:50.482Z",
+      "updatedAt": "2026-08-12T00:53:50.482Z"
+    }
+  ]
+}

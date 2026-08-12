@@ -1,0 +1,4798 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-12T00:51:09.614Z",
+  "blueprints": [
+    {
+      "id": "music-mini-beginner-0557010d1cf7",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "0557010d1cf797c6e2097eeb4f54d35608387bacdb911bb3d55d3108d933a63b",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "B",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "M",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "G",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "CAB",
+            "clue": "A taxi",
+            "row": 0,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "CONGA",
+            "clue": "Tall narrow hand drum of Afro-Cuban origin",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ARIA",
+            "clue": "An elaborate song for solo voice",
+            "row": 0,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "BEAN",
+            "clue": "A small, protein-rich legume",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "SCORE",
+            "clue": "Written music showing all parts of an ensemble work",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "SMOG",
+            "clue": "Polluted, hazy air",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "CARS",
+            "clue": "Pixar film set in Radiator Springs",
+            "row": 1,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "MANIA",
+            "clue": "An irrational but irresistible motive for a belief or action",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "ORGAN",
+            "clue": "Keyboard instrument that produces sound through pipes or electronics",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "GSA",
+            "clue": "A central management agency that sets Federal policy for Federal procurement and real property management and information resources management",
+            "row": 4,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:02.886Z",
+      "updatedAt": "2026-08-12T00:50:02.887Z"
+    },
+    {
+      "id": "music-mini-beginner-56265d445f02",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "56265d445f02a0ec3281a23569f41f474b81f2bd71b0a20a7b57e4f444b65022",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "B",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "P",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "SCAB",
+            "clue": "The crustlike surface of a healing skin lesion",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "SCALE",
+            "clue": "Ordered series of notes spanning an octave",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "CONGA",
+            "clue": "Tall narrow hand drum of Afro-Cuban origin",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "ARGIL",
+            "clue": "A white clay (especially a white clay used by potters)",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "BEON",
+            "clue": "Appear in a show, on T.V. or radio",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "SCORE",
+            "clue": "Written music showing all parts of an ensemble work",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "STEP",
+            "clue": "A short distance",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "TANGO",
+            "clue": "Argentine dance music marked by dramatic syncopation",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "ELGIN",
+            "clue": "Moray town central to the Speyside whisky trade",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "PEAL",
+            "clue": "Ring recurrently",
+            "row": 4,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.92,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:03.023Z",
+      "updatedAt": "2026-08-12T00:50:03.024Z"
+    },
+    {
+      "id": "music-mini-beginner-4aa62eeb04a7",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "4aa62eeb04a7e2e239579899ffb5ecfffc6e8b23ee576daec607f143cda2dc7c",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "F",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "S",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "SOS",
+            "clue": "An internationally recognized distress signal in radio code",
+            "row": 0,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "SCORE",
+            "clue": "Written music showing all parts of an ensemble work",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ORRIS",
+            "clue": "German iris having large white flowers with lavender-tinged falls and a fragrant rhizome",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "SITAR",
+            "clue": "Long-necked Indian instrument with sympathetic strings",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "ACRID",
+            "clue": "Strong and sharp",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "AFT",
+            "clue": "At or near or toward the stern of a ship or tail of an airplane",
+            "row": 1,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "DED",
+            "clue": "A doctor's degree in education",
+            "row": 1,
+            "col": 4,
+            "length": 3,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "FORTE",
+            "clue": "Dynamic marking instructing musicians to play loudly",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "TRIAD",
+            "clue": "Three-note chord built from a root, third, and fifth",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "ESR",
+            "clue": "Microwave spectroscopy in which there is resonant absorption of radiation by a paramagnet",
+            "row": 4,
+            "col": 1,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:05.685Z",
+      "updatedAt": "2026-08-12T00:50:05.685Z"
+    },
+    {
+      "id": "music-mini-beginner-01242dced14e",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "01242dced14ee7364be1268839fdc447a360239b03922253ae5eaab18c527ae5",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "U",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "D",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "H",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "M",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "BET",
+            "clue": "A wager on an outcome",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "BEAT",
+            "clue": "Regular pulse underlying a piece of music",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ETCH",
+            "clue": "Make an etching of",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "TUNER",
+            "clue": "Someone who tunes a musical instrument",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "ETUDE",
+            "clue": "Instrumental study designed to develop technique",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "DEMO",
+            "clue": "Give an exhibition of to an interested audience",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "EDEN",
+            "clue": "Any place of complete bliss and delight and peace",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "ACNED",
+            "clue": "(of complexion) blemished by imperfections of the skin",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "THEME",
+            "clue": "(music) melodic subject of a musical composition",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "RON",
+            "clue": "A Chadic language spoken in northern Nigeria, especially in the Plateau State, Bokkos, Barakin-Ladi, and Mangu LGAs",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:14.004Z",
+      "updatedAt": "2026-08-12T00:50:14.004Z"
+    },
+    {
+      "id": "music-mini-beginner-9864cbf5086d",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "9864cbf5086d705f32ff7eab2b1bd8475999bd4932dd53c45eb2734244916595",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "L",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "ALT",
+            "clue": "Angular distance above the horizon (especially of a celestial object)",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "ALTO",
+            "clue": "Vocal range below soprano",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "LEER",
+            "clue": "A suggestive or sneering look or grin",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "TANGO",
+            "clue": "Argentine dance music marked by dramatic syncopation",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "LEASE",
+            "clue": "Contract granting use of property in exchange for periodic payments",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "SOAR",
+            "clue": "Rise rapidly",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "ERNE",
+            "clue": "Bulky greyish-brown eagle with a short wedge-shaped white tail; of Europe and Greenland",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "TENOR",
+            "clue": "Adult male voice range above bass",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "ORGAN",
+            "clue": "Keyboard instrument that produces sound through pipes or electronics",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "ORE",
+            "clue": "A mineral that contains metal that is valuable enough to be mined",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:20.451Z",
+      "updatedAt": "2026-08-12T00:50:20.451Z"
+    },
+    {
+      "id": "music-mini-beginner-33ce3fa32a67",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "33ce3fa32a67ea3ac96bfd5a6a607e63199c50b6a9b7974172e17703c6b46f95",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "R",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "U",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "B",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "R",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "RUB",
+            "clue": "To move something back and forth against a surface",
+            "row": 0,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "RABAT",
+            "clue": "Moroccan capital",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ULLR",
+            "clue": "(Norse mythology) one of the Aesir known for his beauty and skill with bow and skis; son of Sif and stepson of Thor",
+            "row": 0,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "BEAT",
+            "clue": "Regular pulse underlying a piece of music",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "SCALE",
+            "clue": "Ordered series of notes spanning an octave",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "STAR",
+            "clue": "A famous, celebrated actor",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "CAPO",
+            "clue": "Guitar clamp that raises the pitch of open strings",
+            "row": 1,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "TABLA",
+            "clue": "Pair of hand-played drums used in Indian classical music",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "APART",
+            "clue": "One from the other",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "ROT",
+            "clue": "Decay",
+            "row": 4,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:21.094Z",
+      "updatedAt": "2026-08-12T00:50:21.094Z"
+    },
+    {
+      "id": "music-mini-beginner-af7d83c4b93d",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "af7d83c4b93d6c2f030df0bf5eb739d67763dc34b21d36a27c24b9afbca2378b",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "D",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "M",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "CAD",
+            "clue": "Someone who is morally reprehensible",
+            "row": 0,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "CONGA",
+            "clue": "Tall narrow hand drum of Afro-Cuban origin",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ARIA",
+            "clue": "An elaborate song for solo voice",
+            "row": 0,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "DEAN",
+            "clue": "A man who is the senior member of a group",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "SCORE",
+            "clue": "Written music showing all parts of an ensemble work",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "SMOL",
+            "clue": "Very small and cute",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "CARE",
+            "clue": "Attention or concern for someone",
+            "row": 1,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "MANIA",
+            "clue": "An irrational but irresistible motive for a belief or action",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "ORGAN",
+            "clue": "Keyboard instrument that produces sound through pipes or electronics",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "LEA",
+            "clue": "A unit of length of thread or yarn",
+            "row": 4,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:38.057Z",
+      "updatedAt": "2026-08-12T00:50:38.057Z"
+    },
+    {
+      "id": "music-mini-beginner-4c6d9916df1a",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "4c6d9916df1a8d07dca518c8b868f0b59144a378c800f01a816ea3f18274cfc2",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "C",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "B",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "C",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "E",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "I",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "SCAB",
+            "clue": "The crustlike surface of a healing skin lesion",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "SCALE",
+            "clue": "Ordered series of notes spanning an octave",
+            "row": 0,
+            "col": 1,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "CONGA",
+            "clue": "Tall narrow hand drum of Afro-Cuban origin",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "ARGIL",
+            "clue": "A white clay (especially a white clay used by potters)",
+            "row": 0,
+            "col": 3,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "BEON",
+            "clue": "Appear in a show, on T.V. or radio",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "across",
+            "answer": "SCORE",
+            "clue": "Written music showing all parts of an ensemble work",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "STET",
+            "clue": "Cancel, as of a correction or deletion",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "TANGO",
+            "clue": "Argentine dance music marked by dramatic syncopation",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "ELGIN",
+            "clue": "Moray town central to the Speyside whisky trade",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "TEAL",
+            "clue": "Any of various small short-necked dabbling river ducks of Europe and America",
+            "row": 4,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.92,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:38.602Z",
+      "updatedAt": "2026-08-12T00:50:38.602Z"
+    },
+    {
+      "id": "music-mini-beginner-97aff77b19c3",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "97aff77b19c3d5fbff90c8212aae136497f84935212c916a4ee76cfb3cac876e",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "L",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "T",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "O",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "G",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "O",
+            "block": false,
+            "number": 9
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": "R",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": "E",
+            "block": false,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "APT",
+            "clue": "Mentally quick and resourceful",
+            "row": 0,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "ALTO",
+            "clue": "Vocal range below soprano",
+            "row": 0,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "PEER",
+            "clue": "Look searchingly",
+            "row": 0,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "TANGO",
+            "clue": "Argentine dance music marked by dramatic syncopation",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "LEASE",
+            "clue": "Contract granting use of property in exchange for periodic payments",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "SOAR",
+            "clue": "Rise rapidly",
+            "row": 1,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "down",
+            "answer": "ERNE",
+            "clue": "Bulky greyish-brown eagle with a short wedge-shaped white tail; of Europe and Greenland",
+            "row": 1,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "TENOR",
+            "clue": "Adult male voice range above bass",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "ORGAN",
+            "clue": "Keyboard instrument that produces sound through pipes or electronics",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 9,
+            "direction": "across",
+            "answer": "ORE",
+            "clue": "A mineral that contains metal that is valuable enough to be mined",
+            "row": 4,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:50:43.290Z",
+      "updatedAt": "2026-08-12T00:50:43.290Z"
+    },
+    {
+      "id": "music-mini-beginner-59220b345bbd",
+      "category": "music",
+      "size": "mini",
+      "difficulty": "beginner",
+      "gridHash": "59220b345bbd5f573445c2882d9648935bc1ccfd5e6da945454e5ea2f0b1fd80",
+      "grid": {
+        "rows": 5,
+        "cols": 5,
+        "cells": [
+          {
+            "row": 0,
+            "col": 0,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 1,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "letter": "T",
+            "block": false,
+            "number": 1
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "letter": "E",
+            "block": false,
+            "number": 2
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "letter": "C",
+            "block": false,
+            "number": 3
+          },
+          {
+            "row": 1,
+            "col": 0,
+            "letter": "A",
+            "block": false,
+            "number": 4
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "letter": "S",
+            "block": false,
+            "number": 5
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "letter": "N",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 0,
+            "letter": "B",
+            "block": false,
+            "number": 6
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "letter": "B",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 2,
+            "col": 4,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 0,
+            "letter": "C",
+            "block": false,
+            "number": 7
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "letter": "E",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "letter": "L",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "letter": "O",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 0,
+            "letter": "S",
+            "block": false,
+            "number": 8
+          },
+          {
+            "row": 4,
+            "col": 1,
+            "letter": "P",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "letter": "A",
+            "block": false,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "letter": null,
+            "block": true,
+            "number": null
+          },
+          {
+            "row": 4,
+            "col": 4,
+            "letter": null,
+            "block": true,
+            "number": null
+          }
+        ],
+        "words": [
+          {
+            "number": 1,
+            "direction": "across",
+            "answer": "TEC",
+            "clue": "A police officer who investigates crimes",
+            "row": 0,
+            "col": 2,
+            "length": 3,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                0,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 1,
+            "direction": "down",
+            "answer": "TABLA",
+            "clue": "Pair of hand-played drums used in Indian classical music",
+            "row": 0,
+            "col": 2,
+            "length": 5,
+            "cells": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "number": 2,
+            "direction": "down",
+            "answer": "ENOL",
+            "clue": "An organic compound that contains a hydroxyl group bonded to a carbon atom which in turn is doubly bonded to another carbon atom",
+            "row": 0,
+            "col": 3,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          {
+            "number": 3,
+            "direction": "down",
+            "answer": "CAPO",
+            "clue": "Guitar clamp that raises the pitch of open strings",
+            "row": 0,
+            "col": 4,
+            "length": 4,
+            "cells": [
+              [
+                0,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "across",
+            "answer": "ASANA",
+            "clue": "(Hinduism) a posture or manner of sitting (as in the practice of yoga)",
+            "row": 1,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 4,
+            "direction": "down",
+            "answer": "ABCS",
+            "clue": "A character set that includes letters and is used to write a language",
+            "row": 1,
+            "col": 0,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "number": 5,
+            "direction": "down",
+            "answer": "SEEP",
+            "clue": "Pass gradually or leak through or as if through small openings",
+            "row": 1,
+            "col": 1,
+            "length": 4,
+            "cells": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          },
+          {
+            "number": 6,
+            "direction": "across",
+            "answer": "BEBOP",
+            "clue": "Fast, complex style of jazz developed in the 1940s",
+            "row": 2,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 7,
+            "direction": "across",
+            "answer": "CELLO",
+            "clue": "A large stringed instrument; seated player holds it upright while playing",
+            "row": 3,
+            "col": 0,
+            "length": 5,
+            "cells": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ]
+          },
+          {
+            "number": 8,
+            "direction": "across",
+            "answer": "SPA",
+            "clue": "A place for relaxing treatments",
+            "row": 4,
+            "col": 0,
+            "length": 3,
+            "cells": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      "density": 0.84,
+      "themedAnswerCount": 4,
+      "answerCount": 10,
+      "source": "offline-generator",
+      "metadata": {},
+      "status": "ready",
+      "createdAt": "2026-08-12T00:51:09.613Z",
+      "updatedAt": "2026-08-12T00:51:09.614Z"
+    }
+  ]
+}
