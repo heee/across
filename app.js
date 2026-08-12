@@ -1321,22 +1321,12 @@ function renderCreateCategoryList() {
   };
 }
 
-function isCuratedInventoryLaunchCategory() {
-  const category = normalizedCategory(createCategory || "");
-  return category === "beer & brewing" || category === "whisky";
-}
-
 function applyCreateAvailability() {
-  const inventoryOnly = isCuratedInventoryLaunchCategory();
-  if (inventoryOnly) {
-    createSize = "mini";
-    createDifficulty = "beginner";
-  }
   $all("#create-size .segmented-option").forEach((button) => {
-    button.disabled = inventoryOnly && button.dataset.value !== "mini";
+    button.disabled = false;
   });
   $all("#create-difficulty .segmented-option").forEach((button) => {
-    button.disabled = inventoryOnly && button.dataset.value !== "beginner";
+    button.disabled = false;
   });
   renderSegmented("#create-size", createSize, (value) => { createSize = value; renderCreatePreview(); });
   renderSegmented("#create-difficulty", createDifficulty, (value) => {
@@ -1411,17 +1401,11 @@ function renderVisibilityHelp() {
 }
 
 function renderDifficultyHelp() {
-  $("#create-difficulty-help").textContent = isCuratedInventoryLaunchCategory()
-    ? "Five curated Beginner Mini puzzles are available now. More sizes and difficulties are being added."
-    : DIFFICULTY_HELP[createDifficulty];
+  $("#create-difficulty-help").textContent = DIFFICULTY_HELP[createDifficulty];
 }
 
 async function createPuzzleFromForm(playAfterCreate) {
   if (!createCategory) { showToast("Pick a category first"); return; }
-  if (isCuratedInventoryLaunchCategory() && (createSize !== "mini" || createDifficulty !== "beginner")) {
-    showToast("Beer and Whisky currently support Beginner Mini puzzles");
-    return;
-  }
   const title = $("#create-title").value.trim();
   if (!title) { showToast("Give your puzzle a title first"); return; }
   const buttons = [$("#create-submit"), $("#create-only")];
