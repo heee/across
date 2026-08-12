@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import worker, { createPuzzleFromInventory, purgePuzzleRows } from "../worker/index.js";
-import { validateBlueprint } from "../scripts/puzzle-inventory.mjs";
+import { buildPublicPuzzle, publishManifest, validateBlueprint } from "../scripts/puzzle-inventory.mjs";
 
 class Statement {
   constructor(db, sql, params = []) { this.db = db; this.sql = sql.replace(/\s+/g, " ").trim(); this.params = params; }
@@ -143,4 +143,38 @@ test("offline inventory validation enforces density and size-specific relevance"
   const malformed = structuredClone(candidate);
   malformed.grid.words[0].cells = [];
   assert.match(validateBlueprint(malformed).errors.join(" "), /structurally valid/);
+});
+
+test("public inventory publication attributes editorial ownership without inventing participation", async () => {
+  const validation = validateBlueprint({
+    category: "beer & brewing", size: "mini", difficulty: "medium", grid: validMiniGrid(),
+  });
+  const blueprint = {
+    id: "beer-mini-public-1", category: "beer & brewing", size: "mini", difficulty: "medium",
+    grid: validation.grid,
+  };
+  const puzzle = buildPublicPuzzle(blueprint, "On tap", { createdAt: "2026-08-11T00:00:00.000Z" });
+  assert.equal(puzzle.createdBy, "Across");
+  assert.equal(puzzle.visibility, "open");
+  assert.deepEqual(puzzle.players, []);
+  assert.deepEqual(puzzle.sessions, {});
+
+  const stored = new Map();
+  const query = async (input) => {
+    const statements = Array.isArray(input) ? input : [input];
+    return statements.map((statement) => {
+      if (statement.sql.startsWith("SELECT id FROM puzzle_blueprints")) return { results: [{ id: blueprint.id }] };
+      if (statement.sql.startsWith("INSERT OR IGNORE INTO puzzles")) {
+        stored.set(statement.params[0], statement.params[7]);
+        return { success: true };
+      }
+      if (statement.sql.startsWith("SELECT id, payload_json FROM puzzles")) {
+        return { results: [...stored].map(([id, payload_json]) => ({ id, payload_json })) };
+      }
+      throw new Error(`Unexpected query: ${statement.sql}`);
+    });
+  };
+  const published = await publishManifest([blueprint], ["On tap"], query, { publishedAt: "2026-08-11T00:00:00.000Z" });
+  assert.equal(published.length, 1);
+  assert.equal(stored.size, 1);
 });

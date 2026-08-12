@@ -8,6 +8,7 @@
 //   node scripts/puzzle-inventory.mjs generate --category "beer & brewing" --size large --difficulty medium --count 10 --time-budget-ms 120000 --theme-plan-attempts 1000 --out inventory.json
 //   node scripts/puzzle-inventory.mjs validate --file inventory.json
 //   node scripts/puzzle-inventory.mjs seed --file inventory.json --confirm-seed
+//   node scripts/puzzle-inventory.mjs publish --file inventory.json --titles-file titles.json --confirm-publish
 
 import crypto from "node:crypto";
 import fs from "node:fs";
@@ -126,7 +127,7 @@ function normalizedBlueprint(raw, validation) {
   };
 }
 
-function validateManifest(manifest) {
+export function validateManifest(manifest) {
   if (manifest?.version !== 1 || !Array.isArray(manifest.blueprints)) throw new Error("Expected a version 1 inventory manifest.");
   const normalized = [];
   const failures = [];
@@ -232,6 +233,91 @@ async function cloudflareQuery(statements) {
   return results;
 }
 
+export function buildPublicPuzzle(blueprint, title, options = {}) {
+  const createdAt = options.createdAt || new Date().toISOString();
+  const publisher = options.publisher || "Across";
+  return {
+    id: options.id || `public-${blueprint.id}`.slice(0, 64),
+    title,
+    keywords: [blueprint.category],
+    category: blueprint.category,
+    blueprintId: blueprint.id,
+    size: blueprint.size,
+    difficulty: blueprint.difficulty,
+    visibility: "open",
+    createdBy: publisher,
+    createdAt,
+    grid: blueprint.grid,
+    cells: {},
+    // Editorial publisher attribution is not gameplay participation. The
+    // first real player is added by /join-puzzle and receives the first
+    // session, so rankings never credit the system publisher.
+    players: [],
+    sessions: {},
+    state: "open",
+    completedAt: null,
+    totalTimeMs: 0,
+    highlights: [],
+  };
+}
+
+function loadTitles(file, blueprints) {
+  if (!file) throw new Error("publish requires --titles-file with one editorial title per blueprint");
+  const raw = JSON.parse(fs.readFileSync(path.resolve(file), "utf8"));
+  const titles = Array.isArray(raw)
+    ? raw
+    : blueprints.map((blueprint) => raw?.[blueprint.id]);
+  if (titles.length !== blueprints.length) throw new Error(`Expected ${blueprints.length} titles; received ${titles.length}.`);
+  const cleaned = titles.map((title) => String(title || "").trim());
+  if (cleaned.some((title) => !title || title.length > 100)) throw new Error("Every publication title must be 1-100 characters.");
+  if (new Set(cleaned.map((title) => title.toLowerCase())).size !== cleaned.length) throw new Error("Publication titles must be unique.");
+  return cleaned;
+}
+
+export async function publishManifest(blueprints, titles, query = cloudflareQuery, options = {}) {
+  if (titles.length !== blueprints.length) throw new Error("A title is required for every blueprint.");
+  const ids = blueprints.map((blueprint) => blueprint.id);
+  const placeholders = ids.map(() => "?").join(",");
+  const inventoryResults = await query({
+    sql: `SELECT id FROM puzzle_blueprints WHERE id IN (${placeholders}) AND status = 'ready'`,
+    params: ids,
+  });
+  const readyIds = new Set((inventoryResults || []).flatMap((result) => result?.results || []).map((row) => row.id));
+  const missing = ids.filter((id) => !readyIds.has(id));
+  if (missing.length) throw new Error(`${missing.length} blueprints are not ready in D1; seed them before publishing.`);
+
+  const publishedAt = options.publishedAt || new Date().toISOString();
+  const puzzles = blueprints.map((blueprint, index) => buildPublicPuzzle(blueprint, titles[index], {
+    publisher: options.publisher,
+    createdAt: new Date(Date.parse(publishedAt) + index).toISOString(),
+  }));
+  await query(puzzles.map((puzzle) => ({
+    sql: `INSERT OR IGNORE INTO puzzles (
+      id, title, description, keywords_json, size, difficulty, visibility,
+      created_by, created_at, state, completed_at, fork_of, forked_by,
+      payload_json, updated_at
+    ) VALUES (?, ?, '', ?, ?, ?, 'open', ?, ?, 'open', NULL, NULL, NULL, ?, ?)`,
+    params: [
+      puzzle.id, puzzle.title, JSON.stringify(puzzle.keywords), puzzle.size,
+      puzzle.difficulty, puzzle.createdBy, puzzle.createdAt,
+      JSON.stringify(puzzle), publishedAt,
+    ],
+  })));
+  const verification = await query({
+    sql: `SELECT id, payload_json FROM puzzles WHERE id IN (${placeholders}) ORDER BY id`,
+    params: puzzles.map((puzzle) => puzzle.id),
+  });
+  const rows = (verification || []).flatMap((result) => result?.results || []);
+  if (rows.length !== puzzles.length) throw new Error(`Publication verification found ${rows.length}/${puzzles.length} puzzles.`);
+  for (const row of rows) {
+    const puzzle = JSON.parse(row.payload_json);
+    if (puzzle.visibility !== "open" || puzzle.state !== "open" || puzzle.players?.length || Object.keys(puzzle.sessions || {}).length) {
+      throw new Error(`Published puzzle ${row.id} has invalid public or participation state.`);
+    }
+  }
+  return puzzles;
+}
+
 async function seedManifest(blueprints) {
   if (!process.argv.includes("--confirm-seed")) throw new Error("Seed is a remote write. Re-run with --confirm-seed after validating the manifest.");
   const migration = fs.readFileSync(path.join(ROOT, "migrations", "0002_puzzle_blueprints.sql"), "utf8");
@@ -261,12 +347,18 @@ async function seedManifest(blueprints) {
 async function main() {
   const command = process.argv[2];
   if (command === "generate") return generateManifest();
-  if (!["validate", "seed"].includes(command)) throw new Error("Use generate, validate, or seed.");
+  if (!["validate", "seed", "publish"].includes(command)) throw new Error("Use generate, validate, seed, or publish.");
   const file = option("file");
   if (!file) throw new Error(`${command} requires --file`);
   const blueprints = validateManifest(JSON.parse(fs.readFileSync(path.resolve(file), "utf8")));
   console.log(`Validated ${blueprints.length} puzzle blueprints.`);
   if (command === "seed") await seedManifest(blueprints);
+  if (command === "publish") {
+    if (!process.argv.includes("--confirm-publish")) throw new Error("Publish creates live public puzzle instances. Re-run with --confirm-publish.");
+    const titles = loadTitles(option("titles-file"), blueprints);
+    const puzzles = await publishManifest(blueprints, titles);
+    console.log(`Published and verified ${puzzles.length} open puzzles with no publisher play sessions.`);
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
