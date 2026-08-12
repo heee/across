@@ -13,6 +13,7 @@ import {
   computeLongSlotIds,
   extractSlots,
   generatePuzzle,
+  MANUAL_MIN_OPEN_RATIO,
   runMaintainingArcConsistencyFill,
   runBacktrackFill,
   validateTemplate,
@@ -26,6 +27,7 @@ test("generator preserves every supported output size and difficulty profile", (
   assert.deepEqual(THEME_RATIO_BOUNDS.default, { min: 0.4, max: 0.6 });
   assert.deepEqual(THEME_RATIO_BOUNDS.large, { min: 0.2, max: 0.3 });
   assert.deepEqual(THEME_POLICIES.large, { min: 0.2, max: 0.3, longMin: 0.3, cellMin: 0.3 });
+  assert.deepEqual(MANUAL_MIN_OPEN_RATIO, { mini: 0.8, quick: 0.8, compact: 0.7, standard: 0.7, large: 0.65 });
 });
 
 test("every eligible dense template is square, connected, uncropped, and at least 80% open", () => {

@@ -998,7 +998,18 @@ export function buildOutputFromSlots(rows, slots, assignment, n) {
 // ---------------------------------------------------------------------
 
 const TIME_BUDGET_MS = { mini: 2500, quick: 3500, compact: 5000, standard: 6000, large: 8000 };
-const MIN_OPEN_RATIO = 0.80;
+// Editorial inventory remains independently gated at >=80% by
+// scripts/puzzle-inventory.mjs. The live/manual fallback is intentionally a
+// little more permissive for the two larger creator sizes so an otherwise
+// sound, themed crossword is not rejected merely because no pre-generated
+// blueprint exists for that exact category/difficulty bucket.
+export const MANUAL_MIN_OPEN_RATIO = Object.freeze({
+  mini: 0.80,
+  quick: 0.80,
+  compact: 0.70,
+  standard: 0.70,
+  large: 0.65,
+});
 
 function openCellRatio(grid) {
   const cells = grid?.cells || [];
@@ -1022,6 +1033,12 @@ export function generatePuzzle({
   const themeBounds = themeRatioBounds(size);
   const policy = themePolicy(size);
   const overallDeadline = Date.now() + timeBudget;
+  // Larger manual puzzles need a genuine second path when an 80% template is
+  // incompatible with the requested theme. Previously template search could
+  // consume the entire budget, making the documented legacy fallback dead on
+  // arrival. Reserve 40% for that fallback on Standard/Full.
+  const fallbackShare = size === "large" ? 0.70 : (["compact", "standard"].includes(size) ? 0.40 : 0);
+  const templatePhaseDeadline = overallDeadline - Math.floor(timeBudget * fallbackShare);
 
   // Always fill from all three native answer tiers. Restricting the answer
   // pool by clue difficulty made beginner/easy grids needlessly unsolvable.
@@ -1029,7 +1046,7 @@ export function generatePuzzle({
   const index = buildWordIndex(pool);
 
   const templates = shuffleInPlace([...(TEMPLATES[size] || TEMPLATES.standard)]);
-  const minimumDensity = MIN_OPEN_RATIO;
+  const minimumDensity = MANUAL_MIN_OPEN_RATIO[size] || 0.80;
   // Each template gets its own fair slice of the total budget — critical,
   // because template difficulty varies wildly for a given word pool (two
   // templates that both validate fine and look similarly dense can differ
@@ -1041,12 +1058,12 @@ export function generatePuzzle({
   const perTemplateBudget = Math.max(50, Math.floor(timeBudget / templates.length));
 
   for (const rows of templates) {
-    if (Date.now() > overallDeadline) break;
+    if (Date.now() > templatePhaseDeadline) break;
     const templateDensity = rows.reduce((count, row) => count + [...row].filter((cell) => cell !== "#").length, 0) / (n * n);
     if (templateDensity < minimumDensity) continue;
     const slots = extractSlots(rows);
     const longIds = computeLongSlotIds(slots);
-    const templateDeadline = Math.min(overallDeadline, Date.now() + perTemplateBudget);
+    const templateDeadline = Math.min(templatePhaseDeadline, Date.now() + perTemplateBudget);
     const domains = pruneDomains(slots, index, templateDeadline);
     // Arc consistency can prove a template unsolvable for this exact word
     // pool outright (some slot's domain pruned to nothing) — skip straight
@@ -1090,8 +1107,13 @@ export function generatePuzzle({
     throw new Error("could not meet the crossword density target for this combination — try again");
   }
 
-  const legacy = legacyGenerate(wordBank, keywords, size, difficulty, overallDeadline);
   const themedAnswers = new Set(pool.filter((entry) => entry.themed).map((entry) => entry.word));
+  const legacy = legacyGenerate(wordBank, keywords, size, difficulty, overallDeadline, {
+    minimumDensity,
+    themedAnswers,
+    themeBounds,
+    policy,
+  });
   const themedWords = legacy.words.filter((word) => themedAnswers.has(word.answer));
   const legacyThemeRatio = legacy.words.length ? themedWords.length / legacy.words.length : 0;
   const legacyThemeCellRatio = legacy.words.length
@@ -1128,17 +1150,17 @@ const LEGACY_TARGET_WORDS = { mini: 10, quick: 16, compact: 30, standard: 42, la
 const LEGACY_FILL_ATTEMPTS = 12;
 const LEGACY_FILL_PASSES = 4;
 
-function legacyGenerate(wordBank, keywords, size, difficulty, deadline = Infinity) {
+function legacyGenerate(wordBank, keywords, size, difficulty, deadline = Infinity, constraints = null) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const maxDiff = (DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium).maxDiff;
   const targetWords = LEGACY_TARGET_WORDS[size] || LEGACY_TARGET_WORDS.standard;
 
   const groups = legacyBuildCandidateGroups(wordBank, keywords, maxDiff, n);
-  let result = legacyAttemptBest(groups, n, targetWords, deadline);
+  let result = legacyAttemptBest(groups, n, targetWords, deadline, constraints);
 
   if (result.words.length < 3 && keywords.length > 0) {
     const fallbackGroups = legacyBuildCandidateGroups(wordBank, [], maxDiff, n);
-    result = legacyAttemptBest(fallbackGroups, n, targetWords, deadline);
+    result = legacyAttemptBest(fallbackGroups, n, targetWords, deadline, constraints);
   }
 
   if (result.words.length < 3) {
@@ -1148,20 +1170,46 @@ function legacyGenerate(wordBank, keywords, size, difficulty, deadline = Infinit
   return legacyCropAndNumber(result.grid, result.words, n);
 }
 
-function legacyAttemptBest(groups, n, targetWords, deadline = Infinity) {
+function legacyAttemptBest(groups, n, targetWords, deadline = Infinity, constraints = null) {
   let best = null;
   let bestScore = -1;
+  let bestAccepted = null;
+  let bestAcceptedScore = -1;
   for (let i = 0; i < LEGACY_FILL_ATTEMPTS; i++) {
     if (Date.now() > deadline) break;
     const candidates = groups.flatMap((g) => legacyShuffleByLength(g));
     const result = legacyAttemptFill(candidates, n, targetWords);
     const score = legacyDensityScore(result.grid, n);
+    if (constraints && result.words.length >= 3) {
+      const candidate = legacyCropAndNumber(result.grid, result.words, n);
+      if (legacyMeetsConstraints(candidate, constraints) && score > bestAcceptedScore) {
+        bestAcceptedScore = score;
+        bestAccepted = result;
+      }
+    }
     if (score > bestScore) {
       bestScore = score;
       best = result;
     }
   }
-  return best || { grid: legacyMakeEmptyGrid(n), words: [] };
+  return bestAccepted || best || { grid: legacyMakeEmptyGrid(n), words: [] };
+}
+
+function legacyMeetsConstraints(grid, { minimumDensity, themedAnswers, themeBounds, policy }) {
+  if (openCellRatio(grid) < minimumDensity) return false;
+  if (!themedAnswers?.size) return true;
+  const themedWords = grid.words.filter((word) => themedAnswers.has(word.answer));
+  const ratio = themedWords.length / grid.words.length;
+  if (ratio < themeBounds.min || ratio > themeBounds.max) return false;
+  const longCount = Math.max(1, Math.round(grid.words.length * 0.3));
+  const themedLongCount = [...grid.words]
+    .sort((a, b) => b.length - a.length)
+    .slice(0, longCount)
+    .filter((word) => themedAnswers.has(word.answer)).length;
+  if (themedLongCount < Math.ceil(longCount * policy.longMin)) return false;
+  const totalCells = grid.words.reduce((sum, word) => sum + word.length, 0);
+  const themedCells = grid.words.reduce((sum, word) => sum + (themedAnswers.has(word.answer) ? word.length : 0), 0);
+  return !totalCells || themedCells / totalCells >= policy.cellMin;
 }
 
 function legacyDensityScore(grid, n) {

@@ -141,8 +141,12 @@ The generated module is committed, while the large source download is not.
 
 ### Generation quality status
 
-- Every accepted size enforces at least 80% playable-cell coverage. Generation
-  fails closed instead of serving a sparse or off-theme fallback.
+- Editorial inventory and every public pre-created puzzle enforce at least 80%
+  playable-cell coverage. Manual generation uses the same 80% floor for Mini,
+  with explicit availability floors of 70% for Standard (9x9) and 65% for Full
+  (15x15). This two-tier policy keeps public releases at the editorial bar while
+  allowing people to create larger themed puzzles when an inventory bucket is
+  empty.
 - Mini and Standard require 40–60% explicitly themed answers. Full currently
   uses a 20–30% answer band plus at least 30% themed answer-cell coverage; its
   lower band is a documented feasibility compromise.
@@ -157,6 +161,11 @@ The generated module is committed, while the large source download is not.
   density. The browser worker retries bounded failures automatically: Mini 8,
   legacy Quick 6, Standard/legacy Standard 4, and Full 3, all under the outer
   45-second browser-worker timeout.
+- Standard and Full reserve part of each attempt for the placement fallback
+  (40% and 70%, respectively). Before this change, template search could spend
+  the entire deadline and make the documented fallback unreachable. The
+  fallback now selects an attempt that passes density and theme gates instead
+  of blindly retaining the densest attempt and rejecting it afterward.
 - Legacy corpus categories are canonicalized during generation (`movies` to
   `movies & tv`, `food` to `food & drink`, and `general` to
   `general knowledge`).
@@ -203,11 +212,11 @@ only after a player creates a puzzle and the blueprint is cloned into the
 `puzzles` table; therefore an empty Discover screen can coexist with seeded
 inventory.
 
-If no blueprint exists, the browser may run the same strict generator off-thread
-and submit its completed grid. The server validates its structure before
-persistence. This is a transition path, not permission to weaken density or
-relevance. Inventory remains the reliable instant path, especially for
-Standard and Full.
+If no blueprint exists, the browser runs the manual generator off-thread and
+submits its completed grid. The server validates its structure before
+persistence. Theme relevance remains mandatory; only the documented manual
+density floors differ from the 80% editorial inventory gate. Inventory remains
+the reliable instant path, especially for Standard and Full.
 
 Inventory workflow:
 
