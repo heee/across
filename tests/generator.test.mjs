@@ -6,6 +6,7 @@ import {
   TEMPLATES,
   THEME_RATIO_BOUNDS,
   THEME_POLICIES,
+  applyDifficultyClues,
   buildCandidatePool,
   buildWordIndex,
   buildThemePlans,
@@ -70,6 +71,25 @@ test("category-specific clue wins when the same answer also has a generic entry"
     tier: 1,
     themed: true,
   }]);
+});
+
+test("legacy corpus categories count toward their current creator category", () => {
+  const pool = buildCandidatePool([
+    { w: "REEL", c: "Movie footage holder", cat: "movies", diff: 1 },
+  ], ["Movies & TV"], "", 3, 5);
+  assert.equal(pool[0].themed, true);
+  assert.equal(pool[0].cat, "movies & tv");
+});
+
+test("difficulty changes clue selection without shrinking the answer vocabulary", () => {
+  const bank = [
+    { w: "MALT", c: "Beer grain", cat: "beer & brewing", diff: 1 },
+    { w: "MALT", c: "Grist component transformed during mashing", cat: "beer & brewing", diff: 3 },
+  ];
+  const selected = [{ word: "MALT", clue: "unused", cat: "beer & brewing", diff: 3, themed: true }];
+  assert.equal(applyDifficultyClues(selected, bank, ["beer & brewing"], "beginner")[0].clue, "Beer grain");
+  assert.equal(applyDifficultyClues(selected, bank, ["beer & brewing"], "expert")[0].clue,
+    "Grist component transformed during mashing");
 });
 
 test("offline callers can override search time and theme-plan attempts", () => {

@@ -38,6 +38,17 @@ export const DIFFICULTY_PROFILES = {
   expert: { maxDiff: 3, targetDiff: 3 },
 };
 
+const CORPUS_CATEGORY_ALIASES = {
+  movies: "movies & tv",
+  food: "food & drink",
+  general: "general knowledge",
+};
+
+function canonicalCorpusCategory(value) {
+  const category = String(value || "").trim().toLowerCase();
+  return CORPUS_CATEGORY_ALIASES[category] || category;
+}
+
 // ---------------------------------------------------------------------
 // 1. Symmetric block templates (180-degree rotational symmetry).
 //    '.' = white/fillable, '#' = block. Each satisfies (validated by
@@ -69,8 +80,15 @@ export const DIFFICULTY_PROFILES = {
 // silently changing the app's current light block-cell layout language.
 export const TEMPLATES = {
   mini: [
-    // blocks=4 fill=84% tightness=0.06 lens={"3":2,"4":4,"5":4}
+    // Exhaustive valid rotationally symmetric 5x5 patterns at >=80% open.
     ["....#", "....#", ".....", "#....", "#...."],
+    [".....", ".....", ".....", ".....", "....."],
+    ["#....", ".....", ".....", ".....", "....#"],
+    ["##...", ".....", ".....", ".....", "...##"],
+    ["....#", ".....", ".....", ".....", "#...."],
+    ["#...#", ".....", ".....", ".....", "#...#"],
+    ["...##", ".....", ".....", ".....", "##..."],
+    ["#....", "#....", ".....", "....#", "....#"],
   ],
   quick: [
     ["###...#", "##.....", ".......", ".......", ".......", ".....##", "#...###"],
@@ -327,14 +345,14 @@ export function buildThemePlans(slots, anchorIds, themedCount, domains, attempts
 // answer has both generic and category-specific records, keep the latter.
 export function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
   void title;
-  const requestedCategories = new Set((keywords || []).map((keyword) => String(keyword).trim().toLowerCase()).filter(Boolean));
+  const requestedCategories = new Set((keywords || []).map(canonicalCorpusCategory).filter(Boolean));
   const byAnswer = new Map();
   for (const entry of wordBank) {
     const w = entry.w.toUpperCase();
     if (!/^[A-Z]+$/.test(w)) continue;
     if (w.length < 3 || w.length > n) continue;
     if (entry.diff > maxDiff) continue;
-    const cat = (entry.cat || "").trim().toLowerCase();
+    const cat = canonicalCorpusCategory(entry.cat);
     const themed = requestedCategories.has(cat);
     const candidate = { word: w, clue: entry.c, cat, diff: entry.diff || 1, tier: themed ? 1 : 0, themed };
     const prior = byAnswer.get(w);
@@ -342,6 +360,36 @@ export function buildCandidatePool(wordBank, keywords, title, maxDiff, n) {
   }
 
   return [...byAnswer.values()];
+}
+
+// Grid construction needs the broadest possible answer vocabulary. Difficulty
+// belongs to clue selection, not to whether an otherwise useful answer may
+// appear in the grid. Once a fill is found, choose the best clue variant for
+// the requested player-facing profile while preserving category-specific
+// wording when one exists.
+export function applyDifficultyClues(assignment, wordBank, keywords, difficulty = "medium") {
+  const requestedCategories = new Set((keywords || [])
+    .map(canonicalCorpusCategory)
+    .filter(Boolean));
+  const profile = DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium;
+  const byAnswer = new Map();
+  for (const entry of wordBank) {
+    const word = String(entry.w || "").toUpperCase();
+    if (!byAnswer.has(word)) byAnswer.set(word, []);
+    byAnswer.get(word).push(entry);
+  }
+  return assignment.map((selected) => {
+    const variants = byAnswer.get(selected.word) || [];
+    const themed = variants.filter((entry) => requestedCategories.has(canonicalCorpusCategory(entry.cat)));
+    const preferredCategory = selected.themed && themed.length ? themed : variants;
+    const withinProfile = preferredCategory.filter((entry) => (entry.diff || 1) <= profile.maxDiff);
+    const choices = withinProfile.length ? withinProfile : preferredCategory;
+    const clue = choices.slice().sort((a, b) => (
+      Math.abs((a.diff || 1) - profile.targetDiff) - Math.abs((b.diff || 1) - profile.targetDiff)
+      || String(a.c || "").length - String(b.c || "").length
+    ))[0];
+    return clue ? { ...selected, clue: clue.c, diff: clue.diff || 1 } : selected;
+  });
 }
 
 export function buildWordIndex(entries) {
@@ -968,7 +1016,6 @@ export function generatePuzzle({
 }) {
   const n = SIZE_MAP[size] || SIZE_MAP.standard;
   const profile = DIFFICULTY_PROFILES[difficulty] || DIFFICULTY_PROFILES.medium;
-  const maxDiff = profile.maxDiff;
   const defaultTimeBudget = TIME_BUDGET_MS[size] || 5000;
   const timeBudget = Number.isFinite(timeBudgetMs) && timeBudgetMs > 0 ? timeBudgetMs : defaultTimeBudget;
   const planAttempts = Number.isInteger(themePlanAttempts) && themePlanAttempts > 0 ? themePlanAttempts : 24;
@@ -976,7 +1023,9 @@ export function generatePuzzle({
   const policy = themePolicy(size);
   const overallDeadline = Date.now() + timeBudget;
 
-  const pool = buildCandidatePool(wordBank, keywords, title, maxDiff, n);
+  // Always fill from all three native answer tiers. Restricting the answer
+  // pool by clue difficulty made beginner/easy grids needlessly unsolvable.
+  const pool = buildCandidatePool(wordBank, keywords, title, 3, n);
   const index = buildWordIndex(pool);
 
   const templates = shuffleInPlace([...(TEMPLATES[size] || TEMPLATES.standard)]);
@@ -1027,7 +1076,8 @@ export function generatePuzzle({
         const themedCellRatio = assignment.reduce((sum, entry, id) => sum + (entry.themed ? slots[id].length : 0), 0)
           / slots.reduce((sum, slot) => sum + slot.length, 0);
         if (hasRequestedCategory && themedCellRatio < policy.cellMin) continue;
-        const grid = buildOutputFromSlots(rows, slots, assignment, n);
+        const cluedAssignment = applyDifficultyClues(assignment, wordBank, keywords, difficulty);
+        const grid = buildOutputFromSlots(rows, slots, cluedAssignment, n);
         if (openCellRatio(grid) >= minimumDensity) return grid;
       }
     }

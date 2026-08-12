@@ -61,7 +61,7 @@ function newSession() {
 
 function generatePuzzleOffThread(req) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker("./puzzle-generator-worker.js", { type: "module" });
+    const worker = new Worker("./puzzle-generator-worker.js?v=2", { type: "module" });
     const timeout = setTimeout(() => {
       worker.terminate();
       reject(new Error("Dense crossword generation took too long — please try again"));
