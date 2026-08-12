@@ -11,3 +11,7 @@ export function pickRandomItem(items, random = Math.random) {
   if (items.length === 0) return null;
   return items[Math.floor(random() * items.length)];
 }
+
+export function hasActiveDiscoverCriteria({ query = "", category = "all", difficulty = "all", size = "all" } = {}) {
+  return String(query).trim().length > 0 || category !== "all" || difficulty !== "all" || size !== "all";
+}

@@ -9,7 +9,7 @@
 //    local mode are produced by the same algorithm the Worker uses.
 import { hasStartedPuzzle, puzzleParticipantNames, sortPuzzlesByUserActivity } from "./home-order.js";
 import { profilePuzzleCollections, puzzleLeaderboard, puzzleProgress, puzzleSeriesId } from "./profile-puzzles.js";
-import { pickRandomItem, shuffledCopy } from "./create-options.js";
+import { hasActiveDiscoverCriteria, pickRandomItem, shuffledCopy } from "./create-options.js?v=2";
 
 const PLAYER_HUES = [250, 30, 140, 90, 320, 190, 10, 220, 60, 165, 285, 345];
 const USING_LOCAL_BACKEND = !window.WORKER_URL || window.WORKER_URL.includes("YOUR-SUBDOMAIN");
@@ -1253,9 +1253,20 @@ function renderSearchResults() {
   if (activeSearchSize !== "all") list = list.filter((p) => p.size === activeSearchSize || p.grid?.rows === ALL_SIZE_DIMENSIONS[activeSearchSize]);
   list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   if (list.length === 0) {
-    results.appendChild(el("div", { class: "discover-empty" }, [
-      el("div", { class: "empty-note", text: "No crosswords match these filters yet." }),
-      el("button", {
+    const hasCriteria = hasActiveDiscoverCriteria({
+      query,
+      category: activeSearchCategory,
+      difficulty: activeSearchDifficulty,
+      size: activeSearchSize,
+    });
+    const emptyChildren = [
+      el("div", {
+        class: "empty-note",
+        text: hasCriteria ? "No crosswords match these filters yet." : "No open crosswords yet.",
+      }),
+    ];
+    if (hasCriteria) {
+      emptyChildren.push(el("button", {
         class: "cta-secondary",
         text: "Create one with these choices",
         onclick: () => openCreate({
@@ -1264,8 +1275,9 @@ function renderSearchResults() {
           size: activeSearchSize === "all" ? "compact" : normalizedCreateSize(activeSearchSize),
           title: lastSearchQuery.trim(),
         }),
-      }),
-    ]));
+      }));
+    }
+    results.appendChild(el("div", { class: "discover-empty" }, emptyChildren));
     return;
   }
   for (const p of list) {
