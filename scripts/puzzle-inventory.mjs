@@ -25,6 +25,15 @@ function option(name, fallback = "") {
   return index >= 0 ? process.argv[index + 1] : fallback;
 }
 
+function shuffledCopy(items) {
+  const copy = items.slice();
+  for (let index = copy.length - 1; index > 0; index--) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swap]] = [copy[swap], copy[index]];
+  }
+  return copy;
+}
+
 function canonicalGrid(grid) {
   return {
     rows: grid.rows,
@@ -142,15 +151,29 @@ async function generateManifest() {
   const count = Number(option("count", "10"));
   const timeBudgetMs = Number(option("time-budget-ms", "120000"));
   const themePlanAttempts = Number(option("theme-plan-attempts", "1000"));
+  const configuredMaxAttempts = Number(option("max-attempts", String(count * 50)));
+  const maxAnswerUses = Number(option("max-answer-uses", "0"));
   const output = option("out");
   if (!category || !SIZE_MAP[size] || !DIFFICULTIES.has(difficulty) || !Number.isInteger(count) || count < 1
     || !Number.isFinite(timeBudgetMs) || timeBudgetMs < 1
-    || !Number.isInteger(themePlanAttempts) || themePlanAttempts < 1 || !output) {
+    || !Number.isInteger(themePlanAttempts) || themePlanAttempts < 1
+    || !Number.isInteger(configuredMaxAttempts) || configuredMaxAttempts < 1
+    || !Number.isInteger(maxAnswerUses) || maxAnswerUses < 0 || !output) {
     throw new Error("generate requires --category, --size, --difficulty, positive --count, and --out");
   }
-  const blueprints = [];
-  const hashes = new Set();
-  const maxAttempts = count * 50;
+  let blueprints = [];
+  if (process.argv.includes("--resume") && fs.existsSync(path.resolve(output))) {
+    const existing = JSON.parse(fs.readFileSync(path.resolve(output), "utf8"));
+    blueprints = validateManifest(existing).filter((item) => (
+      item.category === category && item.size === size && item.difficulty === difficulty
+    ));
+  }
+  const hashes = new Set(blueprints.map((item) => item.gridHash));
+  const answerUses = new Map();
+  for (const blueprint of blueprints) for (const word of blueprint.grid.words) {
+    answerUses.set(word.answer, (answerUses.get(word.answer) || 0) + 1);
+  }
+  const maxAttempts = configuredMaxAttempts;
   for (let attempt = 0; attempt < maxAttempts && blueprints.length < count; attempt++) {
     let grid;
     try {
@@ -159,7 +182,11 @@ async function generateManifest() {
         title: "",
         size,
         difficulty,
-        wordBank: WORD_BANK,
+        // Corpus order otherwise makes the deterministic solver return the
+        // same valid fill on every inventory attempt.
+        wordBank: shuffledCopy(maxAnswerUses
+          ? WORD_BANK.filter((entry) => (answerUses.get(entry.w) || 0) < maxAnswerUses)
+          : WORD_BANK),
         timeBudgetMs,
         themePlanAttempts,
       });
@@ -171,6 +198,11 @@ async function generateManifest() {
     if (!validation.ok || hashes.has(validation.gridHash)) continue;
     hashes.add(validation.gridHash);
     blueprints.push(normalizedBlueprint(candidate, validation));
+    for (const word of validation.grid.words) {
+      answerUses.set(word.answer, (answerUses.get(word.answer) || 0) + 1);
+    }
+    fs.writeFileSync(path.resolve(output), `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), blueprints }, null, 2)}\n`);
+    console.log(`Checkpoint ${blueprints.length}/${count}: ${path.resolve(output)}`);
   }
   if (blueprints.length !== count) throw new Error(`Only generated ${blueprints.length}/${count} distinct accepted blueprints in ${maxAttempts} attempts.`);
   fs.writeFileSync(path.resolve(output), `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), blueprints }, null, 2)}\n`);
