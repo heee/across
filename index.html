@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=41">
+<link rel="stylesheet" href="style.css?v=42">
 </head>
 <body>
 <div id="app">
@@ -44,7 +44,10 @@
 
   <!-- Home -->
   <div id="screen-home" class="screen">
-    <div class="scroll-area no-scrollbar" id="home-scroll"></div>
+    <div class="browse-body">
+      <div class="scroll-area no-scrollbar" id="home-scroll"></div>
+      <aside class="detail-pane" id="home-detail"></aside>
+    </div>
     <nav class="bottom-nav" data-nav></nav>
   </div>
 
@@ -63,9 +66,12 @@
       <label class="discover-filter">Difficulty<select id="search-difficulty"></select></label>
       <label class="discover-filter">Size<select id="search-size"></select></label>
     </div>
-    <div class="scroll-area no-scrollbar" style="padding-top:4px">
-      <div class="list-label">New crosswords</div>
-      <div class="puzzle-list" id="search-results"></div>
+    <div class="browse-body">
+      <div class="scroll-area no-scrollbar" style="padding-top:4px">
+        <div class="list-label">New crosswords</div>
+        <div class="puzzle-list" id="search-results"></div>
+      </div>
+      <aside class="detail-pane" id="search-detail"></aside>
     </div>
     <nav class="bottom-nav" data-nav></nav>
   </div>
@@ -141,8 +147,11 @@
         </div>
       </div>
     </div>
-    <div class="grid-wrap">
-      <div class="crossword-grid" id="puzzle-grid"></div>
+    <div class="puzzle-body">
+      <div class="grid-wrap">
+        <div class="crossword-grid" id="puzzle-grid"></div>
+      </div>
+      <aside class="clue-list-panel" id="puzzle-clue-list"></aside>
     </div>
     <div class="clue-bar">
       <button class="clue-step" id="clue-prev">‹</button>
@@ -331,6 +340,6 @@
 </div>
 
 <script src="config.js"></script>
-<script type="module" src="app.js?v=44"></script>
+<script type="module" src="app.js?v=45"></script>
 </body>
 </html>

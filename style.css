@@ -255,9 +255,22 @@ button, input, textarea {
   cursor: pointer;
 }
 
+/* ---------- Browse body (list + tablet detail pane) ---------- */
+
+/* Column at phone widths (detail-pane hidden below); becomes a row with a
+   visible right-hand preview pane at tablet widths — see the tablet media
+   query near the end of this file. */
+.browse-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.detail-pane { display: none; }
+.detail-pane-empty { font: 500 13px var(--font); color: var(--muted-45); text-align: center; margin: auto; }
+.detail-pane-title { font: 700 16px var(--font); text-align: center; margin-top: 14px; }
+.detail-pane-meta { font: 500 12px var(--font); color: var(--muted-5); margin-top: 4px; text-align: center; }
+.detail-pane-action { margin-top: 20px; }
+
 /* ---------- List rows (puzzle cards) ---------- */
 
 .puzzle-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.puzzle-row.selected, .completed-row.selected { box-shadow: 0 0 0 2px var(--accent); }
 
 .puzzle-row {
   display: flex;
@@ -282,6 +295,7 @@ button, input, textarea {
 }
 .mini-grid.size-44 { width: 44px; height: 44px; }
 .mini-grid.size-40 { width: 40px; height: 40px; }
+.mini-grid.size-160 { width: 160px; height: 160px; gap: 3px; }
 .mini-grid-cell { border-radius: 2px; }
 .mini-grid-cell.block { background: transparent; }
 .mini-grid-cell.filled { background: var(--block-cell); }
@@ -609,6 +623,13 @@ button, input, textarea {
 }
 .player-avatar:first-child { margin-left: 0; }
 .player-avatar.offline { opacity: 0.35; }
+
+/* Column at phone widths (clue-list-panel hidden below, .clue-bar carries
+   the one-clue-at-a-time UI instead); becomes a row with a visible clue
+   list beside the grid at tablet widths — see the tablet media query near
+   the end of this file. */
+.puzzle-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.clue-list-panel { display: none; }
 
 .grid-wrap {
   flex: 1;
@@ -1142,3 +1163,120 @@ button, input, textarea {
   text-align: center;
 }
 .toast.show { opacity: 1; }
+
+/* ==========================================================================
+   Tablet layout (iPad portrait and up)
+   - Bottom nav becomes a persistent left rail (screens that have one:
+     Home, Discover, Rankings, Settings — Create/Puzzle/Profile-detail keep
+     their existing back-button "pushed screen" model, no rail).
+   - Home/Discover list rows gain a right-hand detail-pane preview.
+   - The puzzle screen shows a full clue list beside the grid instead of
+     the one-clue-at-a-time bar.
+   - Single-column screens (Create/Rankings/Settings/Profile-detail/
+     Completion) get a centered max-width instead of stretching edge to
+     edge.
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  /* #app was a centered phone-width card; on tablet it becomes the
+     genuinely full-bleed shell, same as Mail/Notes/Reminders on iPad — the
+     rail + panes below control content width where it matters, not an
+     outer card. This also keeps the fixed-position rail's left:0 aligned
+     with #app's own edge at any viewport width. */
+  #app { max-width: none; }
+
+  .app-brand-header { padding-left: calc(88px + 18px); }
+
+  /* ---------- Side rail ---------- */
+
+  .bottom-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 88px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 24px 8px calc(24px + env(safe-area-inset-bottom, 0px));
+    border-top: none;
+    border-right: 1px solid var(--hairline);
+  }
+  .nav-create { margin-top: 0; }
+
+  #screen-home, #screen-search, #screen-rankings, #screen-settings {
+    padding-left: 88px;
+  }
+
+  /* ---------- Home / Discover detail pane ---------- */
+
+  .browse-body { flex-direction: row; }
+  .detail-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 340px;
+    flex: none;
+    border-left: 1px solid var(--hairline);
+    padding: 32px 24px;
+    overflow-y: auto;
+  }
+
+  /* ---------- Puzzle: grid + clue list ---------- */
+
+  .puzzle-body { flex-direction: row; }
+  .grid-wrap { flex: 1.3; }
+  .clue-bar { display: none; }
+  .clue-list-panel {
+    display: flex;
+    flex-direction: row;
+    width: 340px;
+    flex: none;
+    border-left: 1px solid var(--hairline);
+    overflow: hidden;
+  }
+  .clue-list-col { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-y: auto; }
+  .clue-list-col + .clue-list-col { border-left: 1px solid var(--hairline-soft); }
+  .clue-list-heading {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    font: 700 11px var(--font);
+    color: var(--muted-45);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 12px 6px;
+  }
+  .clue-list-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    font: 500 12px var(--font);
+    color: var(--ink);
+    line-height: 1.35;
+    cursor: pointer;
+  }
+  .clue-list-number { font-weight: 700; color: var(--muted-45); margin-right: 4px; }
+  .clue-list-item.active { background: var(--accent-tint); color: var(--accent); font-weight: 600; }
+
+  /* ---------- Wider-scaling single-column screens ---------- */
+
+  #screen-create .scroll-area,
+  #screen-create .create-header,
+  #screen-create .cta-row,
+  #screen-settings .scroll-area,
+  #screen-profile-detail .scroll-area,
+  #screen-completion .completion-scroll,
+  #screen-completion .action-row,
+  #rankings-list {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+}

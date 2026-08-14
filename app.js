@@ -781,6 +781,38 @@ function isPerfectCompletion(puzzle) {
   return sessions.every((s) => (s.revealsUsed || 0) === 0 && !s.autoCheckUsed);
 }
 
+// Tablet layout (≥768px, matches style.css) shows a right-hand preview pane
+// instead of navigating away immediately on row click.
+function isTabletViewport() {
+  return matchMedia("(min-width: 768px)").matches;
+}
+
+function renderDetailPane(paneEl, puzzle, actionLabel, openFn) {
+  paneEl.innerHTML = "";
+  const participants = puzzleParticipantNames(puzzle);
+  paneEl.appendChild(miniGrid(puzzle, "size-160"));
+  paneEl.appendChild(el("div", { class: "detail-pane-title", text: puzzle.title }));
+  paneEl.appendChild(el("div", {
+    class: "detail-pane-meta",
+    text: `${cap(puzzle.difficulty)} · ${puzzle.grid.rows}×${puzzle.grid.cols} · ${participants.length} player${participants.length === 1 ? "" : "s"}`,
+  }));
+  paneEl.appendChild(el("button", { class: "cta-primary detail-pane-action", text: actionLabel, onclick: openFn }));
+}
+
+// On tablet, a row click selects it (highlight + populate the detail pane)
+// instead of opening immediately; the pane's action button does the actual
+// open. On phone, the pane is hidden so this just opens right away — same
+// as before this existed.
+function activateRow(puzzle, actionLabel, openFn, paneId, rowEl) {
+  if (!isTabletViewport()) { openFn(); return; }
+  const pane = $(`#${paneId}`);
+  if (!pane) { openFn(); return; }
+  renderDetailPane(pane, puzzle, actionLabel, openFn);
+  const screen = rowEl?.closest(".screen");
+  screen?.querySelectorAll(".selected").forEach((r) => r.classList.remove("selected"));
+  rowEl?.classList.add("selected");
+}
+
 function miniGrid(puzzle, sizeClass) {
   const grid = el("div", { class: `mini-grid ${sizeClass}` });
   const cells = puzzle?.grid?.cells || [];
@@ -1025,8 +1057,11 @@ function continueRow(p) {
   const total = p.grid.cells.filter((c) => !c.block).length;
   const pct = total ? Math.round((filled / total) * 100) : 0;
   const participants = puzzleParticipantNames(p);
-  const row = el("div", { class: "puzzle-row continue", role: "button", tabindex: "0", onclick: () => openPuzzle(p.id) });
-  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") openPuzzle(p.id); });
+  const openFn = () => openPuzzle(p.id);
+  const row = el("div", { class: "puzzle-row continue", role: "button", tabindex: "0" });
+  const activate = () => activateRow(p, "Continue playing", openFn, "home-detail", row);
+  row.addEventListener("click", activate);
+  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") activate(); });
   row.appendChild(miniGrid(p, "size-44"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
@@ -1050,7 +1085,9 @@ function continueRow(p) {
 
 function openRow(p) {
   const participants = puzzleParticipantNames(p);
-  const row = el("button", { class: "puzzle-row", onclick: () => openSharedPuzzle(p.id) });
+  const openFn = () => openSharedPuzzle(p.id);
+  const row = el("button", { class: "puzzle-row" });
+  row.addEventListener("click", () => activateRow(p, "Join crossword", openFn, "home-detail", row));
   row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "puzzle-info" }, [
     el("div", { class: "puzzle-title", text: p.title }),
@@ -1061,8 +1098,11 @@ function openRow(p) {
 }
 
 function completedRow(p) {
-  const row = el("div", { class: "completed-row", role: "button", tabindex: "0", onclick: () => openCompletedPuzzleOptions(p.id) });
-  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") openCompletedPuzzleOptions(p.id); });
+  const openFn = () => openCompletedPuzzleOptions(p.id);
+  const row = el("div", { class: "completed-row", role: "button", tabindex: "0" });
+  const activate = () => activateRow(p, "View completed", openFn, "home-detail", row);
+  row.addEventListener("click", activate);
+  row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") activate(); });
   row.appendChild(miniGrid(p, "size-40"));
   row.appendChild(el("div", { class: "completed-title", text: p.title }));
   const mins = p.totalTimeMs ? formatMinSec(p.totalTimeMs) : "—";
@@ -1282,7 +1322,11 @@ function renderSearchResults() {
   }
   for (const p of list) {
     const isMine = p.players.includes(currentUser.name);
-    const row = el("button", { class: "puzzle-row", onclick: () => (isMine ? (p.state === "completed" ? openCompletedPuzzleOptions(p.id) : openPuzzle(p.id)) : openSharedPuzzle(p.id)) });
+    const completed = p.state === "completed";
+    const openFn = () => (isMine ? (completed ? openCompletedPuzzleOptions(p.id) : openPuzzle(p.id)) : openSharedPuzzle(p.id));
+    const label = isMine ? (completed ? "View completed" : "Continue playing") : "Join crossword";
+    const row = el("button", { class: "puzzle-row" });
+    row.addEventListener("click", () => activateRow(p, label, openFn, "search-detail", row));
     row.appendChild(miniGrid(p, "size-40"));
     row.appendChild(el("div", { class: "puzzle-info" }, [
       el("div", { class: "puzzle-title", text: p.title }),
@@ -1566,6 +1610,7 @@ function openPuzzle(puzzleId) {
     renderPuzzleHeader([]);
     $("#puzzle-playing-count").textContent = "...";
     renderPuzzleGrid();
+    renderClueList();
     $("#puzzle-keyboard").innerHTML = "";
     updateClueBar();
     updatePuzzleTimers();
@@ -1585,6 +1630,7 @@ function openPuzzle(puzzleId) {
       selectedDirection = "across";
       renderPuzzleHeader(presence);
       renderPuzzleGrid();
+      renderClueList();
       renderPuzzleKeyboard();
       updateClueBar();
       updatePuzzleTimers();
@@ -1861,6 +1907,16 @@ function updateClueBar() {
     clueText.appendChild(el("span", { class: "clue-number", text: `${entry.number} ${cap(entry.direction)}` }));
     clueText.appendChild(document.createTextNode(`\u00A0·\u00A0${entry.clue}`));
   }
+  syncClueListActive();
+}
+
+// Jump straight to a specific word (tablet clue-list click); stepClue()
+// below is just this plus finding the next/prev entry by delta.
+function selectWordEntry(target) {
+  selectedDirection = target.direction;
+  selectedCell = { row: target.row, col: target.col };
+  refreshGridState();
+  updateClueBar();
 }
 
 function stepClue(delta) {
@@ -1869,14 +1925,46 @@ function stepClue(delta) {
   const currentEntry = findWordEntry(currentWord(), selectedDirection);
   let idx = currentEntry ? words.findIndex((w) => w === currentEntry) : 0;
   idx = (idx + delta + words.length) % words.length;
-  const target = words[idx];
-  selectedDirection = target.direction;
-  selectedCell = { row: target.row, col: target.col };
-  refreshGridState();
-  updateClueBar();
+  selectWordEntry(words[idx]);
 }
 $("#clue-prev").addEventListener("click", () => stepClue(-1));
 $("#clue-next").addEventListener("click", () => stepClue(1));
+
+// Tablet clue-list panel (grid + full clue list beside it, see style.css).
+// Rebuilt whenever the puzzle loads/changes; highlight sync happens via
+// syncClueListActive(), called from updateClueBar() on every selection
+// change regardless of what triggered it (cell tap, prev/next, or a click
+// here).
+function renderClueList() {
+  const panel = $("#puzzle-clue-list");
+  if (!panel || !currentPuzzle) return;
+  panel.innerHTML = "";
+  for (const direction of ["across", "down"]) {
+    const col = el("div", { class: "clue-list-col" });
+    col.appendChild(el("div", { class: "clue-list-heading", text: cap(direction) }));
+    const words = currentPuzzle.grid.words.filter((w) => w.direction === direction).sort((a, b) => a.number - b.number);
+    for (const w of words) {
+      const item = el("button", { class: "clue-list-item", "data-word-key": `${w.direction}-${w.number}` });
+      item.appendChild(el("span", { class: "clue-list-number", text: String(w.number) }));
+      item.appendChild(document.createTextNode(w.clue));
+      item.addEventListener("click", () => selectWordEntry(w));
+      col.appendChild(item);
+    }
+    panel.appendChild(col);
+  }
+  syncClueListActive();
+}
+
+function syncClueListActive() {
+  const panel = $("#puzzle-clue-list");
+  if (!panel) return;
+  panel.querySelectorAll(".clue-list-item.active").forEach((item) => item.classList.remove("active"));
+  const entry = findWordEntry(currentWord(), selectedDirection);
+  if (!entry) return;
+  const item = panel.querySelector(`[data-word-key="${entry.direction}-${entry.number}"]`);
+  item?.classList.add("active");
+  item?.scrollIntoView?.({ block: "nearest" });
+}
 
 function isLockedCell(cell) {
   if (!cell || !currentPuzzle) return true;
